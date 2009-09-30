@@ -1,0 +1,7 @@
+
+
+.help-new, .loading-new { display: block; float: left; width: 24px; height: 24px; text-indent: -9999px; }
+.help-new { background: url(../../../admin/img/btn-help-dark.png) no-repeat 50% -24px; }
+.help-new:hover { background-position: 50% -48px; }
+.help-new:active { background-position: 50% -72px; }
+.live-help-new, .live-help-new:hover, .live-help-new:active { background-position: 50% -72px; }

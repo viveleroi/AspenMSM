@@ -1,0 +1,10 @@
+Thumbs.db
+.DS_Store
+.svn
+.CVS
+nbproject
+.project
+.settings
+.buildpath
+*.tmproj
+config.php

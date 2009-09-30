@@ -1,0 +1,332 @@
+@import 'base.css';
+
+/*
+	Yellow:  241, 215, 127
+	Orange:  224, 161, 72
+	Red:     227, 113, 113
+	
+	text-shadow: 1px 1px 2px #141414;
+	
+*/
+
+.js .loadfirst {display: none;}
+
+/* !---------- Custom ---------- */
+
+body { width: 100%; height: 100%; padding-top: 75px; color: #ccc; background: rgb(50,50,50) url(../img/bg-body.png) repeat-x fixed 0 0; opacity: 0.99999; }
+h2 { margin: 0 0 15px 0; padding: 0 15px 5px 15px; border-bottom: 1px solid rgba(255,255,255,0.125); }
+h1, h2, h3, h4 { color: rgba(241,215,127,1); text-shadow: 1px 1px 2px #141414; }
+
+h2 span, h3 span { font-size: 75%; font-weight: normal; color: rgba(241,215,127,0.625); }
+h2 span{ font-size: 75%; }
+h3 span{ font-size: 85%; }
+h2 strong, h3 strong { text-transform: none; }
+h3 strong { display: block; }
+li { text-shadow: 1px 1px 2px #141414; }
+
+/* !---------- Structure ---------- */
+#nav, #content { width: 785px; margin: 0 auto; }
+#status ul, #header, #footer { width: 705px; margin: 0 auto; }
+#status { position: fixed; top: 0; left: 0; width: 100%; height: 60px; z-index: 1000;  background: transparent url(../img/bg-status.png) repeat-x 0 0; }
+#nav { background-color: rgba(0,0,0,0.125); padding: 25px 0; -moz-border-radius: 5px; -webkit-border-radius: 5px; }
+#content { background-color: rgba(0,0,0,0.125); -webkit-border-radius: 5px; }
+#content .container { padding: 25px 25px 0 25px; }
+#footer { padding-bottom: 30px; }
+
+
+
+/* !---------- Login Status ---------- */
+#status ul { list-style-type: none; color: rgba(255,255,255,0.5); font-size: 10px; text-transform: uppercase; text-shadow: 1px 1px 2px #000; }
+#status li { margin: 0; line-height: 40px; display: inline-block; }
+#status li a { font-weight: bold; color: rgba(241, 215, 127, .75); }
+#status li a:hover { color: rgba(241, 215, 127, 1); }
+#status li.user { float: left;  }
+#status li.logout { float: right; }
+#status li.logout a { display: inline-block; padding-right: 30px; background: transparent url(../img/btn-logout.png) no-repeat 100% 7px; }
+#status li.logout a:hover {  background-position: 100% -70px; }
+
+
+/* !---------- Header ---------- */
+#header h1 { margin: 15px 0; color: rgba(255,255,255,0.85); }
+
+/* !---------- Navigation ---------- */
+#nav ul { margin: 0 25px; padding: 0 5px; font-size: 11px; text-transform: uppercase; list-style-type: none; border-bottom: 1px solid rgba(255,255,255,0.125); }
+#nav li { float:left; margin:0 5px -1px 0; padding:0; line-height: 1; font-weight: bold; }
+#nav li a { color: rgba(255,255,255,0.5); float:left; display:block; text-align: center; padding: 8px 10px; text-shadow: 1px 1px 2px #141414; }
+#nav li.at a, #nav li.at a:hover { padding-bottom: 7px; color: rgba(241,215,127,1); border-bottom: 1px solid rgba(241,215,127,1); }
+#nav li.admin { float: right; }
+#nav li.admin a { color: rgba(227,113,113,0.625); }
+#nav li a:hover { padding-bottom: 7px; color: rgba(255,255,255,1); border-bottom: 1px solid rgba(255,255,255,0.75); }
+
+
+/* !---------- Form Submit Area ---------- */
+
+.action { clear: both; float: none; width: auto; display: block; margin-top: 15px; padding: 15px; background: transparent; border-top: 1px solid rgba(255,255,255,0.125); -moz-border-radius: 0px; -webkit-border-radius: 0px;}
+.action a { font-size: 11px; line-height: 27px; color: rgba(241,215,127,0.375); }
+.action a:hover { color: rgba(241,215,127,1); }
+
+
+/* !---------- Generic Button Styling ---------- */
+button { width: auto; border: none; text-align:center; white-space: nowrap; overflow:visible; background: none; padding: 0; margin: 0; text-transform: uppercase; font-size: 10px; font-weight: bold; color: rgba(0,0,0,0.5); }
+button span, button em { display:block; height: 27px; line-height: 27px; background: transparent url(../img/btn-generic.png) no-repeat 0 0; }
+button span { padding-left: 20px; }
+button em { padding-right: 20px; font-style:normal; background-position: 100% 0; }
+
+a.button, a.button span { height: 27px; line-height: 27px; background: transparent url(../img/btn-generic.png) no-repeat 0 0; }
+a.button { display: inline-block; padding-left: 20px; color: rgba(0,0,0,0.5) !important; font-size: 10px !important; font-weight: bold; text-shadow: none; text-transform: uppercase; }
+a.button span { display: block; padding-right: 20px; background-position: 100% 0; }
+
+button:hover, a.button:hover { color: rgba(0,0,0,1) !important; cursor: pointer; }
+button:hover span, a.button:hover { background-position: 0 -27px; }
+button:hover em, a.button:hover span { background-position: 100% -27px; }
+button:active span, a.button:active { background-position: 0 -54px; }
+button:active em, a.button:active span { background-position: 100% -54px; }
+
+a.dark-button, a.dark-button span { height: 24px; line-height: 24px; background: transparent url(../img/btn-generic-dark.png) no-repeat 0 0; }
+a.dark-button { display: inline-block; padding-left: 15px; color: rgba(255,255,255,0.75) !important; text-shadow: 1px 1px 2px #000; font-size: 10px !important; font-weight: bold; text-transform: uppercase; }
+a.dark-button span { display: block; padding-right: 15px; background-position: 100% 0; }
+a.dark-button:hover { color: rgba(255,255,255,1) !important; background-position: 0 -24px }
+a.dark-button:hover span { background-position: 100% -24px }
+a.dark-button:active { color: rgba(255,255,255,1) !important; background-position: 0 -48px }
+a.dark-button:active span { background-position: 100% -48px }
+
+
+/* !---------- Icon Button Styling ---------- */
+
+.edit, .private, .live, .delete, .add, .remove, .drag, .closed, .open, .close, .date, .primary, .view { display: block; float: left; width: 24px; height: 24px; text-indent: -9999px; background: transparent url(../img/btn-manage.png) no-repeat 50% 0; }
+
+.closed { background-position: 50% -552px; }
+.open { background-position: 50% -576px; }
+
+.edit { background-position: 50% -24px; }
+.private { background-position: 50% -96px; }
+.live { background-position: 50% -192px; }
+.delete { background-position: 50% -288px; }
+.add { background-position: 50% -360px; }
+.remove { background-position: 50% -432px; }
+.drag { background-position: 50% -504px; }
+.close { background-position: 50% -600px; }
+.date { background-position: 50% -672px; }
+.primary { background-position: 50% -744px; }
+.view { background-position: 50% -840px; }
+
+.edit:hover { background-position: 50% -48px !important; }
+.private:hover { background-position: 50% -144px !important; }
+.live:hover { background-position: 50% -240px !important; }
+.delete:hover { background-position: 50% -312px !important; }
+.add:hover { background-position: 50% -384px !important; }
+.remove:hover { background-position: 50% -456px !important; }
+.drag:hover { background-position: 50% -528px !important; cursor: move; }
+.close:hover { background-position: 50% -624px !important; }
+.date:hover { background-position: 50% -696px !important; }
+.primary:hover { background-position: 50% -768px !important; }
+.view:hover { background-position: 50% -864px !important; }
+
+.private:active { background-position: 50% -168px !important; }
+.live:active { background-position: 50% -264px !important; }
+.delete:active { background-position: 50% -336px !important; }
+.add:active { background-position: 50% -408px !important; }
+.remove:active { background-position: 50% -480px !important; }
+.close:active { background-position: 50% -646px !important; }
+.primary:active { background-position: 50% -792px !important; }
+.view:active { background-position: 50% -888px !important; }
+
+.active, .active:hover, .active:active { background-position: 50% -816px !important; }
+
+.help, .loading { display: block; float: left; width: 24px; height: 24px; text-indent: -9999px; }
+.help { background: url(../img/btn-help-dark.png) no-repeat 50% -24px; }
+.help:hover { background-position: 50% -48px; }
+.help:active { background-position: 50% -72px; }
+.live-help, .live-help:hover, .live-help:active { background-position: 50% -72px; }
+.loading, .loading:hover, .loading:active { background: url(../img/throbber-small.gif) no-repeat 50% 50% !important; }
+
+/* !---------- Darker Grey Sectioning ---------- */
+.frame { position: relative; display: block; padding: 15px; margin-bottom: 5px; background-color: rgba(0,0,0,0.125); -moz-border-radius: 5px; -webkit-border-radius: 5px; }
+.frame h3 { line-height: 24px; margin: 0; }
+
+/* !---------- Toggle Frames ---------- */
+
+h3.show-hide a { display: block; float: left; height: 24px; width: 24px; text-indent: -9999px; }
+
+/* !---------- Standard List Displayes ---------- */
+
+.legend { width: 100%; padding: 3px 0; }
+.legend strong { display: block; float: left; color: rgba(241,215,127,0.75); }
+.legend span { text-shadow: 1px 1px 2px rgb(41,41,41); display: block; float: right; font-size: 11px; margin-right: 15px; color: rgba(255,255,255,0.5); }
+.legend .icons a { margin-left: 15px; }
+.legend strong, .legend span { line-height: 24px; }
+
+.legend a.help { background: url(../img/btn-help.png) no-repeat 50% -24px; float: right; margin-right: 5px; }
+.legend a.help:hover { background-position: 50% -48px; }
+.legend a.help:active { background-position: 50% -72px; }
+.legend a.loading, .legend a.loading:hover, .legend a.loading:active { background: url(../img/throbber-small.gif) no-repeat 50% 50%; }
+.legend .primary { float: right; margin-right: 5px; }
+
+.list-display { width: 505px; float: right; }
+.list-display li { margin-bottom: 25px; color: rgba(255,255,255,0.75); background-color: #181818; -moz-border-radius: 3px; -webkit-border-radius: 3px;}
+.list-display li.empty, li.empty { padding-left: 24px; line-height: 24px; color: rgba(255,255,255,0.375); background-color: rgba(255,255,255,0.075); }
+.list-display ul { margin: 0 5px; }
+.list-display ul li { margin: 5px 0; line-height: 24px; background-color: rgba(255,255,255,0.125); }
+.list-display ul li strong { float: left; font-weight: normal; }
+.list-display ul li .icons { float: right; margin-right: 15px; }
+.list-display ul li .icons a { margin-left: 15px; }
+
+.legend .edit, .legend .delete { background-position: 50% 0; }
+.list-display ul li .drag, .list-display ul li .edit, .list-display ul li .delete { background-position: 50% 0; }
+
+.legend:hover .edit { background-position: 50% -24px; }
+.legend:hover .delete { background-position: 50% -288px; }
+
+.list-display ul li:hover .drag { background-position: 50% -504px; }
+.list-display ul li:hover .edit { background-position: 50% -24px; }
+.list-display ul li:hover .delete { background-position: 50% -288px; }
+
+
+/* !---------- Scrolling Lists ---------- */
+
+#scroll-list { height: 100px; overflow: auto;}
+.jScrollPaneContainer { position: relative; overflow: hidden; }
+.jScrollPaneTrack, .jScrollPaneDrag, .jScrollPaneDragTop, .jScrollPaneDragBottom, a.jScrollArrowUp, a.jScrollArrowDown { background: url(../img/scrollbars.png) repeat-y 0 0; }
+
+.jScrollPaneTrack { position: absolute; right: 0; top: 0; height: 100%; z-index: 3; cursor: pointer; background-position: -52px 0; }
+.jScrollPaneDrag { position: absolute; cursor: pointer; background-position: -65px 0; }
+.jScrollPaneDragTop { position: absolute; height: 5px; margin-top: -5px; left: 0; overflow: hidden; background-position: -78px 0; }
+.jScrollPaneDragBottom { position: absolute; height: 5px; bottom: 0; margin-bottom: -5px; left: 0; overflow: hidden; background-position: -91px 100%; }
+
+a.jScrollArrowUp { display: block; position: absolute; z-index: 2; top: 0; right: 0; text-indent: -2000px; overflow: hidden; height: 22px; }
+a.jScrollArrowUp:hover { background-position: -13px 0; }
+a.jScrollArrowDown { display: block; position: absolute; z-index: 2; bottom: 0; right: 0; text-indent: -2000px; overflow: hidden; height: 22px; background-position: -26px 0; }
+a.jScrollArrowDown:hover { background-position: -39px 0; }
+
+
+/* !---------- Image Lists ---------- */
+
+.img-holder { margin: 0 5px 5px 5px; padding: 10px; background-color: rgba(255,255,255,0.125); }
+
+.img-options { float: left; width: 200px; background-color: rgba(0,0,0,0.25); }
+.img-options .options_mark, .img-options .view, .img-options .delete { margin: 0 5px 5px 5px; }
+.img-options .options_mark { float: right; }
+.img-options .view { float: right; }
+.img-options img { border: 1px solid rgba(255,255,255,0.75); padding: 1px; margin: 10px; display: block; }
+
+
+.img-form { float: left; margin-left: 15px; width: 225px; }
+.img-form a { display: block; margin-bottom: 10px; color: #fff; }
+.img-form label { display: block; margin-bottom: 3px; }
+.img-form input, .img-form textarea { margin-bottom: 10px; }
+.img-form textarea { width: 225px; }
+
+
+
+#file-list { clear: both; margin-bottom: 5px; border-top: 1px solid rgba(255,255,255,0.125); }
+#file-list .img-list-item { line-height: 24px; padding: 2px 5px; border-bottom: 1px solid rgba(255,255,255,0.125); text-shadow: 1px 1px 2px #141414; }
+#file-list .img-list-item .remove { float: right; }
+
+/* !---------- Sublists of Standard Lists ---------- */
+
+
+
+.brief { margin: 0 5px 5px 5px; padding: 10px; background-color: rgba(255,255,255,0.125);}
+.brief p.dates { font-weight: bold; }
+.brief p { margin-bottom: 10px; }
+
+.toolbox { border-top: 1px solid rgba(255,255,255,0.125); margin-top: 10px; padding: 15px 15px 0 15px; }
+.toolbox #add-section { float: left; width: auto; }
+.toolbox #sort-toggle { float: right; }
+
+.options {  width: 175px; float: left; }
+.options ul { background-color: rgba(0,0,0,0.125); margin-top: 10px; }
+.options li {  margin: 0; padding: 5px; font-size: 10px; text-transform: uppercase; font-weight: bold; }
+.options li a { color: rgba(255,255,255,0.25); }
+.options li a:hover { color: rgba(255,255,255,1); }
+
+
+
+/* !---------- Clearing Floats ---------- */
+
+h3.show-hide:after, 
+.legend:after,
+.list-display li:after  {content:".";display:block;height:0;clear:both;visibility:hidden;}
+
+h3.show-hide, 
+.legend, 
+.list-display li {display:inline-block;}
+
+h3.show-hide, 
+.legend, 
+.list-display li {display:block;}
+
+
+
+
+/* !---------- Footer ---------- */
+#footer p { margin: 0; padding: 10px 0; font-size: 11px; color: rgba(255,255,255,0.35); text-shadow: 1px 1px 2px rgb(41,41,41); }
+#footer p strong { text-transform: uppercase; margin-right: 10px; }
+#footer a { padding-left: 10px; color: rgba(241,215,127,0.5); }
+#footer p:hover { color: rgba(255,255,255,0.75); }
+#footer p:hover a { color: rgba(241,215,127,0.75); }
+#footer p:hover a:hover { color: rgba(241,215,127,1); }
+
+
+
+/* !---------- Drag & Drop Indicator ---------- */
+.target { height: 15px; border: 1px solid rgba(241,215,127,0.75); background-color: rgba(241,215,127,0.25) !important; }
+
+
+
+/* !---------- Alert Messages ---------- */
+.alert {  margin: 0 0 15px 0; }
+
+.success, .warning { display: block; font-weight: bold; text-shadow: 1px 1px 2px #141414; margin: 0; padding: 10px; text-align: center; }
+.success { border: 1px solid #91814c; color: #f1d77f; background-color: #454134; }
+.success p {  margin: 0; }
+
+.warning { border: 1px solid #bf4040; padding-bottom: 0; color: #f3b8b8; background-color: #3e2b2b; }
+.warning li { margin: 0 0 10px 0; }
+
+
+
+/* !---------- Modal Displays ---------- */
+#modal-overlay {background-color: #323232;}
+
+#modal-container { margin-left: 20px; }
+#modal-container .content, #modal-container .t, #modal-container .b, #modal-container .b div { background: transparent url(../img/modal.png) no-repeat top right; }
+#modal-container .content { position: relative; }
+#modal-container .holder { text-align: center; }
+#modal-container .t { position: absolute; top: 0; left: 0; width: 20px; margin-left: -20px; height: 100%; background-position: top left; }
+#modal-container .b { position: relative; width: 100%; }
+#modal-container .b, #modal-container .b div { height: 25px; font-size: 1px; }
+#modal-container .b { background-position: bottom right; }
+#modal-container .b div { position: relative; width: 20px; margin-left: -20px; background-position: bottom left; }
+#modal-container p { color: rgba(255,255,255,1); text-shadow: 1px 1px 2px rgb(41,41,41); }
+
+.modal { width: 300px; height: auto; }
+.modal .holder { padding: 30px 30px 10px 10px; }
+.modal .holder p {  }
+
+.status { width: 50px; height: 50px; background: rgba(0,0,0,0.5) url(../img/throbber.gif) no-repeat 50% 50%; -moz-border-radius: 5px; -webkit-border-radius: 5px; }
+
+#yes, #no { width: 50px; margin: 0 5px; }
+
+
+
+/* !---------- Help Messages ---------- */
+#cluetip {   }
+#cluetip-extra { display: none; }
+#cluetip-outer { position: relative; margin: 0; -moz-border-radius: 7px; -webkit-border-radius: 7px; background: transparent url(../img/help-bg.png); }
+#cluetip-title { overflow: hidden; margin: 0; padding: 5px; font-weight: bold; color: rgba(241,215,127,0.875); }
+#cluetip-title span { display: block; float: left; line-height: 24px; margin-left: 5px; }
+#cluetip-title a { float: right; }  
+#cluetip-inner { clear: both; padding: 0 10px 10px 10px; font-size: 11px; -moz-border-radius: 7px; -webkit-border-radius: 7px; background: transparent url(../img/help-bg.png); }
+#cluetip-inner p { margin: 0; }
+
+.cluetip-arrows { display: none; position: absolute; background: transparent url(../img/help-arrows.png) no-repeat 0 0; }
+
+.clue-right-help  .cluetip-arrows, .clue-left-help  .cluetip-arrows { width: 15px; height: 25px; }
+.clue-top-help  .cluetip-arrows, .clue-bottom-help  .cluetip-arrows { width: 25px; height: 15px; }
+
+.clue-right-help .cluetip-arrows { top: 0; left: -15px; margin-top: -12px; background-position: 0 50%; }
+.clue-left-help .cluetip-arrows { left: 100%; margin: -10px -15px 0 0; background-position: 100% 50%; }
+.clue-top-help .cluetip-arrows { top: 100%; left: 50%; margin-left: -12px; background-position: 50% 100%; }  
+.clue-bottom-help .cluetip-arrows { top: -15px; left: 50%; margin-left: -12px; background-position: 50% 0; }
+

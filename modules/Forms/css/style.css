@@ -1,0 +1,35 @@
+
+#form-list .legend strong { margin-left: 24px; }
+
+#form-fieldset { background-color: transparent; }
+
+#form-builder li { background-color: #181818; margin-bottom: 5px; -moz-border-radius: 3px; -webkit-border-radius: 3px; }
+
+#form-fieldset li a.delete { background-position: 50% -360px; }
+#form-fieldset li:hover a.delete { background-position: 50% -360px; }
+#form-fieldset li:hover a.delete:hover { background-position: 50% -384px !important; }
+#form-fieldset li:hover a.delete:active { background-position: 50% -408px !important; }
+
+
+
+.frm-elements { background-color: rgba(255,255,255,0.05); margin: 0 4px 4px 4px; padding: 9px; -moz-border-radius: 3px; -webkit-border-radius: 3px; }
+.frm-elements label { width: 120px; float: left; margin: 0 15px; line-height: 24px; }
+.frm-elements .false-label { width: 120px; float: left; margin: 0 15px; font-size: 10px; text-transform: uppercase; font-weight: bold; line-height: 24px; }
+.frm-elements input[type=text] { float: left; width: 280px; }
+.frm-elements .fields {  float: left; }
+.frm-elements .fields input[type=checkbox], .frm-elements .fields input[type=radio] { float: left; margin: 5px 10px 0 0; }
+.frm-elements .fields input[type=text] { width: 220px; margin-top: 0; }
+.frm-elements .false-label, .frm-elements .fields { margin-top: 10px; }
+.frm-elements .fields div { clear: both; float: left; width: 280px; margin-bottom: 5px; }
+.frm-elements .fields label.auto { width: auto; margin: 0 0 5px 0; }
+.frm-elements .fields .remove { float: right; }
+.frm-elements .fields .add-area { width: 280px; margin-top: 5px; border-top: 1px solid rgba(255,255,255,0.125); }
+.frm-elements .fields .add-area .add { clear: both; float: right; }
+
+.dark-button { margin: 5px 0 10px 15px; }
+
+
+.frm-elements:after, .frm-fld:after  {content:".";display:block;height:0;clear:both;visibility:hidden;}
+.frm-elements, .frm-fld {display:inline-block;}
+.frm-elements, .frm-fld {display:block;}
+

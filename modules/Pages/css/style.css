@@ -1,0 +1,86 @@
+
+/* !---------- Pages View ---------- */
+.col-head { margin-bottom: 15px; padding: 5px 0; font-size: 10px; text-transform: uppercase; font-weight: bold; color: rgba(255,255,255,0.5); background-color: rgba(0,0,0,0.25); border-bottom: 1px solid rgba(255,255,255,0.25); text-shadow: 1px 1px 2px rgb(41,41,41); }
+.col-head .title { float: left; width: 150px; margin-left: 15px; text-align: left; }
+.col-head .head-right { float: right; width: 175px; margin-right: 7px; }
+.col-head .head-right span { width: 55px; display: block; float: left; text-align: center; }
+
+#page-list .btns-right { width: 175px; }
+#page-list .page-title { display: block; float: left; }
+
+#page-list { margin: 0; padding: 0 5px; list-style-type: none; border: 1px solid rgba(241,215,127,0.05); -moz-border-radius: 3px; -webkit-border-radius: 3px; }
+#page-list:hover { border-color: rgba(241,215,127,0.5); }
+#page-list li { margin: 2px 0; padding: 2px 0; color: rgba(255,255,255,0.625); line-height: 24px; }
+#page-list li ul { clear: both; margin: 0 0 0 30px; }
+#page-list li li { background-color: transparent; border-right: none;  }
+
+.page-highlight { background-color: rgba(0,0,0,0.25); border: 1px solid rgba(0,0,0,0); padding: 2px 0;  -moz-border-radius: 3px; -webkit-border-radius: 3px;  }
+.page-highlight:hover { color: rgba(255,255,255,1); background-color: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.125); }
+
+.nomenu { background-color: rgba(255,255,255,0.0375);}
+
+#page-list li .btns-right { float: right; }
+.page-highlight a { float: left; width: 55px; }
+
+.page-highlight .drag  { background-position: 50% 0; }
+.page-highlight .login { background-position: 50% -912px; }
+.page-highlight .edit  { background-position: 50% 0; }
+.page-highlight .delete { background-position: 50% 0; }
+
+.page-highlight:hover .live { background-position: 50% -216px; }
+.page-highlight:hover .private { background-position: 50% -120px; }
+.page-highlight:hover .drag { background-position: 50% -504px; }
+.page-highlight:hover .edit { background-position: 50% -24px; }
+.page-highlight:hover .delete { background-position: 50% -288px; }
+.page-highlight:hover .locked { background-position: 50% -288px; }
+
+
+
+
+/* !---------- Nested List js Support ---------- */
+#jTreeHelper { list-style-type: none; margin: 0; padding:0; }
+#jTreeHelper li { border: 1px solid #91814c; display: block; width: 300px; padding: 3px 15px; color: #000; font-weight: bold; background: #f1d77f; text-shadow: none; -moz-border-radius: 5px; -webkit-border-radius: 5px; }
+#jTreeHelper li a, #jTreeHelper li .drag { display: none; }
+#jTreeHelper li .page-highlight { background: transparent; }
+#page-list li.jTreePlacement { border: 1px solid #91814c; background: #f1d77f; margin-top: 2px; padding: 0; height: 15px; -moz-border-radius: 5px; -webkit-border-radius: 5px; }
+
+
+
+/* !---------- Page Edit Section ---------- */
+#sections-fieldset { background-color: transparent; }
+
+#page-sections { list-style-type: none; margin: 0; }
+#page-sections li { margin: 5px 0;  -moz-border-radius: 3px; -webkit-border-radius: 3px; }
+#page-sections li#empty { padding-left: 24px; line-height: 24px; color: rgba(255,255,255,0.375); background-color: rgba(255,255,255,0.075); }
+
+#page-sections li.new { background-color: #171717; margin-bottom: 25px; }
+
+#page-sections ol { margin-top: 0; }
+#page-sections ol li { margin: 0; }
+
+#page-sections a.dark-button { clear: both; margin: 5px  0 15px 15px; }
+
+
+
+/* !---------- Clearing Floats ---------- */
+
+.col-head:after, 
+#page-list li:after, 
+#page-sections .legend:after, 
+.editable:after, 
+.page-highlight:after  {content:".";display:block;height:0;clear:both;visibility:hidden;}
+
+.col-head, 
+#page-list li, 
+#page-sections .legend, 
+.editable, 
+.page-highlight {display:inline-block;}
+
+.col-head, 
+#page-list li,  
+#page-sections .legend, 
+.editable, 
+.page-highlight {display:block;}
+
+
+

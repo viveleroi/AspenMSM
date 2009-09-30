@@ -1,0 +1,25 @@
+
+/* !---------- Log-In and Forgotton Password ---------- */
+
+#users_admin_login #content, #users_admin_forgot #content, #users_admin_authenticate #content { width: 425px; }
+#users_admin_login #header, #users_admin_forgot #header, #users_admin_authenticate #header { width: 345px; }
+#users_admin_login h2, #users_admin_forgot h2, #users_admin_authenticate h2{ margin-bottom: 2px; }
+
+.alert {  margin: 15px 0; }
+
+#login-frm fieldset { background: transparent; width: auto; float: none; margin-top: 5px;  }
+#login-frm ol { width: auto; margin: 0; padding: 0; background: transparent; border: none;  }
+#login-frm ol li { margin-bottom: 2px; padding: 15px 0; border: none; background-color: rgba(0,0,0,0.25); -moz-border-radius: 3px; -webkit-border-radius: 3px; }
+#login-frm ol li label { margin-left: 15px; width: 105px; color: rgba(255,255,255,0.5); text-shadow: 1px 1px 2px #141414; }
+#login-frm ol li input { width: 225px; }
+
+
+#login-frm .action { margin-top: 3px; }
+#login-frm .action a { display: block; width: 200px; float: left;  }
+#login-frm .action a.button { display: inline-block; width: auto; }
+
+
+/* !---------- Manage Users ---------- */
+
+
+#user-list .legend strong { margin-left: 24px; }

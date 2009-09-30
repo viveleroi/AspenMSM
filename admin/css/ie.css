@@ -1,0 +1,13 @@
+/* !---------- IE ---------- */
+body {text-align:center;}
+#status, #header, #content, #footer {text-align:left;}
+
+.container {text-align:left;}
+
+ol {margin-left:2em;}
+sup {vertical-align:text-top;}
+sub {vertical-align:text-bottom;}
+fieldset {padding-top:0;}
+hr {margin:-8px auto 11px;}
+.clearfix, .container {display:inline-block;}
+* html .clearfix, * html .container {height:1%;}

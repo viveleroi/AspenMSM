@@ -1,0 +1,177 @@
+<?php
+/**
+ * @abstract Events Admin class - Allows an admin user to manage an events list
+ * @package Aspen Framework
+ * @author Michael Botsko, Botsko.net LLC
+ * @uses Admin
+ */
+class Events {
+
+	/**
+	 * @var object Holds our original application
+	 * @access private
+	 */
+	private $APP;
+
+	/**
+	 *
+	 * @var <type> 
+	 */
+	private $months = array();
+
+
+	/**
+	 * @abstract Constructor, initializes the module
+	 * @return Install_Admin
+	 * @access public
+	 */
+	public function __construct(){
+		$this->APP = get_instance();
+		$this->APP->director->registerCmsSection(__CLASS__, 'events_display');
+	}
+	
+	
+	/**
+	 * @abstract Returns the section information from the db
+	 * @param array $section_data
+	 * @return array
+	 */
+	public function readSection($section_data){
+		
+		$data = array();
+		
+		// pull the section for the database
+		$section_results = $this->APP->model->query(sprintf('SELECT * FROM section_events_display WHERE id = "%s"', $section_data['section_id']));
+		
+		if($section_results->RecordCount()){
+			while($section_content = $section_results->FetchRow()){
+				$section_content['type'] = $section_data['section_type'];
+				$section_content['link_to_full_page'] = $section_content['link_to_full_page'];
+				$section_content['placement_group'] = $section_data['group_name'];
+
+				if(!$this->APP->cms_lib->getUriBit(1)){
+				
+					// pull events
+					$this->APP->model->select('events', array('*, YEAR(start_date) as years, MONTHNAME(start_date) as months'));
+
+					$this->APP->model->parenthStart();
+
+					$match = 'AND';
+					if($section_content['show_recurring'] && $section_content['show_nonrecurring']){
+						$this->APP->model->where('recurring', 1);
+						$match = 'OR';
+					}
+					else if($section_content['show_recurring'] && !$section_content['show_nonrecurring']){
+						$this->APP->model->where('recurring', 1);
+					}
+					elseif($section_content['show_nonrecurring']){
+						$this->APP->model->where('recurring', 0);
+					} else {
+						$this->APP->model->where('recurring', 2);
+					}
+
+					if($section_content['show_nonrecurring'] && $section_content['hide_expired']){
+						$this->APP->model->whereFuture('CONCAT(start_date," ", start_time)', false, $match);
+					}
+
+					$this->APP->model->parenthEnd();
+
+					if(isset($section_content['group_id']) && $section_content['group_id']){
+						$this->APP->model->leftJoin('event_groups_link', 'event_id', 'id', array('group_id'));
+						$this->APP->model->where('group_id', $section_content['group_id']);
+					}
+
+					if($this->APP->params->get->getInt('year')){
+						$this->APP->model->where('YEAR(start_date)', $this->APP->params->get->getInt('year'));
+					}
+
+					$this->APP->model->where('public', 1);
+					$this->APP->model->orderBy('start_date', 'ASC');
+					if($section_content['display_num']){
+						$this->APP->model->limit(0, $section_content['display_num']);
+					}
+					$events = $this->APP->model->results();
+//					print $this->APP->model->getLastQuery();
+					$section_content['events'] = $events['RECORDS'];
+
+					// append month names
+					if($events['RECORDS']){
+						foreach($events['RECORDS'] as $event){
+							if(!empty($event['months'])){
+								$this->months[ $event['months'] ] = $event['months'];
+							}
+						}
+					}
+
+				} else {
+
+					$event = $this->APP->model->quickSelectSingle('events', $this->APP->cms_lib->getUriBit(1));
+
+					if($event){
+						$section_content['events'] = array($event['id']=>$event);
+					} else {
+						$this->APP->cms_lib->error_404();
+					}
+				}
+				
+				$data['section'] = $section_content;
+				
+				if(!$section_data['called_in_template']){
+					$data['content'] = $section_content;
+				}
+			}
+		}
+		
+		return $data;
+
+	}
+	
+	
+	/**
+	 * @abstract Displays the basic section
+	 * @param unknown_type $section
+	 * @param unknown_type $page
+	 * @param unknown_type $bits
+	 */
+	public function displaySection($section, $page, $bits){
+		$this->APP->display->loadSectionTemplate('modules/events', $section['template'], $section, $page, $bits);
+	}
+	
+	
+	/**
+	 * @abstract Parses and returns proper content for the search indexer
+	 * @param array $content
+	 */
+	public function searchIndexer($content = false){
+		$source = array();
+		if($content['events']){
+			foreach($content['events'] as $event){
+				$source[0]['source_type'] 		= $content['type'];
+				$source[0]['source_page_id'] 	= $content['page_id'];
+				$source[0]['source_id'] 		= $content['id'];
+				$source[0]['source_title'] 		= $event['title'];
+				$source[0]['source_content'] 	= $event['content'];
+			}
+		}
+		return $source;
+	}
+
+
+	/**
+	 *
+	 * @return <type>
+	 */
+	public function months(){
+		return $this->months;
+	}
+
+
+	/**
+	 *
+	 * @return <type> 
+	 */
+	public function cur_month(){
+		return strtolower(date('F'));
+	}
+}
+?>

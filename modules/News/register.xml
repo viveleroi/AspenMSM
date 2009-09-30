@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+
+<package>
+
+	<type>Module</type>
+	<guid>49b2175e-040a-ab01-3755-1cdb78b20802</guid>
+	<classname>News</classname>
+	<name>News</name>
+	<version>1.0</version>
+	<description>Manages news.</description>
+	<vendor>Trellis Development, LLC</vendor>
+	<pressUrl>http://www.trellisdevelopment.com</pressUrl>
+	<updateUrl>http://www.trellisdevelopment.com</updateUrl>
+
+	<targetApplication>
+		<name>AspenMSM</name>
+		<guid>a4cd8de0-197b-11de-8c30-0800200c9a66</guid>
+		<minVersion>1.0.0</minVersion>
+		<maxVersion>1.0.0</maxVersion>
+	</targetApplication>
+
+</package>
