@@ -441,25 +441,30 @@ class Pages_Admin {
 	 * @return string
 	 * @access public
 	 */
-	public function pageOptionGroups($pages = false, $group = false, $opt_selected = false, $editing_page_id = false){
+	public function pageOptionGroups($pages = false, $group = false, $opt_selected = false, $editing_page_id = false, $parents = array()){
 
 			$pages = $pages ? $pages : $this->loadPages();
-			//print_r($pages);
+
 			if(is_array($pages)){
 
 				$html = $group ? '<optgroup>' : '';
 
 				foreach($pages as $page){
-	
+
 					if(isset($page['page'])){
 
-						if($editing_page_id != $page['page']['page_id']){
+						// unavailable parents
+						if($page['page']['parent_id']){
+							$parents = array_merge(array($page['page']['parent_id']), $parents);
+						}
+
+						if($editing_page_id !== $page['page']['page_id'] && !in_array($editing_page_id, $parents)){
 							$selected = $opt_selected == $page['page']['page_id'] ? ' selected="selected"' : '';
 							$html .= sprintf('<option value="%d"%s>%s</option>', $page['page']['page_id'], $selected, $page['page']['page_title']);
 						}
-						
+
 						if(isset($page['children'])){
-							$html .= $this->pageOptionGroups($page['children'], true, $opt_selected, $editing_page_id);
+							$html .= $this->pageOptionGroups($page['children'], true, $opt_selected, $editing_page_id, $parents);
 						}
 					}
 				}
