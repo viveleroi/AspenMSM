@@ -8,11 +8,11 @@ if [ $# -lt 1 ]; then
 fi
 
 # remove any existing exports
-rm -rf aspen-msm
+rm -rf AspenMSM
 
 # checkout the latest code from trunk
-git clone git@github.com:botskonet/aspen-msm.git
-cd aspen-msm
+git clone git@github.com:botskonet/AspenMSM.git
+cd AspenMSM
 
 # checkout the proper branch
 if [ $1 != "head" ]; then
@@ -37,6 +37,6 @@ rm -f .DS_Store
 
 # make tarball
 cd ..
-tar czvf AspenMSM_$gitvers.tar.gz aspen-msm
+tar czvf AspenMSM_$gitvers.tar.gz AspenMSM
 
 echo "BUILD COMPLETE, VERSION: $gitvers"
