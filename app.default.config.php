@@ -14,6 +14,9 @@
 	
 	// application version
 	$config['application_version'] = '1.0.0';
+
+	// application build
+	$config['application_build'] = '';
 	
 	// default module if none specific in URL
 	if(LOADING_SECTION == 'Admin'){
