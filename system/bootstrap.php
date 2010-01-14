@@ -20,7 +20,7 @@ error_reporting(E_ALL);
  * have a record of which AF revision
  * you're using.
  */
-define('FRAMEWORK_REV', '1.0.1-14-g45a768d');
+define('FRAMEWORK_REV', '1.0.1-15-g43031ca');
 
 /**
  * @abstract This base class provides a method allowing subclasses access to the higher object through reference.
