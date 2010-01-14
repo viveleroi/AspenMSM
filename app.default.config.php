@@ -126,4 +126,11 @@
 	$config['load_add_core_class'][] = array('classname' => 'Pages_lib');
 	$config['load_add_core_class'][] = array('classname' => 'Display');
 
+	// default modules for specific user groups (overrides default_module)
+	$config['usergroup_default_modules'] = array();
+
+	// Password reset
+	$config['password_reset_subject'] = (array_key_exists('SERVER_NAME', $_SERVER) ? $_SERVER['SERVER_NAME'] : '') . 'Password Reset Form';
+	$config['password_reset_body'] = 'Hello,<br /><br />Your password has been reset to {new_pass}.';
+
 ?>
