@@ -87,7 +87,6 @@ class Router {
 			if($this->getPath() != '/'){
 				$replace[] = $this->getPath();
 			}
-
 			$uri = str_replace($replace, '', $this->getDomainUrl() . $this->APP->params->server->getRaw('REQUEST_URI'));
 			$uri = explode('/', $uri);
 		
@@ -135,8 +134,6 @@ class Router {
 	 */
 	public function identifyModuleForLoad(){
 
-		$default = $this->APP->user->getUserDefaultModule();
-
 		if(strtolower(get_class($this->APP)) == "app"){
 
 			if($this->APP->isInstalled() && $this->map['method'] != 'success' && $this->map['method'] != 'account'){
@@ -144,10 +141,11 @@ class Router {
 				// if user must be logged in
 				if($this->APP->requireLogin()){
 
-					// do a basic itnerface access check
-					if($this->APP->user->userHasInterfaceAccess()){
-							
-						$default = $this->map['module'] ? $this->map['module'] : $default;
+					// do a quick check to see if the user is logged in or not
+					// we need to create our own auth check, as the user module is not loaded at this point
+					if($this->APP->params->session->getAlnum('domain_key') == sha1($this->getApplicationUrl())){
+	
+						$default = $this->map['module'] ? $this->map['module'] : $this->APP->config('default_module');
 	
 					} else {
 	
@@ -156,7 +154,7 @@ class Router {
 					}
 				} else {
 					
-					$default = $this->map['module'] ? $this->map['module'] : $default;
+					$default = $this->map['module'] ? $this->map['module'] : $this->APP->config('default_module');
 					
 				}
 			} else {
@@ -186,8 +184,8 @@ class Router {
 		// check if a login is required
 		if($this->APP->requireLogin()){
 
-			// do a basic interface check
-			if($this->APP->user->userHasInterfaceAccess()){
+			// do a basic login check as user module is not loaded at this point
+			if($this->APP->params->session->getAlnum('domain_key') == sha1($this->getApplicationUrl())){
 	
 				$default = $this->map['method'];
 				$default = $default ? $default : $this->APP->config('default_method');
@@ -306,12 +304,6 @@ class Router {
 	 * @access public
 	 */
 	public function loadFromUrl(){
-
-		// If user is logged in, but does not have access to this interface app
-		if($this->APP->user->isLoggedIn() && !$this->APP->user->userHasInterfaceAccess()){
-			$this->APP->user->logout();
-			$this->redirect('login', false, 'Users');
-		}
 		
 		// redirect if upgrade pending
 		if($this->APP->user->isLoggedIn() && $this->getSelectedModule() != 'Install_Admin'){
@@ -505,7 +497,7 @@ class Router {
             // if no mod_rewrite, we need to handle the paths appropriately
             if($this->APP->config('enable_mod_rewrite') && strpos($this->APP->params->server->getRaw('REQUEST_URI'), '.php?') === false){
 
-                $redirected = stripslashes($this->APP->params->get->getRaw('redirected'));
+                $redirected = $this->APP->params->get->getRaw('redirected');
                 $interface = LS ? LS : '';
 
                 $replace = array();
@@ -516,8 +508,7 @@ class Router {
                     $replace[] = '/'.$redirected;
                 }
 
-                $uri = str_replace($replace, '', urldecode($this->APP->params->server->getRaw('REQUEST_URI')));
-	
+                $uri = str_replace($replace, '', $this->APP->params->server->getRaw('REQUEST_URI'));
             } else {
 
                 $no_qs_url = str_replace('?' . $this->APP->params->server->getRaw('QUERY_STRING'), '', $this->APP->params->server->getRaw('REQUEST_URI'));

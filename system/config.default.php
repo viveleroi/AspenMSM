@@ -99,9 +99,6 @@
 	// default module if none specific in URL
 	$config['default_module'] = 'Index' . (LOADING_SECTION ? '_' . LOADING_SECTION : false);
 
-	// default modules for specific user groups (overrides default_module)
-	$config['usergroup_default_modules'] = array();
-
 	// default module if no user config exists
 	$config['default_module_no_config'] = 'Install_Admin';
 	
@@ -134,13 +131,9 @@
 	// email from sender name
 	$config['email_sender_name'] = 'noreply@' .
 			(array_key_exists('SERVER_NAME', $_SERVER) ? $_SERVER['SERVER_NAME'] : 'yourdomain.com');
-			
-	// password reset email subject
-	$config['password_reset_subject'] = (array_key_exists('SERVER_NAME', $_SERVER) ? $_SERVER['SERVER_NAME'] : '') . 'Password Reset Form';
 
-	// password reset email body
-	$config['password_reset_body'] = 'Hello,<br /><br />Your password has been reset to {new_pass}.';
-	
+
+
 /**
  * DEBUG AND ERROR HANDLING SETTINGS
  *
@@ -317,7 +310,6 @@
 	
 	$config['load_core_class'][] = array('classname' => 'Inspekt', 'folder' => 'security/Inspekt', 'autoload' => false);
 	$config['load_core_class'][] = array('classname' => 'Security');
-	$config['load_core_class'][] = array('classname' => 'User');
 	$config['load_core_class'][] = array('classname' => 'Router', 'autoload' => false);
 	$config['load_core_class'][] = array('classname' => 'Template');
 	$config['load_core_class'][] = array('classname' => 'Error',
@@ -332,14 +324,15 @@
 	$config['load_core_class'][] = array('classname' => 'Install');
 	$config['load_core_class'][] = array('classname' => 'Log');
 	$config['load_core_class'][] = array('classname' => 'Model');
-	$config['load_core_class'][] = array('classname' => 'Module');
 	$config['load_core_class'][] = array('classname' => 'Modules');
 	$config['load_core_class'][] = array('classname' => 'PHPMailer', 'var' => 'mail');
 	$config['load_core_class'][] = array('classname' => 'Settings');
 	$config['load_core_class'][] = array('classname' => 'Sml');
 	$config['load_core_class'][] = array('classname' => 'Form');
-	
+	$config['load_core_class'][] = array('classname' => 'User');
 	$config['load_core_class'][] = array('classname' => 'Scaffold');
+	
+	$config['load_core_class'][] = array('classname' => 'Module', 'autoload' => false);
 	
 	// if user auth enabled - otherwise this is no use
 	if($config['enable_authentication_support']){

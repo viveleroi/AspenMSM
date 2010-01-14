@@ -189,7 +189,7 @@ class Cms_lib {
 	private function identifyPage(){
 		
 		// if rewrites enabled, pull them from the url
-		$uri = explode('/', stripslashes($this->APP->params->get->getRaw('redirected')));
+		$uri = explode('/', $this->APP->params->get->getRaw('redirected'));
 		
 		if(isset($uri[0]) && !empty($uri[0])){
 			$final_page = $this->findPageFromHeirarchy($uri);

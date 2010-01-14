@@ -9,7 +9,7 @@
  */
 
 // turn off the default error display
-ini_set('display_errors', true);
+ini_set('display_errors', false);
 error_reporting(E_ALL);
 
 /**
@@ -20,7 +20,7 @@ error_reporting(E_ALL);
  * have a record of which AF revision
  * you're using.
  */
-define('FRAMEWORK_REV', '1.0.1-5-g4b331ad');
+define('FRAMEWORK_REV', '1.0.1-14-g45a768d');
 
 /**
  * @abstract This base class provides a method allowing subclasses access to the higher object through reference.
@@ -411,7 +411,11 @@ class Bootstrap extends Base {
 			// update our config with the user-set params
 			if(isset($config) && is_array($config)){
 				foreach($config as $param => $value){
-					$all_config[$param] = $value;
+
+					if(isset($all_config[$param])){
+						$all_config[$param] = $value;
+					}
+
 				}
 				define('USER_CONFIG_LOADED', true);
 			}
@@ -554,6 +558,7 @@ class Bootstrap extends Base {
 				$all_classes[$class['classname']] = $class;
 			}
 		}
+	
 
 		// load all required modules
 		if(is_array($all_classes) && count($all_classes) > 0){
@@ -1078,12 +1083,9 @@ class Bootstrap extends Base {
 	 * @access private
 	 */
 	private function registryVersionMatch($min, $max){
+		$app_vers = $this->config('application_version');
 
-		$app_vers = substr(str_replace(".", '', $this->config('application_version')), 0, 3);
-		$min_vers = substr(str_replace(".", '', $min), 0, 3);
-		$max_vers = substr(str_replace(".", '', $max), 0, 3);
-
-		if((int)$app_vers >= (int)$min_vers  &&  (int)$app_vers <= (int)$max_vers){
+		if($this->versionCompare($min, $app_vers) != 'greater' && $this->versionCompare($max, $app_vers) != 'less'){
 			return true;
 		} else {
 			return false;
@@ -1133,33 +1135,33 @@ class Bootstrap extends Base {
 	public function versionCompare($build, $match){
 		
 		$diff = false;
+
+		$build = explode('.', $this->formatVersionNumber($build));
+		$match = explode('.', $this->formatVersionNumber($match));
 		
-		$build = explode('.', $build);
-		$match = explode('.', $match);
+		// get full count so we know the largest array
+		$fullcnt = count($build) > count($match) ? count($build) : count($match);
 		
-		foreach($build as $key => $inc){
+		for($i = 0; $i <= $fullcnt; $i++){
+		
+			$build_inc = isset($build[$i]) ? $build[$i] : 0;
+			$match_inc = isset($match[$i]) ? $match[$i] : 0;
 			
-			if(isset($match[$key])){
-				
-				if((int)$inc > (int)$match[$key]){
-					$diff = 'greater';
-				}
-				elseif((int)$inc < (int)$match[$key]){
-					$diff =  'less';
-				}
-				elseif((int)$inc == (int)$match[$key]){
-					$diff =  'equal';
-				} else {
-				}
-				
-				if($diff != 'equal'){
-					return $diff;
-				}
-			} else {
-				if((int)$inc > 0){
-					$diff = 'greater';
-				}
+			if((int)$build_inc > $match_inc){
+				$diff = 'greater';
 			}
+			elseif((int)$build_inc < $match_inc){
+				$diff =  'less';
+			}
+			elseif((int)$build_inc == $match_inc){
+				$diff =  'equal';
+			} else {
+			}
+			
+			if($diff != 'equal'){
+				return $diff;
+			}
+
 		}
 		return $diff;
 	}

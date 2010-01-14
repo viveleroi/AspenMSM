@@ -183,8 +183,7 @@ class Error {
 			256  => "PHP User Error",
 			512  => "PHP User Warning",
 			1024 => "PHP User Notice",
-			2048 => "Unknown",
-			8192 => "Deprecated"
+			2048 => "Unknown"
 		);
 
 		$this->info = array();

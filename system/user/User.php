@@ -48,16 +48,6 @@ class User {
 			// validation
 			if(!$this->APP->form->isFilled('username')){
 				$this->APP->form->addError('username', 'You must enter a username.');
-			} else {
-				
-				// verify unique
-				$this->APP->model->select('authentication');
-				$this->APP->model->where('username', $this->APP->form->cv('username'));
-				$unique = $this->APP->model->results();
-				
-				if($unique['RECORDS']){
-					$this->APP->form->addError('username', 'That username has already been used.');
-				}
 			}
 	
 			if($this->APP->form->isFilled('password')){
@@ -309,9 +299,12 @@ class User {
 					$this->APP->mail->FromName  	= $this->APP->config('email_sender_name');
 					$this->APP->mail->Mailer    	= "mail";
 					$this->APP->mail->ContentType 	= 'text/html';
-					$this->APP->mail->Subject   	= $this->APP->config('password_reset_subject');
-					$this->APP->mail->Body 			= str_replace('{new_pass}', $new_pass, $this->APP->config('password_reset_body'));
-										
+					$this->APP->mail->Subject   	= $this->APP->config('application_name') . " Password Reset Form";
+
+					$this->APP->mail->Body 			= 'Hello,<br /><br />Your ' .
+									$this->APP->config('application_name') . ' password has been reset to ' . $new_pass . '.';
+									
+									
 					$this->APP->mail->Send();
 					$this->APP->mail->ClearAddresses();
 					
@@ -355,7 +348,7 @@ class User {
 
 					$_SESSION['authenticated']		= true;
 					$_SESSION['authentication_key'] = sha1($account['username'] . $account['id']);
-					$_SESSION['domain_key'] 		= sha1($this->APP->params->server->getRaw('HTTP_HOST'));
+					$_SESSION['domain_key'] 		= sha1($this->APP->router->getApplicationUrl());
 					$_SESSION['username'] 			= $account['username'];
 					$_SESSION['nice_name'] 			= $account['nice_name'];
 					$_SESSION['latest_login'] 		= $account['latest_login'];
@@ -381,13 +374,12 @@ class User {
 	 * @abstract Returns whether or not the user is logged in
 	 * @return boolean
 	 * @access public
-	 * @todo domain key check has been disabled because router is loaded after this class
 	 */
 	public function isLoggedIn(){
 
 		$authenticated 	= false;
 		$auth_key 		= sha1($this->APP->params->session->getRaw('username') . $this->APP->params->session->getInt('user_id'));
-		$domain_key 	= sha1($this->APP->params->server->getRaw('HTTP_HOST'));
+		$domain_key 	= sha1($this->APP->router->getApplicationUrl());
 
 		if($this->APP->checkDbConnection()){
 			if(
@@ -402,67 +394,7 @@ class User {
 		return $authenticated;
 
 	}
-
-
-	/**
-	 * @abstract Checks if user has permissions to access an entire interface
-	 * @param string $interface
-	 * @param integer $user_id
-	 * @return boolean
-	 * @access public
-	 */
-	public function userHasInterfaceAccess($interface = false, $user_id = false){
-
-		if(!$this->APP->requireLogin()){
-			return true;
-		}
-
-		$authenticated 	= false;
-		$interface 		= $interface ? $interface : LOADING_SECTION;
-		$user_id		= $user_id ? $user_id : $this->APP->params->session->getInt('user_id');
-
-		if($this->userHasGlobalAccess()){
-
-			$authenticated = true;
-
-		} else {
-
-			if($this->isLoggedIn()){
-
-				// first identify any groups this user belongs to
-				$this->APP->model->select('user_group_link', array('group_id'));
-				$this->APP->model->where('user_id', $user_id);
-				$groups = $this->APP->model->results();
-
-				$group_where = '';
-
-				if($groups['RECORDS']){
-					foreach($groups['RECORDS'] as $group){
-						$group_where .= '
-							OR group_id = ' . $group['group_id'];
-					}
-				}
-
-
-				// auth if:
-				// interface matches current or is all
-				// module matches current or is all
-				// method matches current or is all
-				$strict_sql = sprintf('
-							SELECT * FROM permissions
-							WHERE (interface = "%s" OR interface = "*") AND (user_id = %s%s)',
-								$interface, $user_id, $group_where);
-
-				$stricts = $this->APP->model->query($strict_sql);
-				$authenticated = $stricts->RecordCount() ? true : false;
-
-			}
-		}
-
-		return $authenticated;
-
-	}
-
+	
 
 	/**
 	 * @abstract Checks if user has permissions to access a page
@@ -472,23 +404,21 @@ class User {
 	 * @return boolean
 	 * @access public
 	 */
-	public function userHasAccess($module = false, $method = false, $interface = false, $user_id = false){
+	public function userHasAccess($module = false, $method = false, $interface = false){
+		
+		if(!$this->APP->requireLogin()){
+			return true;
+		}
 
 		$authenticated 	= false;
 		$module 		= $module ? $module : $this->APP->router->getSelectedModule();
 		$method 		= $method ? $method : $this->APP->router->getSelectedMethod();
 		$interface 		= $interface ? $interface : LOADING_SECTION;
-		$user_id		= $user_id ? $user_id : $this->APP->params->session->getInt('user_id');
 		$module 		= str_replace('_'.$interface, '', $module);
 
-		if(
-			$this->userHasGlobalAccess() ||
-			!$this->APP->requireLogin() ||
-			($module == 'Users' &&
-					($method == 'login' || $method == 'authenticate' || $method == 'logout' || $method == 'forgot') ||
-				$module == 'Install')){
+		if($this->userHasGlobalAccess()){
 
-			return true;
+			$authenticated = true;
 
 		} else {
 
@@ -496,7 +426,7 @@ class User {
 
 				// first identify any groups this user belongs to
 				$this->APP->model->select('user_group_link', array('group_id'));
-				$this->APP->model->where('user_id', $user_id);
+				$this->APP->model->where('user_id', $this->APP->params->session->getInt('user_id'));
 				$groups = $this->APP->model->results();
 
 				$group_where = '';
@@ -507,6 +437,7 @@ class User {
 							OR group_id = ' . $group['group_id'];
 					}
 				}
+				
 
 				// auth if:
 				// interface matches current or is all
@@ -515,11 +446,20 @@ class User {
 				$strict_sql = sprintf('
 							SELECT * FROM permissions
 							WHERE (interface = "%s" OR interface = "*") AND (module = "%s" OR module = "*") AND (method="%s" OR method = "*") AND (user_id = %s%s)',
-								$interface, $module, $method, $user_id, $group_where);
+								$interface, $module, $method, $this->APP->params->session->getInt('user_id'), $group_where);
 
 				$stricts = $this->APP->model->query($strict_sql);
 				$authenticated = $stricts->RecordCount() ? true : false;
 
+			} else {
+				if(
+					$module == 'Users' &&
+					($method == 'login' || $method == 'authenticate' || $method == 'logout' || $method == 'forgot') ||
+					$module == 'Install'){
+
+					$authenticated = true;
+
+				}
 			}
 		}
 
@@ -583,8 +523,8 @@ class User {
 			$groups = $this->APP->model->results();
 				
 			if($groups['RECORDS']){
-				foreach($groups['RECORDS'] as $id => $group){
-					$ingroups[$group['group_id']] = $group['name'];
+				foreach($groups['RECORDS'] as $group){
+					$ingroups[] = $group['name'];
 				}
 			}
 		}
@@ -637,31 +577,6 @@ class User {
 			return 1;
 
 		}
-	}
-
-
-	/**
-	 * @abstract Returns the default module for a specific user group
-	 * @access public
-	 */
-	 public function getUserDefaultModule(){
-
-		$default = $this->APP->config('default_module');
-
-		if($user_id = $this->APP->params->session->getInt('user_id')){
-
-			$groups = array_keys( $this->usersGroups($user_id) );
-
-			$ug_defs = $this->APP->config('usergroup_default_modules');
-
-			foreach($groups as $group){
-				if(array_key_exists($group, $ug_defs)){
-					return $ug_defs[$group];
-				}
-			}
-		}
-
-		return $default;
 	}
 
 
