@@ -13,37 +13,49 @@
  * @package Aspen_Framework
  */
 class Model {
-	
+
 	/**
 	 * @var object Holds our original application
 	 * @access private
 	 */
 	private $APP;
-	
+
 	/**
 	 * @var array Holds an array of calculations we need to perform on the results
 	 * @access private
 	 */
 	private $calcs = false;
-	
+
+	/**
+	 * @var int Holds the current page number
+	 * @access private
+	 */
+	private $current_page;
+
 	/**
 	 * @var array Holds an array of security rules to apply to each field.
 	 * @access private
 	 */
 	private $field_security_rules = array();
-	
+
 	/**
 	 * @var string Holds the last executed query
 	 * @access private
 	 */
 	private $last_query;
-	
+
 	/**
 	 * @var boolean Toggles the pagination features
 	 * @access private
 	 */
 	private $paginate = false;
-	
+
+	/**
+	 *
+	 * @var int Holds the per-page query amount
+	 */
+	private $per_page;
+
 	/**
 	 * @var array Holds the type of query we're running, so we know what to return
 	 * @access private
@@ -68,15 +80,15 @@ class Model {
 	 */
 	private $table;
 
-	
+
 	/**
 	 * @abstract Contrucor, obtains an instance of the original app
 	 * @return Model
 	 * @access private
 	 */
 	public function __construct(){ $this->APP = get_instance(); }
-	
-	
+
+
 //+-----------------------------------------------------------------------+
 //| OPEN / SET / GET FUNCTIONS
 //+-----------------------------------------------------------------------+
@@ -91,8 +103,8 @@ class Model {
 		$this->table = $table;
 		$this->generateSchema();
 	}
-	
-	
+
+
 	/**
 	 * @abstract Loads the current table schema.
 	 * @access private
@@ -101,8 +113,8 @@ class Model {
 	private function generateSchema(){
 		return $this->schema = $this->APP->db->MetaColumns($this->table, false);
 	}
-	
-	
+
+
 	/**
 	 * @abstract Returns raw schema for the current table
 	 * @return array
@@ -111,8 +123,8 @@ class Model {
 	public function getSchema(){
 		return $this->schema;
 	}
-	
-	
+
+
 	/**
 	 * @abstract Returns the field marked as primary key for current table
 	 * @return mixed
@@ -130,8 +142,8 @@ class Model {
 		}
 		return false;
 	}
-	
-	
+
+
 	/**
 	 * @abstract Sets the pagination toggle to true
 	 * @access public
@@ -139,8 +151,8 @@ class Model {
 	public function enablePagination(){
 		$this->paginate = true;
 	}
-	
-	
+
+
 	/**
 	 * @abstract Returns the table status info
 	 * @param string $table
@@ -156,8 +168,8 @@ class Model {
 		}
 		return false;
 	}
-	
-	
+
+
 	/**
 	 * @abstract Returns the last run query
 	 * @return string
@@ -166,8 +178,8 @@ class Model {
 	public function getLastQuery(){
 		return $this->last_query;
 	}
-	
-	
+
+
 	/**
 	 * @abstract Returns the query currently being built
 	 * @return string
@@ -183,7 +195,7 @@ class Model {
 //| SECURITY RULES
 //+-----------------------------------------------------------------------+
 
-	
+
 	/**
 	 * @abstract Sets a security rule for data coming into a specific field
 	 * @param string $field
@@ -194,8 +206,8 @@ class Model {
 	public function setSecurityRule($field, $key, $value){
 		$this->field_security_rules[$field][$key] = $value;
 	}
-	
-	
+
+
 	/**
 	 * @abstract Returns the security rule for a field and key
 	 * @param string $field
@@ -203,22 +215,22 @@ class Model {
 	 * @return mixed
 	 */
 	private function getSecurityRule($field, $key){
-		
+
 		$rule_result = false;
-		
+
 		if(isset($this->field_security_rules[$field][$key])){
 			$rule_result = $this->field_security_rules[$field][$key];
 		}
-		
+
 		return $rule_result;
 	}
-	
-	
+
+
 //+-----------------------------------------------------------------------+
 //| SELECT GENERATING FUNCTIONS
 //+-----------------------------------------------------------------------+
-	
-	
+
+
 	/**
 	 * @abstract Adds a new select statement to our query
 	 * @param string $table
@@ -233,17 +245,17 @@ class Model {
 
 		// begin the select, append SQL_CALC_FOUND_ROWS is pagination is enabled
 		$this->sql['SELECT'] = $this->paginate ? 'SELECT SQL_CALC_FOUND_ROWS' : 'SELECT';
-		
+
 		// determine fields if any set
 		$fields = is_array($fields) ? $fields : array('*');
 		$official_fields = array();
 		foreach($fields as $field){
 			$official_fields[] = sprintf('%s.%s', $this->table, $field);
 		}
-		
+
 		// append fields, append distinct if enabled
 		$this->sql['FIELDS'] = ($distinct ? ' DISTINCT ' : '') . implode(', ', $official_fields);
-		
+
 		// set the from for our current table
 		$this->sql['FROM'] = sprintf('FROM %s', $this->table);
 
@@ -270,7 +282,7 @@ class Model {
 	 * @param array $fields Fields you want to return
 	 */
 	public function leftJoin($table, $key, $foreign_key, $fields = false, $from_table = false){
-	
+
 		$from_table = $from_table ? $from_table : $this->table;
 
 		// if the user has included an as translation, use it
@@ -301,12 +313,12 @@ class Model {
 		}
 	}
 
-	
+
 //+-----------------------------------------------------------------------+
 //| CONDITION GENERATING FUNCTIONS
 //+-----------------------------------------------------------------------+
-	
-	
+
+
 	/**
 	 * @abstract Adds a standard where condition
 	 * @param string $field
@@ -315,10 +327,14 @@ class Model {
 	 * @access public
 	 */
 	public function where($field, $value, $match = 'AND'){
-		$this->sql['WHERE'][] = sprintf('%s %s = "%s"', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field,
+		if($value === NULL){
+			$this->whereIsNull($field, $match);
+		} else {
+			$this->sql['WHERE'][] = sprintf('%s %s = "%s"', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field,
 																					$this->APP->security->dbescape($value, $this->getSecurityRule($field, 'allow_html')));
+		}
 	}
-	
+
 
 	/**
 	 * @abstract Adds a standard where not condition
@@ -332,7 +348,7 @@ class Model {
 																					$this->APP->security->dbescape($value, $this->getSecurityRule($field, 'allow_html')));
 	}
 
-	
+
 	/**
 	 * @abstract Adds a standard where like %% condition
 	 * @param string $field
@@ -344,8 +360,8 @@ class Model {
 		$this->sql['WHERE'][] = sprintf('%s %s LIKE "%%%s%%"', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field,
 																					$this->APP->security->dbescape($value, $this->getSecurityRule($field, 'allow_html')));
 	}
-	
-	
+
+
 	/**
 	 * @abstract Searches for values between $start and $end
 	 * @param string $field
@@ -358,7 +374,7 @@ class Model {
 		$this->sql['WHERE'][] = sprintf('%s %s BETWEEN "%s" AND "%s"', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field, $start, $end);
 	}
 
-	
+
 	/**
 	 * @abstract Adds a standard where greater than condition
 	 * @param string $field
@@ -370,8 +386,8 @@ class Model {
 		$this->sql['WHERE'][] = sprintf('%s %s > "%s"', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field,
 																					$this->APP->security->dbescape($value, $this->getSecurityRule($field, 'allow_html')));
 	}
-	
-	
+
+
 	/**
 	 * @abstract Adds a standard where greater than or is equal to condition
 	 * @param string $field
@@ -383,8 +399,8 @@ class Model {
 		$this->sql['WHERE'][] = sprintf('%s %s >= "%s"', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field,
 																					$this->APP->security->dbescape($value, $this->getSecurityRule($field, 'allow_html')));
 	}
-	
-	
+
+
 	/**
 	 * @abstract Adds a standard where less than condition
 	 * @param string $field
@@ -396,8 +412,8 @@ class Model {
 		$this->sql['WHERE'][] = sprintf('%s %s < "%s"', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field,
 																					$this->APP->security->dbescape($value, $this->getSecurityRule($field, 'allow_html')));
 	}
-	
-	
+
+
 	/**
 	 * @abstract Adds a standard where less than or is equal to condition
 	 * @param string $field
@@ -409,8 +425,8 @@ class Model {
 		$this->sql['WHERE'][] = sprintf('%s %s <= "%s"', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field,
 																					$this->APP->security->dbescape($value, $this->getSecurityRule($field, 'allow_html')));
 	}
-	
-	
+
+
 	/**
 	 * @abstract Finds timestamps prior to today
 	 * @param string $field
@@ -421,8 +437,8 @@ class Model {
 	public function whereBeforeToday($field, $include_today = true, $match = 'AND'){
 		$this->sql['WHERE'][] = sprintf('%s TO_DAYS(%s) <%s TO_DAYS(NOW())', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field, ($include_today ? '=' : ''));
 	}
-	
-	
+
+
 	/**
 	 * @abstract Finds timestamps after today
 	 * @param string $field
@@ -433,8 +449,20 @@ class Model {
 	public function whereAfterToday($field, $include_today = false, $match = 'AND'){
 		$this->sql['WHERE'][] = sprintf('%s TO_DAYS(%s) >%s TO_DAYS(NOW())', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field, ($include_today ? '=' : ''));
 	}
-	
-	
+
+
+	/**
+	 * @abstract Finds timestamps after today
+	 * @param string $field
+	 * @param boolean $include_today
+	 * @param string $match
+	 * @access public
+	 */
+	public function whereIsNull($field, $match = 'AND'){
+		$this->sql['WHERE'][] = sprintf('%s %s IS NULL', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field);
+	}
+
+
 	/**
 	 * @abstract Finds timestamps in the last $day_count days
 	 * @param string $field
@@ -445,8 +473,32 @@ class Model {
 	public function inPastXDays($field, $day_count = 7, $match = 'AND'){
 		$this->sql['WHERE'][] = sprintf('%s TO_DAYS(NOW()) - TO_DAYS(%s) <= %s', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field, $day_count);
 	}
-	
-	
+
+
+   /**
+	* Finds timestamps before the current moment
+	* @param string $field
+	* @param boolean $include_today
+	* @param string $match
+	* @access public
+	*/
+	public function wherePast($field, $include_today = false, $match = 'AND'){
+		$this->sql['WHERE'][] = sprintf('%s UNIX_TIMESTAMP(%s) %s< UNIX_TIMESTAMP(NOW())', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field, ($include_today ? '=' : ''));
+	}
+
+
+   /**
+	* Finds timestamps after the current moment
+	* @param string $field
+	* @param boolean $include_today
+	* @param string $match
+	* @access public
+	*/
+	public function whereFuture($field, $include_today = false, $match = 'AND'){
+		$this->sql['WHERE'][] = sprintf('%s UNIX_TIMESTAMP(%s) %s> UNIX_TIMESTAMP(NOW())', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field, ($include_today ? '=' : ''));
+	}
+
+
 //+-----------------------------------------------------------------------+
 //| AUTO-FILTER (auto-condition) FUNCTIONS
 //+-----------------------------------------------------------------------+
@@ -519,7 +571,7 @@ class Model {
 
 					}
 				}
-				
+
 				if($value === 0){
 					$this->APP->model->whereLike($field, 0);
 				}
@@ -533,12 +585,12 @@ class Model {
 
 	}
 
-	
+
 //+-----------------------------------------------------------------------+
 //| SORT AND MATCH GENERATING FUNCTIONS
 //+-----------------------------------------------------------------------+
 
-	
+
 	/**
 	 * @abstract Adds a sort order, optionally pulls from saved prefs
 	 * @param string $field
@@ -547,9 +599,9 @@ class Model {
 	 * @access public
 	 */
 	public function orderBy($field = false, $dir = false, $sort_location = false){
-		
+
 		$field = $field ? $field : $this->table.'.'.$this->getPrimaryKey();
-		
+
 		// ensure sort by field has been selected
 		if(strpos($this->sql['FIELDS'], '*') === false){
 			// explode by fields if any
@@ -562,7 +614,7 @@ class Model {
 
 				// remove any table reference from our field
 				$tmp_field = preg_replace('/(.*)\./', '', $field);
-				
+
 				// check if our field is in the array of fields
 				if(!in_array($tmp_field, $fields)){
 					// if not, go with the first item
@@ -570,22 +622,22 @@ class Model {
 				}
 			}
 		}
-		
+
 		$sort['sort_by'] 		= $field;
 		$sort['sort_direction'] = $dir = $dir ? $dir : 'ASC';
 
 		if($sort_location){
 			$sort = $this->APP->prefs->getSort($sort_location, false, $field, $dir);
 		}
-		
+
 		if(empty($sort['sort_by'])){
 			$sort['sort_by'] = $field;
 		}
-			
+
 		if(empty($sort['sort_direction'])){
 			$sort['sort_direction'] = $dir;
 		}
-		
+
 		// verify the field exists, if muliple fields present, skip
 		if(strpos($sort['sort_by'], ',') === false && strpos($sort['sort_by'], 'ASC') === false){
 			$sort['sort_by'] = array_key_exists(strtoupper($field), $this->getSchema()) || strpos($this->sql['FIELDS'], $field) ? $sort['sort_by'] : $this->table.'.'.$this->getPrimaryKey();
@@ -593,8 +645,8 @@ class Model {
 		$this->sql['ORDER'] = sprintf("ORDER BY %s %s", $sort['sort_by'], $sort['sort_direction']);
 
 	}
-	
-	
+
+
 	/**
 	 * @abstract Adds a sort order, optionally pulls from saved prefs DEPRACATED
 	 * @param string $sort_location
@@ -605,8 +657,8 @@ class Model {
 	public function orderByPreference($sort_location = false, $field = 'id', $dir = 'ASC'){
 		$this->orderBy($field, $dir, $sort_location);
 	}
-	
-	
+
+
 	/**
 	 * @abstract Limits the results returned
 	 * @param integer $start
@@ -617,8 +669,8 @@ class Model {
 		$start = $start < 0 ? 0 : $start;
 		$this->sql['LIMIT'] = sprintf('LIMIT %s,%s', $start, abs($limit));
 	}
-	
-	
+
+
 	/**
 	 * @abstract Adds a fulltext index match function
 	 * @param string $search
@@ -627,9 +679,9 @@ class Model {
 	 * @access public
 	 */
 	public function match($search, $fields = false, $match = 'AND'){
-		
+
 		if(!$fields){
-			
+
 			$fields = array();
 
 			foreach($this->schema as $field){
@@ -645,19 +697,23 @@ class Model {
 		}
 	}
 
-	
+
 	/**
-	 * @abstract Sets the limit for pagination page numbers
+	 * Sets the limit for pagination page numbers
 	 * @param integer $current_page
 	 * @param integer $per_page
 	 * @access public
 	 */
-	public function paginate($current_page,$per_page = 25){
+	public function paginate($per_page = 25,$current_page = false){
+
+		$this->current_page = $current_page ? $current_page : 1;
+		$this->per_page = $per_page;
+
 		$query_offset = ($current_page - 1) * abs($per_page);
 		$this->limit($query_offset,$per_page);
 	}
 
-	
+
 	/**
 	 * @abstract Sets a group by
 	 * @param string $field
@@ -671,7 +727,7 @@ class Model {
 //+-----------------------------------------------------------------------+
 //| QUERY EXECUTION FUNCTIONS
 //+-----------------------------------------------------------------------+
-	
+
 
 	/**
 	 * @abstract Builds the query we've designed from the above functions
@@ -684,7 +740,7 @@ class Model {
 
 		// generate the select query
 		if(isset($this->sql['SELECT'])){
-			
+
 			$this->query_type = 'select';
 
 			$sql .= '' . $this->sql['SELECT'];
@@ -700,24 +756,24 @@ class Model {
 			}
 
 			$sql .= ' ' . (isset($this->sql['GROUP']) ? $this->sql['GROUP'] : '');
-			
+
 			// if no order set, generate one
 			if(!isset($this->sql['ORDER'])){
 				$this->orderBy();
 			}
-			
+
 			$sql .= ' ' . (isset($this->sql['ORDER']) ? $this->sql['ORDER'] : '');
-		
+
 			$sql .= ' ' . (isset($this->sql['LIMIT']) ? $this->sql['LIMIT'] : '');
 
 		}
-		
+
 		// generate the insert query
 		if(isset($this->sql['INSERT'])){
 			$this->query_type = 'insert';
 			$sql = $this->sql['INSERT'];
 		}
-		
+
 		// generate the update query
 		if(isset($this->sql['UPDATE'])){
 			$this->query_type = 'update';
@@ -736,35 +792,35 @@ class Model {
 	 * @access public
 	 */
 	public function query($query = false){
-		
+
 		$results = false;
-		
+
 		if($query){
-		
+
 			$this->last_query = $query;
-			
+
 			if(!$results = $this->APP->db->Execute($query)){
 				// we don't want every query to show as failure here, so we use the true last location
 				$back = debug_backtrace();
 				$file = strpos($back[0]['file'], 'Model.php') ? $back[1]['file'] : $back[0]['file'];
 				$line = strpos($back[0]['file'], 'Model.php') ? $back[1]['line'] : $back[0]['line'];
-				
+
 				$this->APP->error->raise(2, $this->APP->db->ErrorMsg() . "\nSQL:\n" . $query, $file, $line);
-				
+
 			} else {
 				if($this->APP->config('log_verbosity') < 3){
 					$this->APP->log->write($query);
 				}
 			}
 		}
-		
+
 		$this->clearQuery();
-		
+
 		return $results;
-		
+
 	}
-	
-	
+
+
 	/**
 	 * @abstract Runs the generated query and appends any additional info we've selected
 	 * @param string $key_field Field value to use for array element key values
@@ -773,9 +829,9 @@ class Model {
 	 * @access public
 	 */
 	public function results($key_field = false, $sql = false){
-		
+
 		$sql = $sql ? $sql : $this->writeSql();
-		
+
 		// if we're doing a select
 		if($this->query_type == 'select'){
 
@@ -783,12 +839,12 @@ class Model {
 			$records['RECORDS'] = array();
 
 			if($results = $this->query($sql)){
-	
+
 				if($results->RecordCount()){
 					while($result = $results->FetchRow()){
-						
+
 						$key = $key_field ? $key_field : $this->getPrimaryKey();
-	                   
+
 						if(isset($result[$key]) && !isset($records['RECORDS'][$result[$key]])){
 	                    	$records['RECORDS'][$result[$key]] = $result;
 	                    } else {
@@ -796,48 +852,49 @@ class Model {
 	                    }
 					}
 				} else {
-	
+
 					$records['RECORDS'] = false;
-	
+
 				}
 			} else {
-	
+
 				$records['RECORDS'] = false;
-	
+
 			}
-			
+
 			$this->tmp_records = $records;
-	
+
 			// perform any calcs
 			if($this->calcs){
 				foreach($this->calcs['TOTAL'] as $field){
 					$records[strtoupper('TOTAL_' . $field)] = $this->calcTotal($field);
 				}
 			}
-			
+
 			// if any pagination, return found rows
 			if($this->paginate){
 				$results = $this->query('SELECT FOUND_ROWS()');
-				//if($results->RecordCount){
-					//while($found = $results->FetchRow()){
-						$records['TOTAL_RECORDS_FOUND'] = $results->fields['FOUND_ROWS()'];
-					//}
-				//}
+				$records['TOTAL_RECORDS_FOUND'] = $results->fields['FOUND_ROWS()'];
+				$records['CURRENT_PAGE'] = $this->current_page;
+				$records['RESULTS_PER_PAGE'] = $this->per_page;
+				$records['TOTAL_PAGE_COUNT'] = ceil($records['TOTAL_RECORDS_FOUND'] / $this->per_page);
+			} else {
+				$records['TOTAL_RECORDS_FOUND'] = ($records['RECORDS'] ? count($records['RECORDS']) : 0);
 			}
-			
+
 			$this->tmp_records = false;
-			
+
 			return $records;
-			
+
 		}
-		
+
 		// if we're doing an INSERT
 		if($this->query_type == 'insert'){
 			if($this->query($sql)){
 				return $this->APP->db->Insert_ID();
 			}
 		}
-		
+
 		// if we're doing an UPDATE
 		if($this->query_type == 'update'){
 			if($this->query($sql)){
@@ -847,13 +904,13 @@ class Model {
 			}
 		}
 
-		
+
 		$this->clearQuery();
 		return false;
 
 	}
 
-	
+
 	/**
 	 * @abstract Returns a single field, single-record value from a query
 	 *
@@ -863,7 +920,7 @@ class Model {
 	 * @access public
 	 */
 	public function quickValue($sql = false, $return_field = 'id'){
-		
+
 		$result = $this->query($sql);
 		if($result->RecordCount()){
 			while($row = $result->FetchRow()){
@@ -873,7 +930,7 @@ class Model {
 		return false;
 	}
 
-	
+
 	/**
 	 * @abstract Clears any generated queries
 	 * @access public
@@ -881,8 +938,8 @@ class Model {
 	public function clearQuery(){
 		$this->sql = false;
 	}
-	
-	
+
+
 //+-----------------------------------------------------------------------+
 //| AUTO-QUERY-WRITING FUNCTIONS
 //+-----------------------------------------------------------------------+
@@ -899,18 +956,18 @@ class Model {
 	public function quickSelectSingle($table = false, $id = false, $field = false){
 
 		$field = $field ? $field : $this->getPrimaryKey();
-		
+
 		$this->select($table);
 		$this->where($field, $id);
 		$record = $this->APP->model->results($field);
-		
+
 		if($record['RECORDS']){
 			return $record['RECORDS'][$id];
 		}
 		return false;
 	}
-	
-	
+
+
 	/**
 	 * @abstract Generates a quick select statement for a single record and returns the result as xml
 	 * @param string $table
@@ -922,7 +979,7 @@ class Model {
 		return $this->APP->xml->arrayToXml( $this->quickSelectSingle($table, $id) );
 	}
 
-	
+
 	/**
 	 * @abstract Generates and executes a select query
 	 * @param string $table
@@ -937,16 +994,16 @@ class Model {
 
 			$this->openTable($table);
 			$field_name = $field_name ? $field_name : $this->getPrimaryKey();
-			
+
 			$this->sql['DELETE'] = sprintf('DELETE FROM %s WHERE %s = "%s"', $this->table, $field_name, $id);
 
 		}
 
 		return $this->query($this->sql['DELETE']);
-		
+
 	}
-	
-	
+
+
 	/**
 	 * @abstract Drops a table completely
 	 * @param string $table
@@ -956,8 +1013,8 @@ class Model {
 	public function drop($table){
 		return $this->query(sprintf('DROP TABLE %s', $table));
 	}
-	
-	
+
+
 	/**
 	 * @abstract Duplicates records using INSERT... SELECT...
 	 * @param string $table
@@ -993,12 +1050,12 @@ class Model {
 
 	}
 
-		
+
 //+-----------------------------------------------------------------------+
 //| END-RESULT MANIPULATION FUNCTIONS
 //+-----------------------------------------------------------------------+
-	
-	
+
+
 	/**
 	 * @abstract Adds a field calculation to db results
 	 * @param string $field
@@ -1008,8 +1065,8 @@ class Model {
 	public function addCalc($field, $type = 'total'){
 		$this->calcs[strtoupper($type)][] = $field;
 	}
-	
-	
+
+
 	/**
 	 * @abstract Calculates the total for a field in the resultset
 	 * @param array $records
@@ -1030,8 +1087,8 @@ class Model {
 		return $total;
 
 	}
-	
-	
+
+
 	/**
 	 * @abstract Creates a basic table with the results
 	 * @param array $row_names
@@ -1040,35 +1097,35 @@ class Model {
 	 * @access public
 	 */
 	public function createHtmlTable($row_names = false, $ignore_fields = false){
-	
+
 		$row_names = is_array($row_names) ? $row_names : array();
-	
+
 		$html = '<table>' . "\n";
-	
+
 		foreach($this->schema as $field){
 			if(!$field->primary_key && !in_array($field->name, $ignore_fields)){
-			
+
 				$name = isset($row_names[$field->name]) ? $row_names[$field->name] : $field->name;
-				
+
 				// clean name for row title
 				$name = ucwords(str_replace("_", " ", $name));
-							
+
 				$html .= sprintf('<tr><td><b>%s:</b></td><td>%s</td></tr>' . "\n", $name, $this->APP->form->cv($field->name));
 			}
 		}
-		
+
 		$html .= '</table>' . "\n";
-		
+
 		return $html;
-	
+
 	}
-	
-	
+
+
 //+-----------------------------------------------------------------------+
 //| INSERT / UPDATE FUNCTIONS
 //+-----------------------------------------------------------------------+
 
-	
+
 	/**
 	 * @abstract Generates an INSERT query and auto-executes it. Aliases executeInsert
 	 * @param string $table
@@ -1079,8 +1136,8 @@ class Model {
 	public function insert($table = false, $fields = false){
 		return $this->executeInsert($table, $fields);
 	}
-	
-	
+
+
 	/**
 	 * @abstract Generates an INSERT query and auto-executes it
 	 * @param string $table
@@ -1092,8 +1149,8 @@ class Model {
 		$this->generateInsert($table, $fields);
 		return $this->results();
 	}
-	
-	
+
+
 	/**
 	 * @abstract Generates an INSERT query
 	 * @param string $table
@@ -1101,25 +1158,25 @@ class Model {
 	 * @access public
 	 */
 	public function generateInsert($table = false, $fields = false){
-	
+
 		if($table && is_array($fields)){
-		
+
 			$ins_fields = '';
 			$ins_values = '';
-		
+
 			foreach($fields as $field_name => $field_value){
-			
+
 				$ins_fields .= ($ins_fields == '' ? '' : ', ') . $this->APP->security->dbescape($field_name);
 				$ins_values .= ($ins_values == '' ? '' : ', ') . '"' . $this->APP->security->dbescape($field_value, $this->getSecurityRule($field_name, 'allow_html')) . '"';
-			
+
 			}
-			
+
 			$this->sql['INSERT'] = sprintf('INSERT INTO %s (%s) VALUES (%s)',
 								$this->APP->security->dbescape($table),
 								$ins_fields,
 								$ins_values
 							);
-			
+
 		}
 	}
 
@@ -1154,10 +1211,10 @@ class Model {
 
 		// execute the query
 		return $this->results();
-		
+
 	}
-	
-	
+
+
 	/**
 	 * @abstract Auto-generates and executes an UPDATE query. Aliases executeUpdate
 	 * @param string $table
@@ -1170,8 +1227,8 @@ class Model {
 	public function update($table = false, $fields = false, $where_value, $where_field = false ){
 		return $this->executeUpdate($table, $fields, $where_value, $where_field);
 	}
-	
-	
+
+
 	/**
 	 * @abstract Auto-generates and executes an UPDATE query
 	 * @param string $table
@@ -1187,8 +1244,8 @@ class Model {
 		$this->generateUpdate($table, $fields, $where_value, $where_field );
 		return $this->results();
 	}
-	
-	
+
+
 	/**
 	 * @abstract Auto-generates an UPDATE query
 	 * @param string $table
@@ -1198,28 +1255,28 @@ class Model {
 	 * @access public
 	 */
 	public function generateUpdate($table = false, $fields = false, $where_value, $where_field = 'id' ){
-	
+
 		if($table && is_array($fields)){
-		
+
 			$ins_fields = '';
-		
+
 			foreach($fields as $field_name => $field_value){
-			
+
 				$ins_fields .= ($ins_fields == '' ? '' : ', ') . $this->APP->security->dbescape($field_name) . ' = "' . $this->APP->security->dbescape($field_value, $this->getSecurityRule($field_name, 'allow_html')) . '"';
 
 			}
-			
+
 			$this->sql['UPDATE'] = sprintf('UPDATE %s SET %s WHERE %s = "%s"',
 												$this->APP->security->dbescape($table),
 												$ins_fields,
 												$this->APP->security->dbescape($where_field),
 												$this->APP->security->dbescape($where_value, $this->getSecurityRule($field_name, 'allow_html')));
 
-			
+
 		}
 	}
-	
-	
+
+
 	/**
 	 * @abstract Updates a database record from Form class values
 	 * @param string $table
@@ -1253,7 +1310,7 @@ class Model {
 
 		// execute the query
 		return $this->results();
-		
+
 	}
 }
 ?>

@@ -355,7 +355,7 @@ class User {
 
 					$_SESSION['authenticated']		= true;
 					$_SESSION['authentication_key'] = sha1($account['username'] . $account['id']);
-					$_SESSION['domain_key'] 		= sha1($this->APP->params->server->getRaw('HTTP_HOST'));
+					$_SESSION['domain_key'] 		= sha1($this->APP->router->getApplicationUrl());
 					$_SESSION['username'] 			= $account['username'];
 					$_SESSION['nice_name'] 			= $account['nice_name'];
 					$_SESSION['latest_login'] 		= $account['latest_login'];
@@ -387,7 +387,7 @@ class User {
 
 		$authenticated 	= false;
 		$auth_key 		= sha1($this->APP->params->session->getRaw('username') . $this->APP->params->session->getInt('user_id'));
-		$domain_key 	= sha1($this->APP->params->server->getRaw('HTTP_HOST'));
+		$domain_key 	= sha1($this->APP->router->getApplicationUrl());
 
 		if($this->APP->checkDbConnection()){
 			if(
@@ -465,6 +465,42 @@ class User {
 
 
 	/**
+	 *
+	 * @param <type> $user_array
+	 * @return <type>
+	 */
+	public function singleAuthToken($user_array){
+		return sha1(implode(':',$user_array));
+	}
+
+
+	/**
+	 * http://192.168.0.4/clients/WhackCMS/admin/pages/upload?single-auth-token=e08fcdf7b5cba2d26882a9e07bd2e2eeb1a35b3d
+	 * @custom
+	 * @return <type>
+	 */
+	public function preAuthenticate(){
+
+		$token = $this->APP->params->get->getAlnum('single-auth-token');
+		if($token){
+
+			// pull all users
+			$this->APP->model->select('authentication');
+			$users = $this->APP->model->results();
+
+			if($users['RECORDS']){
+				foreach($users['RECORDS'] as $user){
+					if($this->singleAuthToken($user) == $token){
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+
+	/**
 	 * @abstract Checks if user has permissions to access a page
 	 * @param string $module
 	 * @param string $method
@@ -472,23 +508,21 @@ class User {
 	 * @return boolean
 	 * @access public
 	 */
-	public function userHasAccess($module = false, $method = false, $interface = false, $user_id = false){
+	public function userHasAccess($module = false, $method = false, $interface = false){
+
+		if(!$this->APP->requireLogin()){
+			return true;
+		}
 
 		$authenticated 	= false;
 		$module 		= $module ? $module : $this->APP->router->getSelectedModule();
 		$method 		= $method ? $method : $this->APP->router->getSelectedMethod();
 		$interface 		= $interface ? $interface : LOADING_SECTION;
-		$user_id		= $user_id ? $user_id : $this->APP->params->session->getInt('user_id');
 		$module 		= str_replace('_'.$interface, '', $module);
 
-		if(
-			$this->userHasGlobalAccess() ||
-			!$this->APP->requireLogin() ||
-			($module == 'Users' &&
-					($method == 'login' || $method == 'authenticate' || $method == 'logout' || $method == 'forgot') ||
-				$module == 'Install')){
+		if($this->userHasGlobalAccess() || $this->preAuthenticate()){
 
-			return true;
+			$authenticated = true;
 
 		} else {
 
@@ -496,7 +530,7 @@ class User {
 
 				// first identify any groups this user belongs to
 				$this->APP->model->select('user_group_link', array('group_id'));
-				$this->APP->model->where('user_id', $user_id);
+				$this->APP->model->where('user_id', $this->APP->params->session->getInt('user_id'));
 				$groups = $this->APP->model->results();
 
 				$group_where = '';
@@ -508,6 +542,7 @@ class User {
 					}
 				}
 
+
 				// auth if:
 				// interface matches current or is all
 				// module matches current or is all
@@ -515,11 +550,20 @@ class User {
 				$strict_sql = sprintf('
 							SELECT * FROM permissions
 							WHERE (interface = "%s" OR interface = "*") AND (module = "%s" OR module = "*") AND (method="%s" OR method = "*") AND (user_id = %s%s)',
-								$interface, $module, $method, $user_id, $group_where);
+								$interface, $module, $method, $this->APP->params->session->getInt('user_id'), $group_where);
 
 				$stricts = $this->APP->model->query($strict_sql);
 				$authenticated = $stricts->RecordCount() ? true : false;
 
+			} else {
+				if(
+					$module == 'Users' &&
+					($method == 'login' || $method == 'authenticate' || $method == 'logout' || $method == 'forgot') ||
+					$module == 'Install'){
+
+					$authenticated = true;
+
+				}
 			}
 		}
 
