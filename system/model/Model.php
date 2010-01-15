@@ -45,6 +45,12 @@ class Model {
 	private $last_query;
 
 	/**
+	 * @var string undocumented class variable
+	 * @access private
+	 */
+	private $parenth_start = false;
+
+	/**
 	 * @var boolean Toggles the pagination features
 	 * @access private
 	 */
@@ -320,19 +326,59 @@ class Model {
 
 
 	/**
+	 * @abstract undocumented function
+	 * @return void
+	 * @access private
+	 **/
+	public function parenthStart(){
+		$this->parenth_start = true;
+	}
+
+
+	/**
+	 * @abstract undocumented function
+	 * @return void
+	 * @access private
+	 **/
+	public function parenthEnd(){
+		$this->sql['WHERE'][ (count($this->sql['WHERE'])-1) ] .= ')';
+	}
+
+
+	/**
+	 * @abstract Forms the basis of the where clauses
+	 * @param string $sprint_string
+	 * @param string $field
+	 * @param string $value
+	 * @param string $match
+	 * @access private
+	 */
+	protected function base_where($sprint_string = false, $field = false, $value = false, $match = 'AND'){
+
+		$field = $field ? $field : $this->getPrimaryKey();
+		$match = $this->parenth_start ? $match.' (' : $match;
+
+
+		$this->sql['WHERE'][] = sprintf($sprint_string,
+											(isset($this->sql['WHERE']) ? $match : 'WHERE'.($this->parenth_start ? ' (' : '') ),
+											$field,
+											$this->APP->security->dbescape($value, $this->getSecurityRule($field, 'allow_html'))
+										);
+
+		$this->parenth_start = false;
+
+	}
+
+
+	/**
 	 * @abstract Adds a standard where condition
 	 * @param string $field
 	 * @param mixed $value
 	 * @param string $match
 	 * @access public
 	 */
-	public function where($field, $value, $match = 'AND'){
-		if($value === NULL){
-			$this->whereIsNull($field, $match);
-		} else {
-			$this->sql['WHERE'][] = sprintf('%s %s = "%s"', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field,
-																					$this->APP->security->dbescape($value, $this->getSecurityRule($field, 'allow_html')));
-		}
+	public function where($field = false, $value = false, $match = 'AND'){
+		$this->base_where('%s %s = "%s"', $field, $value, $match);
 	}
 
 
@@ -344,8 +390,7 @@ class Model {
 	 * @access public
 	 */
 	public function whereNot($field, $value, $match = 'AND'){
-		$this->sql['WHERE'][] = sprintf('%s %s != "%s"', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field,
-																					$this->APP->security->dbescape($value, $this->getSecurityRule($field, 'allow_html')));
+		$this->base_where('%s %s != "%s"', $field, $value, $match);
 	}
 
 
@@ -357,8 +402,7 @@ class Model {
 	 * @access public
 	 */
 	public function whereLike($field, $value, $match = 'AND'){
-		$this->sql['WHERE'][] = sprintf('%s %s LIKE "%%%s%%"', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field,
-																					$this->APP->security->dbescape($value, $this->getSecurityRule($field, 'allow_html')));
+		$this->base_where('%s %s LIKE "%%%s%%"', $field, $value, $match);
 	}
 
 
@@ -371,7 +415,7 @@ class Model {
 	 * @access public
 	 */
 	public function whereBetween($field, $start, $end, $match = 'AND'){
-		$this->sql['WHERE'][] = sprintf('%s %s BETWEEN "%s" AND "%s"', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field, $start, $end);
+		$this->base_where('%s %s BETWEEN "'.$start.'" AND "'.$end.'"', $field, false, $match);
 	}
 
 
@@ -383,8 +427,7 @@ class Model {
 	 * @access public
 	 */
 	public function whereGreaterThan($field, $value, $match = 'AND'){
-		$this->sql['WHERE'][] = sprintf('%s %s > "%s"', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field,
-																					$this->APP->security->dbescape($value, $this->getSecurityRule($field, 'allow_html')));
+		$this->base_where('%s %s > "%s"', $field, $value, $match);
 	}
 
 
@@ -396,8 +439,7 @@ class Model {
 	 * @access public
 	 */
 	public function whereGreaterThanEqualTo($field, $value, $match = 'AND'){
-		$this->sql['WHERE'][] = sprintf('%s %s >= "%s"', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field,
-																					$this->APP->security->dbescape($value, $this->getSecurityRule($field, 'allow_html')));
+		$this->base_where('%s %s >= "%s"', $field, $value, $match);
 	}
 
 
@@ -409,8 +451,7 @@ class Model {
 	 * @access public
 	 */
 	public function whereLessThan($field, $value, $match = 'AND'){
-		$this->sql['WHERE'][] = sprintf('%s %s < "%s"', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field,
-																					$this->APP->security->dbescape($value, $this->getSecurityRule($field, 'allow_html')));
+		$this->base_where('%s %s < "%s"', $field, $value, $match);
 	}
 
 
@@ -422,8 +463,7 @@ class Model {
 	 * @access public
 	 */
 	public function whereLessThanEqualTo($field, $value, $match = 'AND'){
-		$this->sql['WHERE'][] = sprintf('%s %s <= "%s"', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field,
-																					$this->APP->security->dbescape($value, $this->getSecurityRule($field, 'allow_html')));
+		$this->base_where('%s %s <= "%s"', $field, $value, $match);
 	}
 
 
@@ -435,7 +475,19 @@ class Model {
 	 * @access public
 	 */
 	public function whereBeforeToday($field, $include_today = true, $match = 'AND'){
-		$this->sql['WHERE'][] = sprintf('%s TO_DAYS(%s) <%s TO_DAYS(NOW())', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field, ($include_today ? '=' : ''));
+		$this->base_where('%s TO_DAYS(%s) <'.($include_today ? '=' : '').' TO_DAYS(NOW())', $field, false, $match);
+	}
+
+
+	/**
+	 * @abstract Finds timestamps before the current moment
+	 * @param string $field
+	 * @param boolean $include_today
+	 * @param string $match
+	 * @access public
+	 */
+	public function wherePast($field, $include_today = false, $match = 'AND'){
+		$this->base_where('%s UNIX_TIMESTAMP(%s) %s< UNIX_TIMESTAMP(NOW())', $field, ($include_today ? '=' : ''), $match);
 	}
 
 
@@ -447,19 +499,19 @@ class Model {
 	 * @access public
 	 */
 	public function whereAfterToday($field, $include_today = false, $match = 'AND'){
-		$this->sql['WHERE'][] = sprintf('%s TO_DAYS(%s) >%s TO_DAYS(NOW())', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field, ($include_today ? '=' : ''));
+		$this->base_where('%s TO_DAYS(%s) >'.($include_today ? '=' : '').' TO_DAYS(NOW())', $field, false, $match);
 	}
 
 
 	/**
-	 * @abstract Finds timestamps after today
+	 * @abstract Finds timestamps after the current moment
 	 * @param string $field
 	 * @param boolean $include_today
 	 * @param string $match
 	 * @access public
 	 */
-	public function whereIsNull($field, $match = 'AND'){
-		$this->sql['WHERE'][] = sprintf('%s %s IS NULL', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field);
+	public function whereFuture($field, $include_today = false, $match = 'AND'){
+		$this->base_where('%s UNIX_TIMESTAMP(%s) %s> UNIX_TIMESTAMP(NOW())', $field, ($include_today ? '=' : ''), $match);
 	}
 
 
@@ -471,31 +523,7 @@ class Model {
 	 * @access public
 	 */
 	public function inPastXDays($field, $day_count = 7, $match = 'AND'){
-		$this->sql['WHERE'][] = sprintf('%s TO_DAYS(NOW()) - TO_DAYS(%s) <= %s', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field, $day_count);
-	}
-
-
-   /**
-	* Finds timestamps before the current moment
-	* @param string $field
-	* @param boolean $include_today
-	* @param string $match
-	* @access public
-	*/
-	public function wherePast($field, $include_today = false, $match = 'AND'){
-		$this->sql['WHERE'][] = sprintf('%s UNIX_TIMESTAMP(%s) %s< UNIX_TIMESTAMP(NOW())', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field, ($include_today ? '=' : ''));
-	}
-
-
-   /**
-	* Finds timestamps after the current moment
-	* @param string $field
-	* @param boolean $include_today
-	* @param string $match
-	* @access public
-	*/
-	public function whereFuture($field, $include_today = false, $match = 'AND'){
-		$this->sql['WHERE'][] = sprintf('%s UNIX_TIMESTAMP(%s) %s> UNIX_TIMESTAMP(NOW())', (isset($this->sql['WHERE']) ? $match : 'WHERE'), $field, ($include_today ? '=' : ''));
+		$this->base_where('%s TO_DAYS(NOW()) - TO_DAYS(%s) <= ' . $day_count, $field, false, $match);
 	}
 
 
@@ -680,6 +708,8 @@ class Model {
 	 */
 	public function match($search, $fields = false, $match = 'AND'){
 
+		$search = $this->APP->security->dbescape($search);
+
 		if(!$fields){
 
 			$fields = array();
@@ -704,7 +734,7 @@ class Model {
 	 * @param integer $per_page
 	 * @access public
 	 */
-	public function paginate($per_page = 25,$current_page = false){
+	public function paginate($current_page = false,$per_page = 25){
 
 		$this->current_page = $current_page ? $current_page : 1;
 		$this->per_page = $per_page;
