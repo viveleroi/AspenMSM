@@ -64,12 +64,12 @@
 				<strong><?php print $this->truncateString($group['name'], 25); ?></strong>
 			</div>
 			<div id="group_<?php print $group['id']; ?>_details" class="group-info clearfix">
-				<ul>
+				<ul class="group-list" id="group_<?php print $group['id']; ?>_list">
 					<?php
 					if($group['contacts']['RECORDS']){
 						foreach($group['contacts']['RECORDS'] as $contact){
 					?>
-					<li class="contact-<?php print $contact['id']; ?> clearfix"><span class="listed"><?php print $contact['last_name']; ?>, <?php print $contact['first_name']; ?></span> <a href="#" class="remove" title="Are you sure you wish to remove this listing?">Remove</a></li>
+					<li class="contact-<?php print $contact['id']; ?> clearfix"><span class="drag">Drag</span><span class="listed"><?php print $contact['last_name']; ?>, <?php print $contact['first_name']; ?></span> <a href="#" class="remove" title="Are you sure you wish to remove this listing?">Remove</a></li>
 					<?php
 						}
 					} else {
@@ -77,6 +77,7 @@
 					<li class="empty">There are no contacts in this group.</li>
 					<?php } ?>
 				</ul>
+				<a class="sort-toggle" id="group_<?php print $group['id']; ?>_trigger" href="#" title="Click to Enable/Disable Sorting">Enable Sorting</a>
 				<a class="delete" href="#" title="Are you sure you wish to delete this group?">Remove</a>
 			</div>
 		</div>

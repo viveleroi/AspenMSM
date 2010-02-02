@@ -1,7 +1,9 @@
 $('html').addClass('js');
 
 $(document).ready(function(){
-
+	
+	$('.group-info').hide();
+	
 	$('html').removeClass('js');
 	
 	$('#scroll-list').jScrollPane();
@@ -12,14 +14,27 @@ $(document).ready(function(){
 	});
 	
 	$('.toggle-group').removeClass('open').addClass('closed').html('Show');
-	$('.group-info').hide();
+	
+	
 	
 	$("a.toggle-group").live('click', function() {
 		toggleListItem(this);
 		return false;
 	});
 	
+	$('.sort-toggle').click(function() {
+		var trigger = $(this);
+		enableSorting(trigger);
+		return false;
+	});
 	
+	$(".group-list").sortable({
+		placeholder: "target",
+		axis: 'y',
+		handle: ".drag",
+		scroll: true,
+		opacity: 0.5
+	});
 	
 	/**
 	 * Group Management
@@ -180,17 +195,35 @@ $(document).ready(function(){
 				if(res.success){
 					setTimeout(function() {
 						$('#group_'+group_id+'_details li.contact-'+contact_id).remove();
-						
 						if($('#group_'+group_id+'_details li').length == 0){
 							$('#group_'+group_id+'_details ul').append( '<li class="empty">There are no contacts in this group.</li>' );
 						}
-						
 				        $.modal.close();
 				    }, 500);
 				}
 			}
 		});
-		
 		return false;
 	});
 });
+
+
+
+function enableSorting(trigger){
+	var listItems = trigger.prev('ul').attr('id');
+	if($(trigger).html() == 'Enable Sorting'){
+		$('#'+listItems).addClass('sorting');
+		$('#'+listItems+' li').stop().animate({backgroundColor: '#383838'});
+		$('#'+listItems+' li .drag').animate({width: "24px", opacity: 'show'}, 500);
+		trigger.html('Disable Sorting');
+		return false;
+	}
+	if($(trigger).html() == 'Disable Sorting'){
+		$('#'+listItems).removeClass('sorting');
+		$('#'+listItems+' li').stop().animate({backgroundColor: '#282828'});
+		$('#'+listItems+' li .drag').animate({width: "0px", opacity: 'hide'}, 500);
+		trigger.html('Enable Sorting');
+		return false;
+	}
+}
+

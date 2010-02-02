@@ -19,14 +19,12 @@
 
 #scroll-list { height: 310px; }
 
-#directory-list {   }
-#directory-list li { padding: 0 5px; line-height: 24px; margin-bottom: 2px; color: rgba(255,255,255,0.75); background-color: rgba(255,255,255,0.075); -moz-border-radius: 3px; -webkit-border-radius: 3px; }
+#directory-list li { line-height: 24px; margin-bottom: 2px; color: rgba(255,255,255,0.75); background-color: rgba(255,255,255,0.075); -moz-border-radius: 3px; -webkit-border-radius: 3px; }
 #directory-list li .drag { background-position: 50% 0; }
 #directory-list li:hover .drag { background-position: 50% -504px; }
 li.ui-draggable-dragging { z-index: 1000; list-style-type: none; padding: 0 5px 0 0; line-height: 24px; color: rgba(0,0,0,0.75); background-color: rgba(241,215,127,0.875); -moz-border-radius: 3px; -webkit-border-radius: 3px; }
 li.ui-draggable-dragging a.drag { display: none; }
-li.ui-draggable-dragging a { font-weight: bold; color: rgba(0,0,0,0.75); text-shadow: none; padding: 0 10px 0 24px;  }
-
+li.ui-draggable-dragging a { font-weight: bold; color: rgba(0,0,0,0.75); text-shadow: none; padding: 0 10px 0 24px; }
 
 #directory-names { float: left; width: 435px; }
 #directory-names .add { float: right; margin: 5px 5px 0 0; }
@@ -34,10 +32,17 @@ li.ui-draggable-dragging a { font-weight: bold; color: rgba(0,0,0,0.75); text-sh
 
 .group { background-color: rgba(0,0,0,0.25); margin: 5px 0; padding: 0 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; }
 .group ul { margin: 0; padding-bottom: 3px; }
-.group ul li { line-height: 24px; margin: 2px 0; padding-left: 5px; color: rgba(255,255,255,0.75); background-color: rgba(255,255,255,0.075); -moz-border-radius: 3px; -webkit-border-radius: 3px; }
-.group ul li a { float: right; }
-.group .listed { float: left; }
+.group ul li { line-height: 24px; margin: 2px 0; color: rgba(255,255,255,0.75); background-color: #282828; -moz-border-radius: 3px; -webkit-border-radius: 3px; }
+.group ul li .remove { float: right; background-position: 0 0; }
+.group ul li .drag { width: 0px; background-position: 0 -504px; }
+.group ul li:hover .remove { background-position: 50% -432px; }
+.group ul.sorting li .remove { visibility: hidden; }
+.group .listed { float: left; margin-left: 5px; }
 .group .delete { float: right; margin-bottom: 5px; }
+
+.group ul li.empty { padding-left: 5px !important; }
+
+
 
 #add-group-area { background-color: rgba(0,0,0,0.25); margin: 5px 0; padding: 0; -moz-border-radius: 5px; -webkit-border-radius: 5px; }
 #add-group .add-fld { width: 170px; margin: 10px 0 10px 10px; }
@@ -55,3 +60,5 @@ li.ui-draggable-dragging a { font-weight: bold; color: rgba(0,0,0,0.75); text-sh
 
 
 .menu-target { background-color: #454134; }
+
+/* .drag { outline: 1px solid red; } */
