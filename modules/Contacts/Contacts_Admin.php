@@ -432,6 +432,25 @@ class Contacts_Admin {
 		print json_encode( array('success'=>(bool)$id, 'id'=>$id, 'name'=>$name) );
 		
 	}
+
+
+	/**
+	 * @abstract Adds a new group
+	 * @param string $name
+	 */
+	public function ajax_sortGroup($group_id, $ul){
+
+		print_r($group_id);
+		print_r($ul);
+
+//		$id = false;
+//		if(!empty($name)){
+//			$id = $this->APP->model->executeInsert('contact_groups', array('name'=>$name));
+//		}
+//
+//		print json_encode( array('success'=>(bool)$id, 'id'=>$id, 'name'=>$name) );
+
+	}
 	
 	
 	/**

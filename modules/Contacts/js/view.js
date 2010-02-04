@@ -21,8 +21,7 @@ $(document).ready(function(){
 	});
 	
 	$('.sort-toggle').click(function() {
-		var trigger = $(this);
-		enableSorting(trigger);
+		enableSorting($(this));
 		return false;
 	});
 	
@@ -207,6 +206,10 @@ function enableSorting(trigger){
 		return false;
 	}
 	if($(trigger).html() == 'Save'){
+
+		// send new orders to the server
+		saveSort(listItems);
+
 		$('#'+listItems).removeClass('sorting');
 		$('#'+listItems+' li').stop().animate({backgroundColor: '#282828'});
 		$('#'+listItems+' li .drag').animate({width: "0px", opacity: 'hide'}, 500);
@@ -215,3 +218,24 @@ function enableSorting(trigger){
 	}
 }
 
+
+function saveSort(listItems){
+
+	var list = $('#'+listItems).serializelist({ 'attributes' : ['id'] });
+
+	group_id = listItems.replace(/[^0-9]/g, '');
+
+	console.log(group_id);
+	console.log(list);
+
+	status();
+	$.ajax({
+		type: "GET",
+		url: "index.php",
+		data: 'module=Contacts&method=ajax_sortGroup&group='+group_id+list,
+		success: function(json){
+//			var res = $.evalJSON(json);
+			$.modal.close();
+		}
+	});
+}
