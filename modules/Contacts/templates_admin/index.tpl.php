@@ -69,7 +69,7 @@
 					if($group['contacts']['RECORDS']){
 						foreach($group['contacts']['RECORDS'] as $contact){
 					?>
-					<li class="contact-<?php print $contact['id']; ?> clearfix" id="contact-<?php print $contact['id']; ?>"><span class="drag">Drag</span><span class="listed"><?php print $contact['last_name']; ?>, <?php print $contact['first_name']; ?></span> <a href="#" class="remove" title="Are you sure you wish to remove this listing?">Remove</a></li>
+					<li class="contact-<?php print $contact['id']; ?> clearfix"><span class="drag">Drag</span><span class="listed"><?php print $contact['last_name']; ?>, <?php print $contact['first_name']; ?></span> <a href="#" class="remove" title="Are you sure you wish to remove this listing?">Remove</a></li>
 					<?php
 						}
 					} else {

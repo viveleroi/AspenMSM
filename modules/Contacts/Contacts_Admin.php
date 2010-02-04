@@ -443,7 +443,7 @@ class Contacts_Admin {
 		$sql = 'UPDATE contact_groups_link SET sort_order = "%d" WHERE contact_id = "%d" AND group_id = "%s"';
 		if(is_array($ul)){
 			foreach($ul as $key => $contact){
-				$c_id = str_replace('contact-', '', $contact);
+				$c_id = preg_replace('/[^0-9]/', '', $contact);
 				$this->APP->model->query( sprintf($sql, (int)$key, (int)$c_id, (int)$group_id) );
 			}
 			$success = true;

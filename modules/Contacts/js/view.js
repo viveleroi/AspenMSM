@@ -56,12 +56,12 @@ $(document).ready(function(){
 			drop: function(event, ui){
 	
 				var group = $(this).attr('id');
-				group = group.replace(/groupholder-/, '');
+				group = group.replace(/[^0-9]/g, '');
 				
 				var is_open = $('#group_'+group+'_details').css('display') == 'block' ? true : false;
 				
 				var contact = ui.draggable.attr('id');
-				contact = contact.replace(/contact-/, '');
+				contact = contact.replace(/[^0-9]/g, '');
 				
 				status();
 				$.ajax({
@@ -78,26 +78,20 @@ $(document).ready(function(){
 						// if success, append the name
 						if(res.success){
 							if(res.contact.first_name){
-
 								$('#group_'+group+'_details ul li').each(function(){
 									if($(this).hasClass('empty')){
 										$(this).remove();
 									}
-								})
-								
-								$('#group_'+group+'_details ul').append( $('<li class="contact-'+res.id+' clearfix"><span class="listed">'+res.contact.last_name+', '+res.contact.first_name+'</span><a class="remove" title="Are you sure you wish to remove this listing?" href="#">Remove</a></li>') );
+								});
+								$('#group_'+group+'_details ul').append( $('<li class="contact-'+res.contact.id+' clearfix"><span class="listed">'+res.contact.last_name+', '+res.contact.first_name+'</span><a class="remove" title="Are you sure you wish to remove this listing?" href="#">Remove</a></li>') );
 							}
 						} else {
-							
-							if(res.exists){
-								 // person already exists
-							} else {
+							if(!res.exists){
 								alert('There was an error adding this group to the contact.'); 
 							}
 						}
-						
+						saveSort($('#group_'+group+'_list'));
 						$.modal.close();
-						
 					}
 				});
 			}
@@ -140,8 +134,7 @@ $(document).ready(function(){
 	// delete group link
 	$('#directory-groups a.delete').click(function(){
 		var par_id = $(this).parent().attr('id');
-		par_id = par_id.replace(/group_/, '');
-		par_id = par_id.replace(/_details/, '');
+		par_id = par_id.replace(/[^0-9]/g, '');
 		global_id = par_id;
 		confirm('Are you sure you want to delete this group?', function(){
 			par_id = global_id;
@@ -169,10 +162,9 @@ $(document).ready(function(){
 	// delete member from group link
 	$('#directory-groups li a.remove').live('click', function(){
 		var group_id = $(this).parents('div').attr('id');
-		group_id = group_id.replace(/group_/, '');
-		group_id = group_id.replace(/_details/, '');
+		group_id = group_id.replace(/[^0-9]/g, '');
 		var contact_id = $(this).parent().attr('class');
-		contact_id = contact_id.replace(/contact-/, '');
+		contact_id = contact_id.replace(/[^0-9]/g, '');
 		status();
 		$.ajax({
 			type: "GET",
@@ -197,19 +189,19 @@ $(document).ready(function(){
 });
 
 function enableSorting(trigger){
-	var listItems = trigger.prev('ul').attr('id');
+	var listItems = $('#'+trigger.prev('ul').attr('id'));
 	if($(trigger).html() == 'Enable Sorting'){
-		$('#'+listItems).addClass('sorting');
-		$('#'+listItems+' li').stop().animate({backgroundColor: '#383838'});
-		$('#'+listItems+' li .drag').animate({width: "24px", opacity: 'show'}, 500);
+		listItems.addClass('sorting');
+		listItems.find('li').stop().animate({backgroundColor: '#383838'});
+		listItems.find('li .drag').animate({width: "24px", opacity: 'show'}, 500);
 		trigger.html('Save');
 		return false;
 	}
 	if($(trigger).html() == 'Save'){
 		saveSort(listItems);
-		$('#'+listItems).removeClass('sorting');
-		$('#'+listItems+' li').stop().animate({backgroundColor: '#282828'});
-		$('#'+listItems+' li .drag').animate({width: "0px", opacity: 'hide'}, 500);
+		listItems.removeClass('sorting');
+		listItems.find('li').stop().animate({backgroundColor: '#282828'});
+		listItems.find('li .drag').animate({width: "0px", opacity: 'hide'}, 500);
 		trigger.html('Enable Sorting');
 		return false;
 	}
@@ -219,8 +211,8 @@ function enableSorting(trigger){
 
 function saveSort(listItems){
 
-	var list = $('#'+listItems).serializelist({ 'attributes' : ['id'], 'allow_nest' : false });
-	group_id = listItems.replace(/[^0-9]/g, '');
+	var list = listItems.serializelist({ 'attributes' : ['class'], 'allow_nest' : false });
+	group_id = $(listItems).attr('id').replace(/[^0-9]/g, '');
 
 	status();
 	$.ajax({
