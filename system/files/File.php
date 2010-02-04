@@ -381,7 +381,7 @@ class File {
 			if($file['size'] > $this->APP->config('upload_max_file_size')){
 				$return_info['max_size'] = $this->APP->config('upload_max_file_size');
 				$this->APP->error->raise(2, "Upload failed: file size exceeded maximum.", __FILE__, __LINE__);
-				$file['error'] 	= 2;
+				$file['error'] = 2;
 			}
 
 			// if no error, upload file
@@ -441,10 +441,10 @@ class File {
             		return $return_info;
           		}
         	} else {
-
           		if($file['error'] != 4){
-            		$this->APP->error->raise(2, "The file upload was unsuccessful.", __FILE__, __LINE__);
-            		return "The file upload was unsuccessful.";
+					$msg = $this->uploadError($file['error']);
+					$this->APP->error->raise(2, $msg, __FILE__, __LINE__);
+            		return $msg;
           		}
         	}
 		} else {
@@ -452,7 +452,42 @@ class File {
 		}
 		return false;
 	}
-	
+
+
+	/**
+	 *
+	 * @param <type> $err
+	 * @return <type>
+	 * http://www.php.net/manual/en/features.file-upload.errors.php
+	 */
+	private function uploadError($err){
+		switch($err){
+			case 0:
+				return '';
+				break;
+			case 1:
+				return 'The uploaded file exceeds the server maximum.';
+				break;
+			case 2:
+				return 'The uploaded file exceeds the form/application maximum.';
+				break;
+			case 3:
+				return 'The uploaded file was only partially uploaded.';
+				break;
+			case 4:
+				return 'The file upload failed due to a missing or corrupt temporary directory.';
+				break;
+			case 5:
+				return 'The file upload failed: Failed to write file to disk.';
+				break;
+			case 6:
+				return 'The file upload failed: File upload stopped by extension.';
+				break;
+			default:
+				return '';
+				break;
+		}
+	}
 
 //+-----------------------------------------------------------------------+
 //| INFROMATIONAL GET/SET FUNCTIONS
