@@ -48,7 +48,7 @@ class Contacts_Admin {
 				$this->APP->model->select('contacts');
 				$this->APP->model->leftJoin('contact_groups_link', 'contact_id', 'id', array('group_id'));
 				$this->APP->model->where('group_id', $g_id);
-				$this->APP->model->orderBy('last_name, first_name');
+				$this->APP->model->orderBy('sort_order, last_name, first_name');
 				$groups['RECORDS'][$g_id]['contacts'] = $this->APP->model->results();
 				
 			}
@@ -439,17 +439,16 @@ class Contacts_Admin {
 	 * @param string $name
 	 */
 	public function ajax_sortGroup($group_id, $ul){
-
-		print_r($group_id);
-		print_r($ul);
-
-//		$id = false;
-//		if(!empty($name)){
-//			$id = $this->APP->model->executeInsert('contact_groups', array('name'=>$name));
-//		}
-//
-//		print json_encode( array('success'=>(bool)$id, 'id'=>$id, 'name'=>$name) );
-
+		$success = false;
+		$sql = 'UPDATE contact_groups_link SET sort_order = "%d" WHERE contact_id = "%d" AND group_id = "%s"';
+		if(is_array($ul)){
+			foreach($ul as $key => $contact){
+				$c_id = str_replace('contact-', '', $contact);
+				$this->APP->model->query( sprintf($sql, (int)$key, (int)$c_id, (int)$group_id) );
+			}
+			$success = true;
+		}
+		print json_encode( array('success'=>$success, 'group_id'=>$group_id) );
 	}
 	
 	
@@ -652,12 +651,13 @@ class Contacts_Admin {
 
 
 		$sql = "
-			CREATE TABLE `contact_groups_link` (
+			CREATE TABLE IF NOT EXISTS `contact_groups_link` (
 			  `id` int(10) unsigned NOT NULL auto_increment,
 			  `contact_id` int(10) unsigned NOT NULL,
 			  `group_id` int(10) unsigned NOT NULL,
+			  `sort_order` int(11) NOT NULL,
 			  PRIMARY KEY  (`id`)
-			) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+			) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 		$success = $this->APP->model->query($sql);
 
 

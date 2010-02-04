@@ -206,27 +206,21 @@ function enableSorting(trigger){
 		return false;
 	}
 	if($(trigger).html() == 'Save'){
-
-		// send new orders to the server
 		saveSort(listItems);
-
 		$('#'+listItems).removeClass('sorting');
 		$('#'+listItems+' li').stop().animate({backgroundColor: '#282828'});
 		$('#'+listItems+' li .drag').animate({width: "0px", opacity: 'hide'}, 500);
 		trigger.html('Enable Sorting');
 		return false;
 	}
+	return false;
 }
 
 
 function saveSort(listItems){
 
-	var list = $('#'+listItems).serializelist({ 'attributes' : ['id'] });
-
+	var list = $('#'+listItems).serializelist({ 'attributes' : ['id'], 'allow_nest' : false });
 	group_id = listItems.replace(/[^0-9]/g, '');
-
-	console.log(group_id);
-	console.log(list);
 
 	status();
 	$.ajax({
@@ -235,6 +229,7 @@ function saveSort(listItems){
 		data: 'module=Contacts&method=ajax_sortGroup&group='+group_id+list,
 		success: function(json){
 //			var res = $.evalJSON(json);
+//			res.success;
 			$.modal.close();
 		}
 	});

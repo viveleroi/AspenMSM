@@ -79,33 +79,34 @@ $.preloadImages = function() {
     $.fn.serializelist = function(options) {
         // Extend the configuration options with user-provided
         var defaults = {
-            prepend: 'ul',
-            is_child: false,
-            attributes: ['id', 'class']
+			attributes: ['id', 'class'], // which html attributes should be sent?
+			allow_nest: true, // allow nested elements to be included
+            prepend: 'ul', // which query string param name should be used?
+            is_child: false // determine if we're serializing a child list
         };
         var opts = $.extend(defaults, options);
         var serialStr     = '';
-
         if(!opts.is_child){ opts.prepend = '&'+opts.prepend; }
-
         // Begin the core plugin
         this.each(function() {
-            var ul_obj = this;
-
-            var li_count     = 0;
+            var li_count = 0;
             $(this).children().each(function(){
-
-                for(att in opts.attributes){
-                    serialStr += opts.prepend+'['+li_count+']['+opts.attributes[att]+']='+$(this).attr(opts.attributes[att]);
-                }
-
+				if(opts.allow_nest || opts.attributes.length > 1){
+					 for(att in opts.attributes){
+						serialStr += opts.prepend+'['+li_count+']['+opts.attributes[att]+']='+$(this).attr(opts.attributes[att]);
+					}
+				} else {
+					 serialStr += opts.prepend+'['+li_count+']='+$(this).attr(opts.attributes[0]);
+				}
                 // append any children elements
-                var child_base = opts.prepend+'['+li_count+'][children]';
-                $(this).children().each(function(){
-                    if(this.tagName == 'UL' || this.tagName == 'OL'){
-                        serialStr += $(this).serializelist({'prepend': child_base, 'is_child': true});
-                    }
-                });
+				if(opts.allow_nest){
+					var child_base = opts.prepend+'['+li_count+'][children]';
+					$(this).children().each(function(){
+						if(this.tagName == 'UL' || this.tagName == 'OL'){
+							serialStr += $(this).serializelist({'prepend': child_base, 'is_child': true});
+						}
+					});
+				}
                 li_count++;
             });
         });
