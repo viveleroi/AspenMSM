@@ -82,7 +82,8 @@ $.preloadImages = function() {
 			attributes: ['id', 'class'], // which html attributes should be sent?
 			allow_nest: true, // allow nested elements to be included
             prepend: 'ul', // which query string param name should be used?
-            is_child: false // determine if we're serializing a child list
+            is_child: false, // determine if we're serializing a child list
+			att_regex: false
         };
         var opts = $.extend(defaults, options);
         var serialStr     = '';
@@ -92,11 +93,13 @@ $.preloadImages = function() {
             var li_count = 0;
             $(this).children().each(function(){
 				if(opts.allow_nest || opts.attributes.length > 1){
-					 for(att in opts.attributes){
-						serialStr += opts.prepend+'['+li_count+']['+opts.attributes[att]+']='+$(this).attr(opts.attributes[att]);
+					for(att in opts.attributes){
+						val = rep(opts.attributes[att], $(this).attr(opts.attributes[att]));
+						serialStr += opts.prepend+'['+li_count+']['+opts.attributes[att]+']='+val;
 					}
 				} else {
-					 serialStr += opts.prepend+'['+li_count+']='+$(this).attr(opts.attributes[0]);
+					val = att_rep(opts.attributes[0], $(this).attr(opts.attributes[0]));
+					serialStr += opts.prepend+'['+li_count+']='+val;
 				}
                 // append any children elements
 				if(opts.allow_nest){
@@ -109,6 +112,17 @@ $.preloadImages = function() {
 				}
                 li_count++;
             });
+			function att_rep (att, val){
+				if(opts.att_regex){
+					for(x in opts.att_regex){
+						if(opts.att_regex[x].att == att){
+							return val.replace(opts.att_regex[x].regex, '');
+						}
+					}
+				} else {
+					return val;
+				}
+			}
         });
         return(serialStr);
     };
