@@ -82,8 +82,8 @@ $.preloadImages = function() {
 			attributes: ['id', 'class'], // which html attributes should be sent?
 			allow_nest: true, // allow nested elements to be included
             prepend: 'ul', // which query string param name should be used?
-            is_child: false, // determine if we're serializing a child list
-			att_regex: false
+			att_regex: false, // replacement regex to run on attr values
+            is_child: false // determine if we're serializing a child list
         };
         var opts = $.extend(defaults, options);
         var serialStr     = '';
