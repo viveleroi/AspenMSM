@@ -211,7 +211,7 @@ function enableSorting(trigger){
 
 function saveSort(listItems){
 
-	var list = listItems.serializelist({ 'attributes' : ['class'], 'allow_nest' : false, 'att_regex' : [{'att':'class','regex':/[^0-9]/g},{'att':'id','regex':'/[^0-9]/g'}] });
+	var list = listItems.serializelist({ 'attributes' : ['class'], 'allow_nest' : false, 'att_regex' : [{'att':'class','regex':/[^0-9]/g}] });
 	group_id = $(listItems).attr('id').replace(/[^0-9]/g, '');
 
 	status();
