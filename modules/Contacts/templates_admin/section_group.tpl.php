@@ -55,6 +55,14 @@
 				</select>
 				<a class="help" href="<?php print $this->APP->router->getModuleUrl('Contacts_Admin') ?>/help/section-group-select.htm" title="Select Form">Help</a>
 			</li>
+			<li class="auto">
+				<label for="contactgroup_<?php print $next_id ?>_sort_method">Sort:</label>
+				<select id="contactgroup_<?php print $next_id ?>_sort_method" name="page_sections[<?php print $next_id ?>][sort_method]">
+					<option value="sort_order"<?php print $section['content']['sort_method'] == 'sort_order' ? ' selected="selected"' : ''; ?>>Sort Order</option>
+					<option value="alpha"<?php print $section['content']['sort_method'] == 'alpha' ? ' selected="selected"' : ''; ?>>Alphabetically</option>
+				</select>
+				<a class="help" href="<?php print $this->APP->router->getModuleUrl('Contacts_Admin') ?>/help/section-group-select.htm" title="Select Form">Help</a>
+			</li>
 			
 		</ol>
 		<a class="dark-button delete-confirm" href="#" title="Are you sure you want to delete &#8220;<?php print isset($section['content']['title']) ? (empty($section['content']['title']) ? 'Untitled Contact Group Display' : $section['content']['title']) : 'New Contact Group Display' ?>&#8221; and all it&#8217;s content?"><span>Delete Section</span></a>

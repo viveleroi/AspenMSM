@@ -107,8 +107,14 @@ class Contacts extends Display {
 						
 						$this->APP->model->select('contacts');
 						$this->APP->model->leftJoin('contact_groups_link', 'contact_id', 'id', array('group_id'));
-						$this->APP->model->where('group_id', $g_id);						
-						$this->APP->model->orderBy('sort_order, last_name, first_name');
+						$this->APP->model->where('group_id', $g_id);
+
+						if($section_content['sort_order'] == 'sort_order'){
+							$this->APP->model->orderBy('sort_order, last_name, first_name');
+						} else {
+							$this->APP->model->orderBy('last_name, first_name');
+						}
+						
 						$groups['RECORDS'][$g_id]['contacts'] = $this->APP->model->results();
 						
 						if($groups['RECORDS'][$g_id]['contacts']['RECORDS']){

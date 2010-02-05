@@ -397,13 +397,14 @@ class Contacts_Admin {
 			$section['show_title'] = isset($section['show_title']) ? $section['show_title'] : false;
 			
 			$this->APP->model->query(sprintf('
-				INSERT INTO section_contactgroup_display (page_id, title, show_title, template, group_id)
-				VALUES ("%s", "%s", "%s", "%s", "%s")',
+				INSERT INTO section_contactgroup_display (page_id, title, show_title, template, group_id, sort_method)
+				VALUES ("%s", "%s", "%s", "%s", "%s", "%s")',
 					$this->APP->security->dbescape($page_id),
 					$this->APP->security->dbescape($section['title']),
 					$this->APP->security->dbescape($section['show_title']),
 					$this->APP->security->dbescape($section['template']),
-					$this->APP->security->dbescape($section['group_id'])));
+					$this->APP->security->dbescape($section['group_id']),
+					$this->APP->security->dbescape($section['sort_method'])));
 					
 			$sections[] = array(
 				'placement_group' => $section['placement_group'],
