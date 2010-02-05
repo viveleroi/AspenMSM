@@ -706,7 +706,7 @@ class Model {
 	 * @param string $match
 	 * @access public
 	 */
-	public function match($search, $fields = false, $match = 'AND'){
+	public function match($search, $fields = false, $match = 'AND', $fields_append = array()){
 
 		$search = $this->APP->security->dbescape($search);
 
@@ -720,6 +720,8 @@ class Model {
 				}
 			}
 		}
+
+		$fields = array_merge($fields, $fields_append);
 
 		if(is_array($fields) && count($fields)){
 			$this->sql['WHERE'][] = sprintf('%s MATCH(%s) AGAINST ("%s" IN BOOLEAN MODE)', (isset($this->sql['WHERE']) ? $match : 'WHERE'), implode(",", $fields), $search);

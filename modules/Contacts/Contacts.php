@@ -241,18 +241,20 @@ class Contacts extends Display {
 
 		if($specialty){
 			$this->APP->model->leftJoin('contact_specialties_link', 'contact_id', 'id', array('specialty_id'));
-			//$this->APP->model->leftJoin('contact_specialties', 'id', 'specialty_id', array('specialty'), 'contact_specialties_link');
-			//$this->APP->model->where('contact_specialties.specialty', $specialty);
 			$this->APP->model->where('contact_specialties_link.specialty_id', $specialty);
+		} else {
+			$this->APP->model->leftJoin('contact_specialties_link', 'contact_id', 'id', array('specialty_id'));
+			$this->APP->model->leftJoin('contact_specialties', 'id', 'specialty_id', array('specialty'), 'contact_specialties_link');
+			$this->APP->model->where('contact_specialties.specialty', $keyword);
 		}
 
 		if($keyword && !$first_name && !$last_name){
-			$this->APP->model->match($keyword);
+			$this->APP->model->match($keyword, false, 'AND', array('contact_specialties.specialty'));
 		}
 
 		$this->APP->model->paginate($this->APP->params->get->getRaw('page'), $this->APP->config('search_results_per_page'));
-		$this->APP->model->orderBy('last_name, first_name');
-		//print $this->APP->model->getBuildQuery();
+		$this->APP->model->orderBy('match_relevance DESC, last_name, first_name');
+//		print $this->APP->model->getBuildQuery();
 		$results = $this->APP->model->results();
 
 		if($results['RECORDS']){
