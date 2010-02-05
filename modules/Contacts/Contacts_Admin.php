@@ -750,15 +750,16 @@ class Contacts_Admin {
 
 
 		$sql = "
-			CREATE TABLE `section_contactgroup_display` (
+			CREATE TABLE IF NOT EXISTS `section_contactgroup_display` (
 			  `id` int(10) unsigned NOT NULL auto_increment,
 			  `page_id` int(10) unsigned NOT NULL default '0',
 			  `title` varchar(255) NOT NULL default '',
 			  `show_title` tinyint(1) NOT NULL default '1',
 			  `template` varchar(155) NOT NULL,
 			  `group_id` int(11) NOT NULL,
+			  `sort_method` enum('sort_order','alpha') NOT NULL default 'sort_order',
 			  PRIMARY KEY  (`id`)
-			) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
+			) ENGINE=MyISAM  DEFAULT CHARSET=latin1;";
 		$success = $this->APP->model->query($sql);
 
 
