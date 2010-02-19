@@ -108,14 +108,14 @@ class Router {
 			if(is_array($get)){
 				foreach($get as $key => $value){
 					if($key != 'module' && $key != 'method'){
-						$bits[$key] = $this->APP->params->get->getRaw($key);
+						$bits[$key] = $this->stripQuery($this->APP->params->get->getRaw($key));
 					}
 				}
 			}
 		}
 		
 		// we need to remove any left over query string from malformed mod_rewrite query
-		$this->map['method'] = preg_replace('/\?(.*)/', '', $this->map['method']);
+		$this->map['method'] = $this->stripQuery($this->map['method']);
 		
 		// append any function arguments
 		$this->map['bits'] = $bits;
@@ -124,6 +124,16 @@ class Router {
 		if(!empty($this->map['module'])){
 			$this->map['module'] .= (LOADING_SECTION != '' ? '_'.LOADING_SECTION : '');
 		}
+	}
+
+
+	/**
+	 * Removes any remaining query string from manual URI processing.
+	 * @param string $str
+	 * @return string
+	 */
+	private function stripQuery($str){
+		return preg_replace('/\?(.*)/', '', $str);
 	}
 	
 	
@@ -509,6 +519,8 @@ class Router {
                 }
 
                 $uri = str_replace($replace, '', urldecode($this->APP->params->server->getRaw('REQUEST_URI')));
+				$uri = $this->stripQuery($uri);
+
             } else {
 
                 $no_qs_url = str_replace('?' . $this->APP->params->server->getRaw('QUERY_STRING'), '', $this->APP->params->server->getRaw('REQUEST_URI'));
