@@ -8,7 +8,7 @@
 				<ol>
 					<li>
 						<label for="title">Article Title:</label>
-						<input id="title" name="title" type="text" value="<?php print $values['title']; ?>" />
+						<input id="title" name="title" type="text" value="<?php print htmlentities($values['title'], ENT_QUOTES, 'UTF-8'); ?>" />
 						<a class="help" href="<?php print $this->APP->router->getModuleUrl() ?>/help/news-article_title.htm" title="Article Title">Help</a>
 					</li>
 					<li>

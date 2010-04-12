@@ -1,0 +1,8 @@
+RewriteEngine on
+Options +FollowSymlinks
+RewriteCond %{HTTP_HOST} ^www.pullmanregional.com
+RewriteRule ^(.*)$ http://www.pullmanregional.org/$1 [R=301,L]
+RewriteRule ^\.htaccess$ - [F]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$  index.php?redirected=$1 [QSA,L]

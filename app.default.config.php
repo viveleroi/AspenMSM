@@ -108,6 +108,7 @@
 	$allowed[] = 'img[src|alt|width|height]';
 	$allowed[] = 'ol[id|class]';
 	$allowed[] = 'ul[id|class]';
+	$allowed[] = 'li[id|class]';
 	$allowed[] = 'div[id|class]';
 	
 	$config['html_purifier_settings'][] = array('HTML', 'Allowed', implode(',', $allowed));
