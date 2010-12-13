@@ -615,7 +615,6 @@ class Router {
 	 */
 	public function decodeForRewriteUrl($var){
 		$var = urldecode($var);
-		$var = str_replace("-", "?", $var);
 		$var = str_replace("-question-", "?", $var);
 		$var = str_replace("-slash-", "/", $var);
 		$var = str_replace("-and-", "&", $var);

@@ -58,6 +58,7 @@ class Contacts extends Display {
 				$results = $this->APP->model->results();
 
 				if($results['RECORDS']){
+				
 					foreach($results['RECORDS'] as $key => $contact){
 
 						$related = $this->pullRelatedContactContent($contact['id']);
@@ -109,7 +110,7 @@ class Contacts extends Display {
 				$this->APP->model->select('contact_groups');
 				$this->APP->model->where('id', $section_content['group_id']);
 				$groups = $this->APP->model->results();
-				
+
 				if($groups['RECORDS']){
 					foreach($groups['RECORDS'] as $g_id => $group){
 						
