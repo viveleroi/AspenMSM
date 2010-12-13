@@ -161,7 +161,7 @@ function initTinyMCE() {
 		remove_script_host: false,
 		relative_urls: false,
 		dialog_type : "modal",
-		theme_advanced_buttons1 : "pastetext,pasteword,|,bold,italic,sub,sup,|,bullist,numlist,|,image,link,unlink,anchor,|,charmap",
+		theme_advanced_buttons1 : "pastetext,pasteword,|,bold,italic,sub,sup,|,bullist,numlist,indent,outdent,|,image,link,unlink,anchor,|,charmap",
 		theme_advanced_buttons2 : "styleselect,formatselect",
 		theme_advanced_buttons3 : "",
 		theme_advanced_toolbar_location : "top",

@@ -76,8 +76,12 @@
 				</li>
 			</ol>
 			<ol>
+				<li>
+					<label for="brief_bio">Brief Bio:</label>
+					<textarea name="brief_bio" id="brief_bio" class="content-area" rows="5" cols="60"><?php print $values['brief_bio'] ?></textarea>
+				</li>
 				<li class="tmce">
-					<label for="bio">Biography:</label>
+					<label for="bio">Full Bio:</label>
 					<textarea name="bio" id="bio" class="mce-editor content-area" rows="10" cols="60"><?php print $values['bio'] ?></textarea>
 				</li>
 			</ol>

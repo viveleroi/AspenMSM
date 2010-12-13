@@ -597,7 +597,12 @@ class Router {
 		$var = str_replace("/", "-slash-", $var);
 		$var = str_replace("&", "-and-", $var);
 		$var = str_replace(" ", "_", $var);
+		
 		$var = urlencode($var);
+		
+		$var = str_replace("%28", "(", $var); 
+    	$var = str_replace("%29", ")", $var); 
+    	
 		return $var;
 	}
 
@@ -610,6 +615,7 @@ class Router {
 	 */
 	public function decodeForRewriteUrl($var){
 		$var = urldecode($var);
+		$var = str_replace("-", "?", $var);
 		$var = str_replace("-question-", "?", $var);
 		$var = str_replace("-slash-", "/", $var);
 		$var = str_replace("-and-", "&", $var);

@@ -64,6 +64,14 @@ class Contacts extends Display {
 						$results['RECORDS'][$key] = array_merge($results['RECORDS'][$key], $related);
 
 					}
+				} else {
+					$results = $this->APP->model->quickSelectSingle('contacts', $this->APP->cms_lib->getUriBit(1));
+
+					if($results){
+						$section_content['contacts'] = array($results['id']=>$results);
+					} else {
+						$this->APP->cms_lib->error_404();
+					}
 				}
 
 				$section_content['results'] = $results['RECORDS'];

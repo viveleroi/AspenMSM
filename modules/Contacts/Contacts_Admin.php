@@ -359,12 +359,14 @@ class Contacts_Admin {
 			$section['show_title'] = isset($section['show_title']) ? $section['show_title'] : false;
 			
 			$this->APP->model->query(sprintf('
-				INSERT INTO section_contacts_display (page_id, title, show_title, template, contact_id)
-				VALUES ("%s", "%s", "%s", "%s", "%s")',
+				INSERT INTO section_contacts_display (page_id, title, show_title, template, link_to_full_page, detail_page_id, contact_id)
+				VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s")',
 					$this->APP->security->dbescape($page_id),
 					$this->APP->security->dbescape($section['title']),
 					$this->APP->security->dbescape($section['show_title']),
 					$this->APP->security->dbescape($section['template']),
+					$this->APP->security->dbescape($section['link_to_full_page']),
+					$this->APP->security->dbescape($section['detail_page_id']),
 					$this->APP->security->dbescape($section['contact_id'])));
 					
 			$sections[] = array(
@@ -397,13 +399,15 @@ class Contacts_Admin {
 			$section['show_title'] = isset($section['show_title']) ? $section['show_title'] : false;
 			
 			$this->APP->model->query(sprintf('
-				INSERT INTO section_contactgroup_display (page_id, title, show_title, template, group_id, sort_method)
-				VALUES ("%s", "%s", "%s", "%s", "%s", "%s")',
+				INSERT INTO section_contactgroup_display (page_id, title, show_title, template, group_id, link_to_full_page, detail_page_id, sort_method)
+				VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")',
 					$this->APP->security->dbescape($page_id),
 					$this->APP->security->dbescape($section['title']),
 					$this->APP->security->dbescape($section['show_title']),
 					$this->APP->security->dbescape($section['template']),
 					$this->APP->security->dbescape($section['group_id']),
+					$this->APP->security->dbescape($section['link_to_full_page']),
+					$this->APP->security->dbescape($section['detail_page_id']),
 					$this->APP->security->dbescape($section['sort_method'])));
 					
 			$sections[] = array(
@@ -683,6 +687,15 @@ class Contacts_Admin {
 			  PRIMARY KEY  (`id`)
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
 		$success = $this->APP->model->query($sql);
+		
+		$sql = "
+			CREATE TABLE `contact_languages_link` (
+			  `id` int(10) unsigned NOT NULL auto_increment,
+			  `contact_id` int(10) unsigned NOT NULL,
+			  `language_id` int(10) unsigned NOT NULL,
+			  PRIMARY KEY  (`id`)
+			) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+		$success = $this->APP->model->query($sql);
 
 
 		$sql = "
@@ -690,15 +703,6 @@ class Contacts_Admin {
 			`id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
 			`specialty` VARCHAR( 255 ) NOT NULL
 			) ENGINE = MYISAM ;";
-		$success = $this->APP->model->query($sql);
-
-
-		$sql = "
-			CREATE TABLE `contact_languages` (
-			  `id` int(10) unsigned NOT NULL auto_increment,
-			  `language` varchar(155) NOT NULL default '',
-			  PRIMARY KEY  (`id`)
-			) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
 		$success = $this->APP->model->query($sql);
 
 
@@ -731,6 +735,7 @@ class Contacts_Admin {
 			  `telephone` varchar(20) NOT NULL default '',
 			  `telephone_2` varchar(20) NOT NULL,
 			  `fax` varchar(20) NOT NULL,
+			  `brief_bio` longtext NOT NULL,
 			  `bio` longtext NOT NULL,
 			  PRIMARY KEY  (`id`),
 			  FULLTEXT KEY `FULLTEXT` (`title`,`first_name`,`last_name`,`accreditation`,`company`,`specialty`,`address_1`,`city`,`state`,`postal`,`telephone`,`bio`)
