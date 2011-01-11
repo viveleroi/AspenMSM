@@ -101,10 +101,10 @@
 	$allowed[] = 'p[class]';
 	$allowed[] = 'a[href|title|name|id|class]';
 	$allowed[] = 'dl[class]';
-	$allowed[] = 'table[class|cellspacing]';
+	$allowed[] = 'table[id|class|cellspacing]';
 	$allowed[] = 'tr[class]';
-	$allowed[] = 'th[class]';
-	$allowed[] = 'td[class]';
+	$allowed[] = 'th[class|colspan|rowspan]';
+	$allowed[] = 'td[class|colspan|rowspan]';
 	$allowed[] = 'img[src|alt|width|height]';
 	$allowed[] = 'ol[id|class]';
 	$allowed[] = 'ul[id|class]';

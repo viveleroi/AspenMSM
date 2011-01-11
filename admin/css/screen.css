@@ -18,7 +18,7 @@ h2 { margin: 0 0 15px 0; padding: 0 15px 5px 15px; border-bottom: 1px solid rgba
 h1, h2, h3, h4 { color: rgba(241,215,127,1); text-shadow: 1px 1px 2px #141414; }
 
 h2 span, h3 span { font-size: 75%; font-weight: normal; color: rgba(241,215,127,0.625); }
-h2 span{ font-size: 75%; }
+h2 span{ font-size: 75%; display: block; }
 h3 span{ font-size: 85%; }
 h2 strong, h3 strong { text-transform: none; }
 h3 strong { display: block; }

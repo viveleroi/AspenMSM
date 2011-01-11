@@ -643,7 +643,7 @@ class Cms_lib {
 	 */
 	public function navigation(
 										$parent_id = 0, 
-										$ul_id = 'nav', 
+										$ul_id = 'menu', 
 										$show_parent_link = true, 
 										$show_parent_link_nest = false, 
 										$show_ul = true,
@@ -952,8 +952,8 @@ class Cms_lib {
 			$title = (isset($this->page['page_title']) ? $this->page['page_title'] : false);
 		}
 		
-		return $append . ($append_website_title && !empty($title) ? ' - ' : '') . $this->APP->html->purify($title);
-		
+		/* return $append . ($append_website_title && !empty($title) ? ' - ' : '') . $this->APP->html->purify($title); */
+		return $this->APP->html->purify($title) . ($append_website_title && !empty($title) ? ' - ' : '') . $append;
 	}
 	
 	

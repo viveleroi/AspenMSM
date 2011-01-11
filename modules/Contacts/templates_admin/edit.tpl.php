@@ -78,7 +78,7 @@
 			<ol>
 				<li>
 					<label for="brief_bio">Brief Bio:</label>
-					<textarea name="brief_bio" id="brief_bio" class="content-area" rows="5" cols="60"><?php print $values['brief_bio'] ?></textarea>
+					<textarea name="brief_bio" id="brief_bio" rows="10" cols="60"><?php print $values['brief_bio'] ?></textarea>
 				</li>
 				<li class="tmce">
 					<label for="bio">Full Bio:</label>
@@ -124,7 +124,7 @@
 				<?php
 					}
 				} else { ?>
-					<img src="<?php print $this->APP->router->getUploadsUrl(); ?>/contacts/no-photo.png" width="100" height="160" alt="No Photo Available" />
+					<img src="/admin/img/no-contact-photo.png" width="100" height="100" alt="No Photo Available" />
 					<input type="file" name="file_path" id="file_path" />
 				<?php } ?>
 				</li>

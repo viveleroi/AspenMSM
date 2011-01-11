@@ -49,7 +49,7 @@
 				<select id="news_<?php print $next_id ?>_template" name="page_sections[<?php print $next_id ?>][template]">
 				<option value="0">--</option>
 				<?php
-				$template = isset($section['content']['template']) ? $section['content']['template'] : 0;
+				$template = isset($section['content']['template']) ? $section['content']['template'] : NULL;
 				if(is_array($templates)){
 					foreach($templates as $option){
 						print '<option value="'.$option['FILENAME'].'"'.($template == $option['FILENAME'] ? ' selected="selected"' : '').'>' . $option['NAME'] . '</option>';

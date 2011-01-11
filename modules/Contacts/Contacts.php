@@ -99,7 +99,7 @@ class Contacts extends Display {
 		$data = array();
 
 		$section_results = $this->APP->model->query(sprintf('SELECT * FROM section_%s WHERE id = "%s"', $section_data['section_type'], $section_data['section_id']));
-
+		
 		if($section_results->RecordCount()){
 			while($section_content = $section_results->FetchRow()){
 				
@@ -110,7 +110,7 @@ class Contacts extends Display {
 				$this->APP->model->select('contact_groups');
 				$this->APP->model->where('id', $section_content['group_id']);
 				$groups = $this->APP->model->results();
-
+				
 				if($groups['RECORDS']){
 					foreach($groups['RECORDS'] as $g_id => $group){
 						
@@ -118,7 +118,7 @@ class Contacts extends Display {
 						$this->APP->model->leftJoin('contact_groups_link', 'contact_id', 'id', array('group_id'));
 						$this->APP->model->where('group_id', $g_id);
 
-						if($section_content['sort_order'] == 'sort_order'){
+						if($section_content['sort_method'] == 'sort_order'){
 							$this->APP->model->orderBy('sort_order, last_name, first_name');
 						} else {
 							$this->APP->model->orderBy('last_name, first_name');

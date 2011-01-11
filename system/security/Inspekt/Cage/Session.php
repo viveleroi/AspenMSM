@@ -42,9 +42,11 @@ class Inspekt_Cage_Session extends Inspekt_Cage {
 		}
 		*/
 		
+/*
 		if ($strict) {
 			//$source = NULL;
 		}
+*/
 
 		return $cage;
 		

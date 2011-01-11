@@ -38,7 +38,7 @@ class Pages_Admin {
 	public function __construct(){
 		$this->APP = get_instance();
 		$this->APP->director->registerPageSection(__CLASS__, 'Text Content', 'basic_editor');
-		$this->APP->director->registerPageSection(__CLASS__, 'Text with Image Content', 'imagetext_editor');
+/* 		$this->APP->director->registerPageSection(__CLASS__, 'Text with Image Content', 'imagetext_editor'); */
 	}
 
 
@@ -460,7 +460,7 @@ class Pages_Admin {
 
 						if($editing_page_id !== $page['page']['page_id'] && !in_array($editing_page_id, $parents)){
 							$selected = $opt_selected == $page['page']['page_id'] ? ' selected="selected"' : '';
-							$html .= sprintf('<option value="%d"%s>%s</option>', $page['page']['page_id'], $selected, $page['page']['page_title']);
+							$html .= sprintf('<option value="%d"%s>%s</option>', $page['page']['page_id'], $selected, $this->APP->template->truncateString($page['page']['page_title'],35));
 						}
 
 						if(isset($page['children'])){

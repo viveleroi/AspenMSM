@@ -154,7 +154,7 @@ class Cms extends Bootstrap {
 	 * @return string
 	 * @access public
 	 */
-	public function navigation($parent_id = 0, $ul_id = 'nav', $show_parent_link = true, $show_parent_link_nest = false, $show_ul = true){
+	public function navigation($parent_id = 0, $ul_id = 'menu', $show_parent_link = true, $show_parent_link_nest = false, $show_ul = true){
 		return $this->cms_lib->navigation($parent_id, $ul_id, $show_parent_link, $show_parent_link_nest, $show_ul);
 	}
 
