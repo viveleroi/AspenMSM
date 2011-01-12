@@ -195,12 +195,14 @@ class Contacts_Admin {
 							$this->APP->model->select('contact_images');
 							$this->APP->model->where('contact_id', $id);
 							$images = $this->APP->model->results();
-
-							foreach($images['RECORDS'] as $image){
-								$base = APPLICATION_PATH.DS.'files'.DS.'contacts'.DS.$image['contact_id'];
-								$this->APP->file->delete($base.DS.$image['filename_orig']);
-								$this->APP->file->delete($base.DS.$image['filename_thumb']);
-								$this->APP->model->delete('contact_images', $image['id']);
+							
+							if (is_array($images['RECORDS'])){
+								foreach($images['RECORDS'] as $image){
+									$base = APPLICATION_PATH.DS.'files'.DS.'contacts'.DS.$image['contact_id'];
+									$this->APP->file->delete($base.DS.$image['filename_orig']);
+									$this->APP->file->delete($base.DS.$image['filename_thumb']);
+									$this->APP->model->delete('contact_images', $image['id']);
+								}
 							}
 
 								// get new thumb file name, new path
@@ -212,11 +214,11 @@ class Contacts_Admin {
 							$orig_path = str_replace($file['file_name'], $orig_name, $file['server_file_path']);
 
 							// load original in thumbnail
-							$thm_create = Thumbnail::create($file['server_file_path']);
+							$thm_create = new Thumbnail($file['server_file_path']);
 							$thm_create->adaptiveResize($thm_width,$thm_height);
 							$thm_create->save($thm_path);
 
-							$orig_create = Thumbnail::create($file['server_file_path']);
+							$orig_create = new Thumbnail($file['server_file_path']);
 							$orig_create->adaptiveResize($orig_width,$orig_height);
 							$orig_create->save($orig_path);
 

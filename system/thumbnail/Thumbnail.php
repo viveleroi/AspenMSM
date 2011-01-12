@@ -320,6 +320,49 @@ class Thumbnail {
             $this->newDimensions = $this->calcPercent($width,$height);
         }
     }
+    
+    /**
+     * @abstract Calculates new image dimensions, not allowing the width and height to be less than either the max width or height 
+     * @param int $width
+     * @param int $height
+     * @access private
+     */
+    private function calcImageSizeStrict ($width, $height) {
+		if ($this->maxWidth >= $this->maxHeight) {
+			if ($width > $height) {
+				$newDimensions = $this->calcHeight($width, $height);
+				if ($newDimensions['newWidth'] < $this->maxWidth) {
+					$newDimensions = $this->calcWidth($width, $height);
+				}
+			}
+			
+			elseif ($height >= $width) {
+				$newDimensions = $this->calcWidth($width, $height);
+				
+				if ($newDimensions['newHeight'] < $this->maxHeight) {
+					$newDimensions = $this->calcHeight($width, $height);
+				}
+			}
+		}
+		elseif ($this->maxHeight > $this->maxWidth) {
+			if ($width >= $height) {
+				$newDimensions = $this->calcWidth($width, $height);
+				
+				if ($newDimensions['newHeight'] < $this->maxHeight) {
+					$newDimensions = $this->calcHeight($width, $height);
+				}
+			}
+			elseif ($height > $width) {
+				$newDimensions = $this->calcHeight($width, $height);
+				
+				if ($newDimensions['newWidth'] < $this->maxWidth) {
+					$newDimensions = $this->calcWidth($width, $height);
+				}
+			}
+		}
+		
+		$this->newDimensions = $newDimensions;
+	}
 
 
     /**
@@ -445,6 +488,60 @@ class Thumbnail {
 		$this->newImage = $this->workingImage;
 		$this->currentDimensions['width'] = $cropSize;
 		$this->currentDimensions['height'] = $cropSize;
+	}
+
+
+	/**
+	 * This function attempts to get the image to as close to the provided dimensions as possible, and then crops the remaining overflow (from the center) to get the image to be the size specified
+	 * @param int $maxWidth
+	 * @param int $maxHeight
+	 * @access public
+	 */
+	public function adaptiveResize ($width, $height) {
+		$this->maxHeight = (intval($height) > $this->currentDimensions['height']) ? $this->currentDimensions['height'] : $height;
+		$this->maxWidth = (intval($width) > $this->currentDimensions['width']) ? $this->currentDimensions['width'] : $width;
+		
+		$this->calcImageSizeStrict($this->currentDimensions['width'], $this->currentDimensions['height']);
+		
+		$this->resize($this->newDimensions['newWidth'], $this->newDimensions['newHeight']);
+		
+		$this->maxHeight = (intval($height) > $this->currentDimensions['height']) ? $this->currentDimensions['height'] : $height;
+		$this->maxWidth = (intval($width) > $this->currentDimensions['width']) ? $this->currentDimensions['width'] : $width;
+		
+		if (function_exists('imagecreatetruecolor')) {
+			$this->workingImage = imagecreatetruecolor($this->maxWidth, $this->maxHeight);
+		} else {
+			$this->workingImage = imagecreate($this->maxWidth, $this->maxHeight);
+		}
+				
+		$cropWidth = $this->maxWidth;
+		$cropHeight = $this->maxHeight;
+		$cropX = 0;
+		$cropY = 0;
+		
+		if ($this->currentDimensions['width'] > $this->maxWidth){
+			$cropX = intval(($this->currentDimensions['width'] - $this->maxWidth) / 2);
+		} elseif ($this->currentDimensions['height'] > $this->maxHeight) {
+			$cropY = intval(($this->currentDimensions['height'] - $this->maxHeight) / 2);
+		}
+		
+		imagecopyresampled(
+            $this->workingImage,
+            $this->oldImage,
+            0,
+            0,
+            $cropX,
+            $cropY,
+            $cropWidth,
+            $cropHeight,
+            $cropWidth,
+            $cropHeight
+		);
+		
+		$this->oldImage = $this->workingImage;
+		$this->currentDimensions['width'] = $this->maxWidth;
+		$this->currentDimensions['height'] = $this->maxHeight;
+		
 	}
 
 	

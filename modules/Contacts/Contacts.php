@@ -52,30 +52,27 @@ class Contacts extends Display {
 				$section_content['type'] = $section_data['section_type'];
 				$section_content['placement_group'] = $section_data['group_name'];
 
-
 				$this->APP->model->select('contacts');
 				$this->APP->model->where('id', $section_content['contact_id']);
 				$results = $this->APP->model->results();
+				
+				$section_content['results'] = $results['RECORDS'];
 
 				if($results['RECORDS']){
-				
 					foreach($results['RECORDS'] as $key => $contact){
-
 						$related = $this->pullRelatedContactContent($contact['id']);
 						$results['RECORDS'][$key] = array_merge($results['RECORDS'][$key], $related);
-
 					}
 				} else {
 					$results = $this->APP->model->quickSelectSingle('contacts', $this->APP->cms_lib->getUriBit(1));
-
 					if($results){
+						$related = $this->pullRelatedContactContent($results['id']);
+						$results = array_merge($results, $related);
 						$section_content['contacts'] = array($results['id']=>$results);
 					} else {
 						$this->APP->cms_lib->error_404();
 					}
 				}
-
-				$section_content['results'] = $results['RECORDS'];
 				$data['section'] = $section_content;
 				
 				if(!$section_data['called_in_template']){
@@ -83,9 +80,7 @@ class Contacts extends Display {
 				}
 			}
 		}
-
 		return $data;
-
 	}
 	
 	
