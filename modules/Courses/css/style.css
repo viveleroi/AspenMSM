@@ -1,0 +1,76 @@
+/*
+#groupholder-0 { display: none; }
+
+
+#list-holder { background-color: rgba(0,0,0,0.25); margin: 5px 0; padding: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; }
+#scroll-list { height: 415px; }
+
+#item-list li { padding: 0 5px 0 0;  line-height: 24px; margin-bottom: 2px; color: rgba(255,255,255,0.75); background-color: rgba(255,255,255,0.075); -moz-border-radius: 3px; -webkit-border-radius: 3px; }
+#item-list li a { color: rgba(255,255,255,0.75); }
+#item-list li .drag { background-position: 50% 0; }
+#item-list li:hover .drag { background-position: 50% -504px; }
+#item-names { float: left; width: 435px; }
+#item-names h3 { margin-left: 10px; }
+#item-names .add { float: right; margin: 5px 5px 0 0; }
+
+#menu-groups { float: right; width: 225px; }
+#menu-groups h3 { margin-left: 25px; }
+
+
+.group { background-color: rgba(0,0,0,0.25); margin: 5px 0; -moz-border-radius: 5px; -webkit-border-radius: 5px; }
+.group .group-info { margin: 0 5px; }
+.group ul { margin: 0; padding-bottom: 3px; }
+.group ul li { line-height: 24px; margin: 2px 0; padding-left: 5px; color: rgba(255,255,255,0.75); background-color: rgba(255,255,255,0.075); -moz-border-radius: 3px; -webkit-border-radius: 3px; }
+.group ul li a { float: right; }
+.group .listed { float: left; }
+.group .delete { float: right; margin-bottom: 5px; }
+
+li.ui-draggable-dragging { z-index: 1000; list-style-type: none; padding: 0 5px 0 0;  line-height: 24px; color: rgba(0,0,0,0.75); background-color: rgba(241,215,127,0.875); -moz-border-radius: 3px; -webkit-border-radius: 3px; }
+li.ui-draggable-dragging a { font-weight: bold; color: rgba(0,0,0,0.75); text-shadow: none; padding-right: 5px; }
+li.ui-draggable-dragging a.drag { padding: 0; }
+.menu-target { background-color: #454134; }
+
+#add-group-area { background-color: rgba(0,0,0,0.125); margin: 5px 0; padding: 0; -moz-border-radius: 5px; -webkit-border-radius: 5px; }
+#add-group { padding-top: 10px; }
+#add-group label { margin-left: 10px; }
+#add-group .add-fld { width: 205px; margin: 0 0 10px 10px; }
+#add-group .add-desc { width: 205px; height: 100px; margin: 0 0 0 10px; }
+#add-group .add-btn { float: right; width: 24px; height: 24px; margin: 0 10px 5px 0; padding: 0; border: none; text-indent: -9999px;  background: transparent url(../../../admin/img/btn-manage.png) no-repeat 50% -360px; }
+#add-group .add-btn:hover { background-position: 50% -384px !important; }
+
+
+
+form ol li input.price { width: 50px; }
+
+form ol li .false-name-label, form ol li .false-price-label { font-size: 10px; text-transform:uppercase; font-weight:bold; float: left; width: 120px; margin-right: 15px; line-height: 24px; color: rgba(0,0,0,0.5); text-shadow: none; }
+form ol li .false-name-label { width: 150px; margin-right: 20px; }
+form ol li .false-price-label { width: 50px; }
+form ol li span.time-sep { float: left; padding: 0 15px 0 2px; font-size: 12px; line-height: 24px; font-weight: bold; color: rgba(0,0,0,0.5); text-shadow: none; }
+
+form ol li .multi input.price-name { width: 150px; }
+form ol li .multi input.price-value { width: 50px; }
+
+*/
+
+
+
+
+
+
+form ol li .cost label { font-size: 12px; line-height: 14px; text-transform: none; margin-right: 10px; font-weight: normal;  }
+form ol li.short input, form ol li .cost label, form ol li .cost label input { width: 80px; }
+
+#classes { width: 280px; float: left; }
+
+#classes .class p { margin: 0; }
+#classes .class { clear: both; margin-bottom: 5px; padding: 5px; border: 1px solid hsla(0,0%,0%,0.25); -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; background-color: hsla(0,0%,100%,0.75); color: hsla(0, 0%, 0%, 0.5); }
+#classes .class .edit { float: right; }
+
+.c-date {  }
+.c-seat {  }
+.c-loc {  }
+
+#classes .class.none { color: #999; background-color: hsla(0,0%,100%,0.25); border: 1px solid hsla(0,0%,0%,0.075); font-style: italic; }
+
+#schedule .add { float: right; }
+

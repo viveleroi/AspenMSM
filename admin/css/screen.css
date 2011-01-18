@@ -23,6 +23,7 @@ h3 span{ font-size: 85%; }
 h2 strong, h3 strong { text-transform: none; }
 h3 strong { display: block; }
 li { text-shadow: 1px 1px 2px #141414; }
+form li { text-shadow: none !important; }
 
 /* !---------- Structure ---------- */
 #nav, #content { width: 785px; margin: 0 auto; }
