@@ -137,19 +137,21 @@ class Pages_Admin extends Module {
 		$data['available_sections'] = director()->getPageSections();
 
 		$form = new Form('pages', $id);
-		$form = new Form('pages', $id);
 		
 		// load sections
 		$data['sections'] = array();
 		
 		// pull all references to sections for this page
-		$sections = $model->query(sprintf('SELECT * FROM section_list WHERE page_id = "%s" ORDER BY id', $id));
-		if($sections->RecordCount()){
-			while($section = $sections->FetchRow()){
-				
+		$model = model()->open('section_list');
+		$model->where('page_id', $id);
+		$sections = $model->results();
+
+		if($sections){
+			foreach($sections as $section){
+
 				// pull the section for the database
 				$section_results = $model->query(sprintf('SELECT * FROM section_%s WHERE id = "%s"',
-																strtolower($section['section_type']), $section['section_id']));
+														strtolower($section['section_type']), $section['section_id']));
 				if($section_results->RecordCount()){
 					while($section_content = $section_results->FetchRow()){
 						$data['sections'][$section['id']]['meta'] = $section;
@@ -227,9 +229,6 @@ class Pages_Admin extends Module {
 
 		$data['values'] = $form->getCurrentValues();
 
-		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
-		template()->addView(template()->getModuleTemplateDir().DS . 'edit.tpl.php');
-		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
 		template()->display($data);
 
 	}

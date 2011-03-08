@@ -370,7 +370,7 @@ class User  {
 
 				// first identify any groups this user belongs to
 				$model = model()->open('user_group_link');
-				$model = model()->open(array('group_id'));
+				$model->select(array('group_id'));
 				$model->where('user_id', $user_id);
 				$groups = $model->results();
 				$groups = Utils::extract('/group_id', $groups);
@@ -420,7 +420,7 @@ class User  {
 					$groups = $this->users_groups;
 				} else {
 					$model = model()->open('user_group_link');
-					$model = model()->open(array('group_id'));
+					$model->select(array('group_id'));
 					$model->where('user_id', $user_id);
 					$groups = $model->results();
 					$groups = Utils::extract('/group_id', $groups);

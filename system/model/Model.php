@@ -2047,7 +2047,7 @@ class Model  {
 //				// clean name for row title
 //				$name = ucwords(str_replace("_", " ", $name));
 //
-//				$html .= sprintf('<tr><td><b>%s:</b></td><td>%s</td></tr>' . "\n", $name, $form->cv($field->name));
+//				$html .= sprintf('<tr><td><b>%s:</b></td><td>%s</td></tr>' . "\n", $name, app()->form->cv($field->name));
 //			}
 //		}
 //
