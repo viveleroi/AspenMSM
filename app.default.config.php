@@ -120,12 +120,12 @@
 	$config['load_add_core_class'][] = array('classname' => 'Xml', 'folder' => 'formats');
 	//$config['load_add_core_class'][] = array('classname' => 'Json', 'folder' => 'formats');
 	
-	$config['load_add_core_class'][] = array('classname' => 'Thumbnail', 'autoload' => false);
-	$config['load_add_core_class'][] = array('classname' => 'Director');
-	$config['load_add_core_class'][] = array('classname' => 'Search');
-	$config['load_add_core_class'][] = array('classname' => 'Cms_lib');
-	$config['load_add_core_class'][] = array('classname' => 'Pages_lib');
-	$config['load_add_core_class'][] = array('classname' => 'Display');
+//	$config['load_add_core_class'][] = array('classname' => 'Thumbnail', 'autoload' => false);
+//	$config['load_add_core_class'][] = array('classname' => 'Director');
+//	$config['load_add_core_class'][] = array('classname' => 'Search');
+//	$config['load_add_core_class'][] = array('classname' => 'Cms_lib');
+//	$config['load_add_core_class'][] = array('classname' => 'Pages_lib');
+//	$config['load_add_core_class'][] = array('classname' => 'Display');
 
 	// default modules for specific user groups (overrides default_module)
 	$config['usergroup_default_modules'] = array();

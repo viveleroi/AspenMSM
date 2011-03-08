@@ -8,148 +8,29 @@
  * @since 		1.0
  */
 
+
 /**
- * Error handling class, based off of the ErrorHandler script 2.0.1
- * from http://gosu.pl/software/mygosulib.html. Heavily modified.
- *
+ * Shortcut to return an instance of our original app
+ * @return object
+ */
+function &error(){
+	return app()->error;
+}
+
+
+/**
  * Please note that this class relies
  * as little as possible on other classes
  * within this framework so that we
  * can avoid as many failure points as possible.
  *
  * @package Aspen_Framework
- * @author Cezary Tomczak
  */
-class Error {
-
-	/**
-	 * @var integer $errNo Error number
-	 * @access private
-	 */
-	private $errNo;
-
-	/**
-	 * @var string $errMsg Error message
-	 * @access private
-	 */
-	private $errMsg;
-
-	/**
-	 * @var string $file Source file name/path
-	 * @access private
-	 */
-	private $file;
-
-	/**
-	 * @var integer $line Error source line number
-	 * @access private
-	 */
-	private $line;
-
-	/**
-	 * @var array $errType Error types
-	 * @access private
-	 */
-	private $errType;
-
-	/**
-	 * @var mixed $info
-	 * @access private
-	 */
-	private $info;
-
-	/**
-	 * @var array $trace Trace of errors
-	 * @access private
-	 */
-	private $trace;
-
-	/**
-	 * @var object $APP Holds an instance of our app
-	 * @access private
-	 */
-	private $APP;
+class Error  {
 
 
 	/**
-	 * @abstract Handles our error logging/display
-	 * @return ErrorHandler
-	 */
-	public function __construct(){ $this->APP = get_instance(); }
-	
-	
-	/**
-	 * @abstract Returns the error number
-	 * @return string
-	 * @access public
-	 */
-	public function getErrorNo(){
-		return $this->errNo;
-	}
-	
-	
-	/**
-	 * @abstract Returns the error message
-	 * @return string
-	 * @access public
-	 */
-	public function getErrorMessage(){
-		return $this->errMsg;
-	}
-	
-	
-	/**
-	 * @abstract Returns the error type
-	 * @return string
-	 * @access public
-	 */
-	public function getErrorType(){
-		return $this->errType[$this->errNo];
-	}
-
-	
-	/**
-	 * @abstract Returns the error line
-	 * @return string
-	 * @access public
-	 */
-	public function getErrorLine(){
-		return $this->line;
-	}
-	
-	
-	/**
-	 * @abstract Returns the error file
-	 * @return string
-	 * @access public
-	 */
-	public function getErrorFile(){
-		return $this->file;
-	}
-	
-	
-	/**
-	 * @abstract Returns the error information array
-	 * @return array
-	 * @access public
-	 */
-	public function getErrorInfo(){
-		return $this->info;
-	}
-	
-	
-	/**
-	 * @abstract Returns the error trace
-	 * @return array
-	 * @access public
-	 */
-	public function getErrorTrace(){
-		return $this->trace;
-	}
-	
-	
-	/**
-	 * @abstract Raises a new error message
+	 * Raises a new error message
 	 * @param integer $errNo
 	 * @param string $errMsg
 	 * @param string $file
@@ -162,16 +43,11 @@ class Error {
 		// die if no errornum
 		if (!$errNo) { return; }
 
-		$this->errNo = $errNo;
-		$this->errMsg = $errMsg;
-		$this->file = $file;
-		$this->line = $line;
-
 		while (ob_get_level()) {
 			ob_end_clean();
 		}
 
-		$this->errType = array (
+		$errType = array (
 			1    => "PHP Error",
 			2    => "PHP Warning",
 			4    => "PHP Parse Error",
@@ -183,132 +59,132 @@ class Error {
 			256  => "PHP User Error",
 			512  => "PHP User Warning",
 			1024 => "PHP User Notice",
-			2048 => "Unknown"
+			2048 => "Unknown",
+			4096 => "Unknown",
+			8192 => "Deprecated"
 		);
 
-		$this->info = array();
-
-		if (($this->errNo & E_USER_ERROR) && is_array($arr = @unserialize($this->errMsg))) {
-			foreach ($arr as $k => $v) {
-				$this->info[$k] = $v;
-		  	}
+		$trace = array();
+		$db = debug_backtrace();
+		foreach($db as $file_t){
+			if(isset($file_t['file'])){
+				$trace[] = array('file'=>$file_t['file'],'line'=>$file_t['line'],'function'=>$file_t['function']);
+			}
 		}
 
-		$this->trace = array();
-
-		if (function_exists('debug_backtrace')) {
-			$this->trace = debug_backtrace();
-		 	array_shift($this->trace);
+		// determine uri
+		if(is_object(app()->router) && method_exists(app()->router, 'fullUrl')){
+			$uri = router()->fullUrl();
+		} else {
+			$uri = $this->getServerValue('REQUEST_URI');
 		}
+
+		$error = array(
+				'application' => app()->config('application'),
+				'version_complete' => VERSION_COMPLETE,
+				'version' => VERSION,
+				'build' => BUILD,
+				'date' => date("Y-m-d H:i:s"),
+				'gmdate' => gmdate("Y-m-d H:i:s"),
+				'visitor_ip' => $this->getServerValue('REMOTE_ADDR'),
+				'referrer_url' => $this->getServerValue('HTTP_REFERER'),
+				'request_uri' => $uri,
+				'user_agent' => $this->getServerValue('HTTP_USER_AGENT'),
+				'error_type' => $errType[$errNo],
+				'error_message' => $errMsg,
+				'error_no' => $errNo,
+				'file' => $file,
+				'line' => $line,
+				'trace' => (empty($trace) ? false : $trace)
+			);
 
 		// if we're going to save to a db
-		if($this->APP->config('save_error_to_db') && $this->APP->checkDbConnection()){
+		if(app()->config('save_error_to_db') && app()->checkDbConnection()){
 
 			$error_sql = sprintf('
 				INSERT INTO error_log (
 					application, version, date, visitor_ip, referer_url, request_uri,
 					user_agent, error_type, error_file, error_line, error_message)
 				VALUES ("%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s")',
-					mysql_real_escape_string($this->APP->config('application_name')),
-					VERSION . ' Framework Rev:' . FRAMEWORK_REV,
-					date("Y-m-d H:i:s"),
-					$this->getServerValue('REMOTE_ADDR'),
-					$this->getServerValue('HTTP_REFERER'),
-					$this->getServerValue('REQUEST_URI'),
-					$this->getServerValue('HTTP_USER_AGENT'),
-					$this->errType[$this->errNo],
-					$this->file,
-					$this->line,
-					mysql_real_escape_string($this->errMsg)
+					mysql_real_escape_string($error['application']),
+					mysql_real_escape_string($error['version_complete']),
+					mysql_real_escape_string($error['date']),
+					mysql_real_escape_string($error['visitor_ip']),
+					mysql_real_escape_string($error['referrer_url']),
+					mysql_real_escape_string($error['request_uri']),
+					mysql_real_escape_string($error['user_agent']),
+					mysql_real_escape_string($error['error_no']),
+					mysql_real_escape_string($error['file']),
+					mysql_real_escape_string($error['line']),
+					mysql_real_escape_string($error['error_message'])
 				);
 
-			if(!$this->APP->db->Execute($error_sql)){
+			if(!app()->db->Execute($error_sql)){
 				print 'There was an error trying to log the most recent error to the database:<p>'
-						.  $this->APP->db->ErrorMsg()
+						.  app()->db->ErrorMsg()
 						. '<p>Query was:</p>' . $error_sql;
 						exit;
 			}
 		}
 
-
-		// If we're emailing it to the developer
-		if($this->APP->config('send_error_emails') && $this->APP->config('error_email_recipient')){
-
-			$this->APP->mail->AddAddress($this->APP->config('error_email_recipient'));
-			$this->APP->mail->From      = $this->APP->config('error_email_sender');
-			$this->APP->mail->FromName  = $this->APP->config('error_email_sender_name');
-			$this->APP->mail->Mailer    = "mail";
-
-			$errorBody = VERSION . "
-			DATE: " . date("Y-m-d h:i:s") . "
-			VISITOR IP: " . $this->getServerValue('REMOTE_ADDR') . "
-			REFERRER URL: " . $this->getServerValue('HTTP_REFERER') . "
-			REQUEST URI: " . $this->APP->router->getFullUrl() . $this->getServerValue('REQUEST_URI', '') . "
-			USER AGENT: " . $this->getServerValue('HTTP_USER_AGENT') . "
-			ERROR TYPE: " . $this->errType[$this->errNo] . "\r";
-
-			if (is_array($this->trace)){
-				foreach ($this->trace as $k => $v){
-
-					$errorBody .= "FILE: " . $v['file'] . "\rLINE: " . $v['line'] . "\r";
-
-				}
-			} else {
-				$errorBody .= "FILE: " . $this->file . "\rLINE: " . $this->line . "\r";
-			}
-
-			$errorBody .= "
-			ERROR MESSAGE:\r\r";
-
-			if (is_array($this->info)) {
-				foreach ($this->info as $k => $v) {
-				  $errorBody .= "$k: $v\r";
-				}
-			} else {
-				$errorBody .= "$this->errMsg\r";
-			}
-
-			$this->APP->mail->Subject = "Application Error: " . $this->errMsg;
-			$this->APP->mail->Body = $errorBody;
-			$this->APP->mail->Send();
-			$this->APP->mail->ClearAddresses();
-
-		}
-		
 		// if logging exists, log this error
-		if(isset($this->APP->log) && is_object($this->APP->log)){
-			$this->APP->log->write(sprintf('ERROR (File: %s/%s: %s', $this->file, $this->line, $this->errMsg));
+		if(isset(app()->log) && is_object(app()->log)){
+			app()->log->write(sprintf('ERROR (File: %s/%s: %s',$error['file'],$error['line'],$error['error_message']));
 		}
 
 		// If we need to display this error, do so
-		if($this->errNo <= $this->APP->config('minimum_displayable_error')){
-			
-			if($this->errNo > 1){
-				$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-				$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'error.tpl.php');
-				$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-				$this->APP->template->display();
+		if($errNo <= app()->config('minimum_displayable_error')){
+			if(
+				!app()->env->keyExists('SSH_CLIENT')
+				&& !app()->env->keyExists('TERM')
+				&& !app()->env->keyExists('SSH_CONNECTION')
+				&& app()->server->keyExists('HTTP_HOST')){
+
+				template()->setLayout('error');
+				template()->display(array('error'=>$error));
 				exit;
-			} else {
-				$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'error.tpl.php');
-				$this->APP->template->display();
-				exit;
+
 			}
 		}
+
+		// post the errors to json-enabled api (snowy evening)
+		if(app()->config('error_json_post_url')){
+
+			$params = array(
+					'api_key'=>app()->config('error_json_post_api_key'),
+					'project_id'=>app()->config('error_json_post_proj_id'),
+					'payload'=>json_encode($error));
+
+			$ch = curl_init();
+			curl_setopt($ch,CURLOPT_URL,app()->config('error_json_post_url'));
+			curl_setopt($ch,CURLOPT_POST,count($error));
+			curl_setopt($ch,CURLOPT_POSTFIELDS,http_build_query($params));
+			curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
+			$result = curl_exec($ch);
+			curl_close($ch);
+		}
 	}
-	
+
 	
 	/**
-	 * @abstract Returns a server value, uses params class if loaded
+	 *
+	 * @param <type> $exception
+	 */
+	public function raiseException($exception){
+		$this->raise(2, $exception->getMessage(), $exception->getFile(), $exception->getLine());
+	}
+
+
+	/**
+	 * Returns a server value, uses params class if loaded
 	 * @param string $key
 	 * @param string $default
 	 * @return string
 	 * @access private
 	 */
 	private function getServerValue($key, $default = 'N/A'){
-		
-		if(isset($this->APP->params) && is_object($this->APP->params)){
-			return $this->APP->params->server->getRaw($key);
+		if(isset(app()->params) && is_object(app()->params)){
+			return app()->server->getRaw($key);
 		} else {
 			return isset($_SERVER[$key]) ? $_SERVER[$key] : $default;
 		}

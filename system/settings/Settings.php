@@ -8,71 +8,101 @@
  * @since 		1.0
  */
 
+
 /**
- * @abstract Manages application settings
+ * Shortcut to return an instance of our original app
+ * @return object
+ */
+function &settings(){
+	return app()->settings;
+}
+
+
+/**
+ * Manages application settings
  * @package Aspen_Framework
  */
-class Settings {
+class Settings  {
 
 	/**
-	 * @var object $APP Holds our original application
-	 * @access private
+	 * @var array Holds the user settings configurations from the db
 	 */
-	private $APP;
-
-
-	/**
-	 * @abstract Constructor
-	 * @access private
-	 */
-	public function __construct(){ $this->APP = get_instance(); }
+	private $settings = array();
 
 
 	/**
-	 * @abstract Returns a configuration value from the db
-	 * @param string $key
-	 * @return mixed
-	 * @access public
+	 * Constructor
 	 */
-	public function getConfig($key){
-
-		$value = false;
-		
-		if($this->APP->checkDbConnection()){
-
-			$this->APP->model->select('config');
-			$this->APP->model->where('config_key', $key);
-			$config = $this->APP->model->results();
-	
-			if($config['RECORDS']){
-				foreach($config['RECORDS'] as $setting){
-					$value = $setting['current_value'] == '' ? $setting['default_value'] : $setting['current_value'];
-				}
-			} else {
-				$value = $this->APP->config($key);
-			}
+	public function aspen_init() {
+		if(app()->checkDbConnection()){
+			$this->loadSettings();
 		}
-
-		return $value;
-
 	}
 
 
 	/**
-	 * @abstract Sets a configuration value
-	 * @param string $key
-	 * @param string $value
+	 *
+	 * @param <type> $user_id
 	 */
-	public function setConfig($key = false, $value = false){
+	public function loadSettings(){
+		if(model()->tableExists('config')){
+			$cfg_model	= model()->open('config');
+			$this->settings = $cfg_model->results();
+		}
+	}
 
-		if($key){
-			$rec = $this->APP->model->quickSelectSingle('config', $key, 'config_key');
-			if(is_array($rec)){
-				$this->APP->model->executeUpdate('config', array('current_value'=>$value), $key, 'config_key');
+
+	/**
+	 * Returns a configuration value from the db
+	 * @param string $key
+	 * @param integer $user_id
+	 * @return mixed
+	 * @access public
+	 */
+	public function getConfig($key, $user_id = NULL){
+		if(app()->checkDbConnection()){
+			$cfg = $this->configRecord($key, $user_id);
+			if(is_array($cfg)){
+				return $cfg['current_value'] === '' ? $cfg['default_value'] : $cfg['current_value'];
 			} else {
-				$this->APP->model->executeInsert('config', array('current_value'=>$value,'config_key'=>$key));
+				return app()->config($key);
 			}
 		}
+		return NULL;
+	}
+
+
+	/**
+	 * Sets a configuration value - updates if it exists otherwise insert.
+	 * @param string $key
+	 * @param string $value
+	 * @param integer $user_id
+	 */
+	public function setConfig($key = false, $value = false, $user_id = NULL){
+		$new_rc = array('current_value'=>$value,'config_key'=>$key,'user_id'=>$user_id);
+		$cfg_model	= model()->open('config');
+		$cfg = $this->configRecord($key, $user_id);
+		return is_array($cfg) ? $cfg_model->update($new_rc, $cfg['id']) : $cfg_model->insert($new_rc);
+	}
+
+
+	/**
+	 * Loads the core config record
+	 * @param string $key
+	 * @param integer $user_id
+	 * @return array
+	 * @access private
+	 */
+	private function configRecord($key, $user_id = NULL){
+		$user_id = $user_id ? $user_id : session()->getInt('user_id');
+		if(is_array($this->settings)){
+			foreach($this->settings as $setting){
+				if($setting['config_key'] == $key && $setting['user_id'] == $user_id ){
+					return $setting;
+				}
+			}
+		}
+		return NULL;
 	}
 }
 ?>

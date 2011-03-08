@@ -9,57 +9,44 @@
  */
 
 /**
- * @abstract Manages user preferences
+ * Manages user preferences
  * @package Aspen_Framework
  */
-class Preferences {
-
-	/**
-	 * @var object $APP Holds our original application
-	 * @access private
-	 */
-	private $APP;
+class Preferences  {
 
 
 	/**
-	 * @abstract Constructor
-	 * @access private
-	 */
-	public function __construct(){ $this->APP = get_instance(); }
-
-
-	/**
-	 * @abstract Loads user preferences into their session
+	 * Loads user preferences into their session
 	 * @access private
 	 */
 	public function loadUserPreferences(){
 
 		$_SESSION['settings'] =  array();
 
-		if($this->APP->params->session->getInt('user_id', false) && $this->APP->checkDbConnection()){
+		$user_id = session()->getInt('user_id');
 
-			// load sort settings
-			$this->APP->model->select('preferences_sorts');
-			$this->APP->model->where('user_id', $this->APP->params->session->getInt('user_id'));
-			$sorts = $this->APP->model->results();
-			
-			if($sorts['RECORDS']){
-				foreach($sorts['RECORDS'] as $sort){
-					
-					$sort_pref = array('sort_by' => $sort['sort_by'], 'sort_direction' => $sort['direction']);
-					$_SESSION['settings']['sorts'][$sort['location']] = $sort_pref;
-					
+		if($user_id && app()->checkDbConnection() && model()->tableExists('config')){
+
+			// load sort field
+			$pref_model = model()->open('config');
+			$pref_model->where('user_id', $user_id);
+			$pref_model->where('LEFT(config_key, 4)', 'sort');
+			$sorts = $pref_model->results();
+
+			if($sorts){
+				foreach($sorts as $sort){
+					$_SESSION['settings']['sorts'][$sort['config_key']] = $sort;
 				}
 			}
 		}
-		
-		$this->APP->params->refreshCage('session');
-		
+
+		app()->refreshCage('session');
+
 	}
 
 
 	/**
-	 * @abstract Adds a new sort preference
+	 * Adds a new sort preference
 	 * @param string $location
 	 * @param string $field
 	 * @param string $dir
@@ -67,28 +54,29 @@ class Preferences {
 	 */
 	public function addSort($location = false, $field = false, $dir = 'ASC'){
 
-		if($this->APP->params->session->getInt('user_id', false)){
+		if($user_id = session()->getInt('user_id')){
+
+			$pref_model = model()->open('config');
 
 			// remove any old entry for this location
-			$sql = sprintf('DELETE FROM preferences_sorts WHERE user_id = "%s" AND location = "%s"',
-														$this->APP->params->session->getInt('user_id'), $location);
-			$this->APP->model->query($sql);
+			$sql = sprintf('
+						DELETE FROM config
+						WHERE user_id = "%s"
+						AND (config_key = "sort.%s.field"
+						OR config_key = "sort.%2$s.dir" )',
+						$user_id, $location);
+			$pref_model->query($sql);
 
 			// add in a new entry
-			$settings = array(
-							'user_id' => $this->APP->params->session->getInt('user_id'),
-							'location' => $location,
-							'sort_by' => $sort,
-							'direction' => $dir
-						);
-			$this->APP->model->executeInsert('preferences_sorts', $settings);
+			$pref_model->insert(array('user_id' => $user_id, 'config_key' => 'sort.'.$location.'.field', 'current_value' => $field));
+			$pref_model->insert(array('user_id' => $user_id, 'config_key' => 'sort.'.$location.'.dir', 'current_value' => $dir));
 
 		}
 	}
 
 
 	/**
-	 * @abstract Returns a sort preference
+	 * Returns a sort preference
 	 * @param string $location
 	 * @param string $field
 	 * @param string $default
@@ -98,23 +86,106 @@ class Preferences {
 	 */
 	public function getSort($location, $field = false, $default = 'id', $dir = 'ASC'){
 
-		$sort = array('sort_by'=>$default,'sort_direction'=>$dir,'is_default'=>true);
+		$sort = array('sort_by'=>$default,'sort_direction'=>strtoupper($dir));
 
-		if($this->APP->params->session->getInt('user_id', false) && $this->APP->params->session->getRaw('settings', false)){
+		if(session()->isArray('settings')){
 
-			$settings = $this->APP->params->session->getRaw('settings');
+			$settings = session()->getArray('settings');
 
-			if(isset($settings['sorts'][$location])){
-				if($field){
-					$sort = $settings['sorts'][$location]['sort_by'] == $field ? $settings['sorts'][$location] : false;
-				} else {
-					$sort = $settings['sorts'][$location];
+			$loc_key = 'sort.'.$location;
+			if(isset($settings['sorts'][$loc_key.'.field'])){
+
+				$sort['sort_by']		= $settings['sorts'][$loc_key.'.field']['current_value'];
+				$sort['sort_direction']	= strtoupper($settings['sorts'][$loc_key.'.dir']['current_value']);
+
+				//If the field arg not matched, don't return anything
+				if($field && $sort['sort_by'] != $field){
+					$sort = false;
 				}
 			}
 		}
 
 		return $sort;
 
+	}
+
+
+	/**
+	 * Pulls and allows easy POSTing of configuration values.
+	 */
+	public function edit($user_id = NULL){
+
+		// Load the prefs we're allowed to edit
+		$edit_prefs = app()->config('preference_configs_to_edit');
+
+		// Set the current/default values
+		$record = array();
+		foreach($edit_prefs as $pref){
+			$record[$pref] = app()->settings->getConfig($pref, $user_id);
+		}
+
+		// process the form if submitted
+		if(post()->keyExists('preferences-submit')){
+			$config = model()->open('config');
+			foreach($record as $field => $existing_value){
+				$record[$field] = post()->getRaw($field);
+				$config->query( sprintf('DELETE FROM config WHERE config_key = "%s" AND user_id = "%s"', $field, $user_id) );
+				$config->insert( array('current_value'=>$record[$field],'config_key'=>$field,'user_id'=>$user_id));
+			}
+			sml()->say('Your user preferences have been saved successfully.', true);
+		}
+
+		return new Prefs($record);
+
+	}
+}
+
+
+/**
+ *
+ */
+class Prefs {
+
+	/**
+	 * @var array Preferences
+	 */
+	protected $prefs;
+
+
+	/**
+	 *
+	 * @param <type> $prefs
+	 */
+	public function  __construct($prefs) {
+		$this->prefs = $prefs;
+	}
+
+
+	/**
+	 *
+	 * @param <type> $key
+	 * @param <type> $default
+	 * @return <type>
+	 */
+	public function get($key, $default = false){
+		if(array_key_exists($key, $this->prefs)){
+			return $this->prefs[$key];
+		}
+		return $default;
+	}
+
+
+	/**
+	 *
+	 * @param <type> $key
+	 * @param <type> $val
+	 * @return <type>
+	 */
+	public function checked($key, $val){
+		if(array_key_exists($key, $this->prefs)){
+			return ($this->prefs[$key] == $val ? ' checked="checked"' : '');
+		}
+		return false;
 	}
 }
 ?>

@@ -9,24 +9,38 @@
  */
 
 /**
- * @abstract Base parent class for application modules, sets up app reference
+ * Base parent class for application modules, sets up app reference
  * @package Aspen_Framework
  */
 class Module {
 
-	/**
-	 * @var object $APP Holds our original application
-	 * @access private
-	 */
-	protected $APP;
-
 
 	/**
-	 * @abstract Constructor, initializes the module
-	 * @return Index_Admin
+	 * Loads our default dashboard screen
 	 * @access public
 	 */
-	public function __construct(){ $this->APP = get_instance(); }
+	public function view(){
+		template()->display();
+	}
 
+
+	/**
+	 * Activates the default loading of the 404 error
+	 */
+	public function error_404(){
+		router()->header_code(404);
+		template()->setLayout('404');
+		template()->display();
+		exit;
+	}
+
+	
+	/**
+	 * Sets the template page title.
+	 * @param string $str
+	 */
+	public function setPageTitle($str){
+		template()->page_title = $str;
+	}
 }
 ?>

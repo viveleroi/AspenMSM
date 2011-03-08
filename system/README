@@ -1,0 +1,47 @@
+ASPEN FRAMEWORK
+Copyright 2008-2010 Trellis Development, LLC (trellisdevelopment.com)
+Licensed under Mozilla Public License, 1.1 (see license)
+
+
+Aspen is a PHP-based website and application development platform. Not only will
+you be able to produce quality results in less time, but your work is kept
+modular for amazing portability. Moving entire features between projects is
+essentially a drag and drop.
+
+Aspen is flexible enough to handle everything from a simple website to an
+enterprise-level application, and it introduces a new level of standardization
+across projects. Share features between your own projects. Share with other
+developers. The choice is yours.
+
+
+Core Devs:
+-------------------------------------------
+  Michael Botsko [mbotsko@trellisdev.com]
+
+
+Contributors:
+-------------------------------------------
+
+
+Links:
+-------------------------------------------
+  Aspen Documentation:
+    http://docs.aspen-framework.org/wiki/Main_Page
+
+  Google Group:
+    http://groups.google.com/group/aspen-framework
+
+  GitHub Repository:
+    http://github.com/botskonet/aspen-framework
+
+
+Third Party Libraries:
+-------------------------------------------
+  ADOdb V5.11
+    http://adodb.sourceforge.net/
+
+  HTMLPurifier 4.2.0
+    http://htmlpurifier.org/
+
+  PHPMailer 5.0
+    http://phpmailer.sourceforge.net

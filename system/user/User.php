@@ -8,321 +8,203 @@
  * @since 		1.0
  */
 
+
 /**
- * @abstract Managers user accounts
+ * Shortcut to return an instance of our original app
+ * @return object
+ */
+function &user(){
+	return app()->user;
+}
+
+
+/**
+ * Managers user accounts
  * @package Aspen_Framework
  */
-class User {
+class User  {
+
 
 	/**
-	 * @var object $APP Holds our original application
+	 * @var array Holds the permissions table results
+	 */
+	private $permissions = array();
+
+
+	/**
+	 * Loads the permissions table results so we don't need to query the db constantly
 	 * @access private
 	 */
-	private $APP;
-
-
+	public function loadPermissions(){
+		// first identify any groups this user belongs to
+		if(app()->session->keyExists('user_id')){
+			$model = model()->open('user_group_link');
+			$model->select(array('group_id'));
+			$model->where('user_id', session()->getInt('user_id'));
+			$groups = $model->results();
+			$this->users_groups = Utils::extract('/group_id', $groups);
+		}
+		$perms = model()->open('permissions');
+		$this->permissions = $perms->results();
+	}
+	
+	
 	/**
-	 * @abstract Constructor, initializes the module
-	 * @return User
-	 * @access private
-	 */
-	public function __construct(){ $this->APP = get_instance(); }
-
-
-	/**
-	 * @abstract Displays and processes the add new user form
+	 * @abstract Displays and processes the signup form
 	 * @access public
 	 * @param integer $id
 	 */
-	public function add(){
+	public function signup(){
 
-		$id = false;
-
-		$this->APP->form->loadTable('authentication');
-		$this->APP->form->addField('password_confirm');
-		$this->APP->form->addField('group', array(), array());
-
-		// process the form if submitted
-		if($this->APP->form->isSubmitted()){
-
-			// validation
-			if(!$this->APP->form->isFilled('username')){
-				$this->APP->form->addError('username', 'You must enter a username.');
-			} else {
-
-				// verify unique
-				$this->APP->model->select('authentication');
-				$this->APP->model->where('username', $this->APP->form->cv('username'));
-				$unique = $this->APP->model->results();
-
-				if($unique['RECORDS']){
-					$this->APP->form->addError('username', 'That username has already been used.');
-				}
-			}
-
-			if($this->APP->form->isFilled('password')){
-				if(!$this->APP->form->isFilled('password_confirm')){
-					$this->APP->form->addError('password', 'You must enter a valid password.');
-				} else {
-					if(!$this->APP->form->fieldsMatch('password', 'password_confirm')){
-						$this->APP->form->addError('password', 'Your passwords do not match.');
-					}
-				}
-			} else {
-				$this->APP->form->addError('password', 'You must enter a valid password.');
-			}
-
-			$groups = $this->APP->form->cv('group');
-			if(empty($groups)){
-				$this->APP->form->addError('group', 'You must select at least one user group.');
-			}
-
-			// if no errors, process groups
-			if(!$this->APP->form->error()){
-
-				$this->APP->form->setCurrentValue('password', sha1( $this->APP->form->cv('password') ));
-
-				if($id = $this->APP->form->save()){
-
-					// add new user groups
-					foreach($this->APP->form->cv('group') as $group){
-						$this->APP->model->executeInsert('user_group_link', array('user_id' => $id, 'group_id' => $group));
-					}
-				}
-			}
+		// if the user is logged in, send to interface
+		if($this->isLoggedIn()){
+			router()->redirectToUrl( app()->router->interfaceUrl() );
 		}
 
-		return $id;
+		$result = false;
+		$form = new Form('users', false, array('groups'));
+		$form->addFields(array('password_confirm'));
+
+		// process the form if submitted
+		if($form->isSubmitted()){
+			$form->setCurrentValue('allow_login', 1);
+			$form->setCurrentValue('Groups', array(2));
+			$result = $form->save();
+		}
+
+		template()->set(array('form'=>$form));
+
+		return $result;
 
 	}
 
 
 	/**
-	 * @abstract Displays and processes the edit user form
+	 * Displays and processes the add/edit user form
 	 * @access public
 	 * @param integer $id
 	 */
-	public function edit($id){
+	public function edit($id = false){
 
-		$this->APP->form->loadRecord('authentication', $id);
-		$this->APP->form->addField('password_confirm');
-
-		// pull all groups this user is associated with
-		$group_array = array();
-
-		$this->APP->model->select('user_group_link');
-		$this->APP->model->where('user_id', $id);
-		$groups = $this->APP->model->results();
-		if($groups['RECORDS']){
-			foreach($groups['RECORDS'] as $group){
-				$group_array[] = $group['group_id'];
-			}
-		}
-		$this->APP->form->addField('group', $group_array, $group_array);
-
+		$result = false;
+		$form = new Form('users', $id, array('groups'));
+		$form->addField('password_confirm');
 
 		// process the form if submitted
-		if($this->APP->form->isSubmitted()){
-
-			// validation
-			if(!$this->APP->form->isFilled('username')){
-				$this->APP->form->addError('username', 'You must enter a username.');
-			}
-
-			if($this->APP->form->isFilled('password_confirm')){
-				if(!$this->APP->form->fieldsMatch('password', 'password_confirm')){
-					$this->APP->form->addError('password', 'Your passwords do not match.');
-				}
-			}
-
-			$groups = $this->APP->form->cv('group');
-			if(empty($groups)){
-				$this->APP->form->addError('group', 'You must select at least one user group.');
-			}
-
-			// if allow_login not present, set to false
-			$this->APP->form->setCurrentValue('allow_login', $this->APP->params->post->getInt('allow_login', false));
-
-			if(!$this->APP->form->error()){
-
-				$upd = array(
-						'username' => $this->APP->form->cv('username'),
-						'nice_name' => $this->APP->form->cv('nice_name'),
-						'allow_login' => $this->APP->form->cv('allow_login')
-				);
-
-				if($this->APP->form->isFilled('password')){
-					$upd['password'] = sha1($this->APP->form->cv('password'));
-				}
-
-				if($this->APP->model->executeUpdate('authentication', $upd, $id)){
-
-					$groups = $this->APP->form->cv('group');
-
-					// if user is admin, we can't permit them to remove the admin group
-					// from themselves
-					if(IS_ADMIN && $id == $this->APP->params->session->getInt('user_id')){
-						if(!in_array(1, $groups)){
-							$groups[] = 1;
-						}
-					}
-
-					// remove existing groups
-					$this->APP->model->delete('user_group_link', $id, 'user_id');
-
-					// add new user groups
-					foreach($groups as $group){
-						$this->APP->model->executeInsert('user_group_link', array('user_id' => $id, 'group_id' => $group));
-					}
-
-					return true;
-
-				}
-			}
+		if($form->isSubmitted()){
+			$result = $form->save($id);
 		}
 
-		return false;
+		template()->set(array('form'=>$form));
+
+		return $result;
 
 	}
 
 
 	/**
-	 * @abstract Allows a user to change their own password
+	 * Allows a user to change their own password
 	 * @access public
 	 */
 	public function my_account(){
-
-		// add these two values since it's all we need right now
-		$this->APP->form->addFields(array('password_1', 'password_2'));
-
-		// if form submitted
-		if($this->APP->form->isSubmitted()){
-
-			// load values
-			$this->APP->form->loadPOST();
-
-			// validate that passwords set and match
-			if($this->APP->form->isFilled('password_1')){
-				if($this->APP->form->cv('password_1') != $this->APP->form->cv('password_2')){
-					$this->APP->form->addError('password_1', 'Your passwords must match.');
-				}
-			} else {
-				$this->APP->form->addError('password_1', 'Your password may not be blank.');
-			}
-
-			// if we have no errors, update password in user authentication table
-			if(!$this->APP->form->error()){
-
-				return $this->APP->model->executeUpdate(
-										'authentication',
-										array('password' => sha1($this->APP->form->cv('password_1'))),
-										$this->APP->params->session->getInt('user_id'));
-
-
-			}
-		}
-
-		return false;
-
+		return $this->edit(session()->getInt('user_id'));
 	}
 
 
 	/**
-	 * @abstract Deletes a user record
+	 * Deletes a user record
 	 * @param integer $id
 	 * @access public
 	 */
 	public function delete($id = false){
-		if($id){
-			$this->APP->model->delete('authentication', $id);
-			$this->APP->sml->addNewMessage('User account has been deleted successfully.');
-			return true;
-		}
-		return false;
+		$auth = model()->open('users');
+		return $auth->delete($id);
 	}
 
 
 	/**
-	 * @abstract Displays the login page
+	 * Displays the login page
 	 * @param string $module_path
 	 * @access public
 	 */
-	public function login(){
+	final public function login(){
 
-		$uri = $this->APP->params->server->getRaw('REQUEST_URI');
-		$uri .= $this->APP->params->server->getRaw('QUERY_STRING');
+		// if the user is logged in, send to interface
+		if($this->isLoggedIn()){
+			router()->redirectToUrl( router()->interfaceUrl() );
+		}
+
+		$uri = app()->server->getPath('REQUEST_URI').app()->server->getRaw('QUERY_STRING');
+		$uri = strip_tags(urldecode($uri));
 		$uri = preg_replace('/redirected=(.*)/', '', $uri);
 
 		// set the forwarding url if any set pre-login
 		if(
-			$this->APP->config('post_login_redirect') && !strpos($uri, 'install') &&
+			app()->config('post_login_redirect') && !strpos($uri, 'install') &&
 			!strpos($uri, 'users&method=login') && !strpos($uri, 'users/login') &&
 			!strpos($uri, 'users&method=forgot') && !strpos($uri, 'users/forgot') &&
 			!strpos($uri, 'users&method=authenticate') && !strpos($uri, 'users/authenticate')
 		){
-			$_SESSION['post-login_redirect'] = $uri;
+			$_SESSION['post-login_redirect'] = router()->domainUrl().$uri;
 		} else {
-			$_SESSION['post-login_redirect'] = $this->APP->router->getInterfaceUrl();
+			$_SESSION['post-login_redirect'] = router()->interfaceUrl();
 		}
 	}
 
 
 	/**
-	 * @abstract Displays the login failed message and returns to login
+	 * Displays the login failed message and returns to login
 	 * @access public
 	 */
 	public function login_failed(){
-		$this->APP->form->addError('user', 'Your username and password did not match. Please try again.');
-		$this->APP->Users_Admin->login();
+		sml()->say(text('users:login:say:error'), false);
+		router()->redirect('users/login');
 	}
 
 
 	/**
-	 * @abstract Displays and processes the forgotten password system
+	 * Displays and processes the forgotten password system
 	 * @access public
 	 */
 	public function forgot(){
 
-		$this->APP->form->addFields(array('user'));
+		$form = new Form();
+		$form->addFields(array('user'));
 
 		// process the form if submitted
-		if($this->APP->form->isSubmitted()){
+		if($form->isSubmitted()){
 
-			// validation
-			if(!$this->APP->form->isFilled('user')){
-				$this->APP->form->addError('user', 'Please enter your username.');
-			}
+			// generate a new password
+			$new_pass = $this->makePassword();
 
-			if(!$this->APP->form->error()){
+			// load the account
+			$auth = model()->open('users');
+			$user = $auth->quickSelectSingle($form->cv('user'), 'username');
 
-				// generate a new password
-				$new_pass = $this->makePassword();
+			if(is_array($user)){
 
 				// update the account
-				$this->APP->model->executeUpdate('authentication', array('password' => sha1($new_pass)), strtolower($this->APP->form->cv('user')), 'LOWER(username)');
+				$user['password'] = $user['password_confirm'] = $new_pass;
+				$auth->update($user, $user['id']);
 
-				if($this->APP->db->Affected_Rows()){
-
-					// SEND THE EMAIL TO THE USER
-					$this->APP->mail->AddAddress($this->APP->form->cv('user'));
-					$this->APP->mail->From      	= $this->APP->config('email_sender');
-					$this->APP->mail->FromName  	= $this->APP->config('email_sender_name');
-					$this->APP->mail->Mailer    	= "mail";
-					$this->APP->mail->ContentType 	= 'text/html';
-					$this->APP->mail->Subject   	= $this->APP->config('password_reset_subject');
-					$this->APP->mail->Body 			= str_replace('{new_pass}', $new_pass, $this->APP->config('password_reset_body'));
-
-					$this->APP->mail->Send();
-					$this->APP->mail->ClearAddresses();
-
+				if(app()->db->Affected_Rows()){
+					app()->mail->AddAddress($form->cv('user'));
+					app()->mail->From      	= app()->config('email_sender');
+					app()->mail->FromName  	= app()->config('email_sender_name');
+					app()->mail->Mailer    	= "mail";
+					app()->mail->ContentType= 'text/html';
+					app()->mail->Subject   	= app()->config('password_reset_subject');
+					app()->mail->Body 		= str_replace('{new_pass}', $new_pass, app()->config('password_reset_body'));
+					app()->mail->Send();
+					app()->mail->ClearAddresses();
 					return 1;
-
 				}
+			} else {
+				return -1;
 			}
-
-			return -1;
-
 		}
+
+		template()->set(array('form'=>$form));
 
 		return false;
 
@@ -330,44 +212,66 @@ class User {
 
 
 	/**
-	 * @abstract Handles authenticating the user
+	 * Returns a machine-user-application specific string that's encoded and stored
+	 * in the session and is used to verify that session.
+	 * @return string
+	 * @access private
+	 */
+	final private function getDomainKeyValue(){
+		$string = app()->config('application_guid') . LS;
+		$string .= app()->server->getServerName('HTTP_HOST');
+		$string .= app()->server->getServerName('HTTP_USER_AGENT');
+		$string .= app()->server->getServerName('REMOTE_ADDR');
+		return sha1($string);
+	}
+
+
+	/**
+	 * Handles authenticating the user
 	 * @access public
 	 */
-	public function authenticate(){
+	final public function authenticate(){
 
 		$auth = false;
-		$user = $this->APP->params->post->getRaw('user');
-		$pass = sha1($this->APP->params->post->getRaw('pass'));
+		$p	  = new PasswordHash();
+		$user = post()->getEmail('user');
+		$pass = post()->getRaw('pass');
 
 		if($user && $pass){
 
-			$this->APP->model->select('authentication');
-			$this->APP->model->where('password', $pass);
-			$this->APP->model->where('username', $this->APP->security->dbescape($user));
-			$this->APP->model->where('allow_login', 1);
-			$this->APP->model->limit(0, 1);
-			$result = $this->APP->model->results();
+			$model = model()->open('users');
+			$model->where('username', $user);
+			$model->where('allow_login', 1);
+			$model->limit(0, 1);
+			$result = $model->results();
 
-			if($result['RECORDS']){
-				foreach($result['RECORDS'] as $account){
+			if($result){
+				foreach($result as $account){
+					if($p->CheckPassword($pass, $account['password'])){
 
-					$auth = true;
+						$_SESSION['authenticated']		= true;
+						$_SESSION['authentication_key'] = $this->getAuthenticationKey($account['username'], $account['id']);
+						$_SESSION['domain_key'] 		= $this->getDomainKeyValue();
+						$_SESSION['username'] 			= $account['username'];
+						$_SESSION['first_name'] 		= $account['first_name'];
+						$_SESSION['last_name']			= $account['last_name'];
+						$_SESSION['latest_login'] 		= date(DATE_FORMAT);
+						$_SESSION['last_login'] 		= $account['latest_login'];
+						$_SESSION['user_id'] 			= $account['id'];
+						
+						// is this the very first login?
+						$_SESSION['first_login']		= Date::isEmptyDate($account['latest_login']);
 
-					$_SESSION['authenticated']		= true;
-					$_SESSION['authentication_key'] = sha1($account['username'] . $account['id']);
-					$_SESSION['domain_key'] 		= sha1($this->APP->router->getApplicationUrl());
-					$_SESSION['username'] 			= $account['username'];
-					$_SESSION['nice_name'] 			= $account['nice_name'];
-					$_SESSION['latest_login'] 		= $account['latest_login'];
-					$_SESSION['last_login'] 		= $account['last_login'];
-					$_SESSION['user_id'] 			= $account['id'];
+						// run any post-auth logic
+						$this->post_authentication($account);
 
-					// update last login date
-					$upd = array('last_login' => $account['latest_login'], 'latest_login' => date("Y-m-d H:i:s"));
-					$this->APP->model->executeUpdate('authentication', $upd, $account['id']);
+						// update last login date
+						$upd = array('last_login' => $account['latest_login'], 'latest_login' => date(DATE_FORMAT));
+						$model->update($upd, $account['id']);
 
-					$auth = true;
+						$auth = true;
 
+					}
 				}
 			}
 		}
@@ -378,34 +282,75 @@ class User {
 
 
 	/**
-	 * @abstract Returns whether or not the user is logged in
-	 * @return boolean
-	 * @access public
-	 * @todo domain key check has been disabled because router is loaded after this class
+	 * Allows users to run additional code during login without having to
+	 * extend the authentication function itself.
 	 */
-	public function isLoggedIn(){
-
-		$authenticated 	= false;
-		$auth_key 		= sha1($this->APP->params->session->getRaw('username') . $this->APP->params->session->getInt('user_id'));
-		$domain_key 	= sha1($this->APP->router->getApplicationUrl());
-
-		if($this->APP->checkDbConnection()){
-			if(
-				$this->APP->params->session->getInt('authenticated', false) &&
-				$this->APP->params->session->getAlnum('authentication_key') == $auth_key &&
-				$this->APP->params->session->getAlnum('domain_key') == $domain_key
-				){
-					$authenticated = true;
-			}
-		}
-
-		return $authenticated;
-
+	protected function post_authentication($account = false){
+		return true;
 	}
 
 
 	/**
-	 * @abstract Checks if user has permissions to access an entire interface
+	 * Generates a unique authentication key.
+	 * @param string $username
+	 * @param string $user_id
+	 * @return string
+	 */
+	public function getAuthenticationKey($username, $user_id){
+		return sha1($username . $user_id);
+	}
+
+
+	/**
+	 * Returns the post-login redirect URL if it's been set.
+	 * @access public
+	 */
+	public function postLoginRedirect(){
+		$redirect = false;
+		if(session()->isPath('post-login_redirect')){
+			$redirect = session()->getPath('post-login_redirect');
+			$lred = strtolower($redirect);
+			if(strpos($lred, 'users/login') !== false || strpos($lred, 'users/authenticate') !== false){
+				$redirect = false;
+			}
+		}
+		return (empty($redirect) ? router()->interfaceUrl() : $redirect);
+	}
+
+
+	/**
+	 * Returns whether or not the user is logged in
+	 * @return boolean
+	 * @access public
+	 */
+	final public function isLoggedIn(){
+		$authenticated 	= false;
+		$auth_key 		= sha1(session()->getEmail('username') . session()->getInt('user_id'));
+		if(app()->checkDbConnection()){
+			if(
+				session()->getInt('authenticated', false) &&
+				session()->getAlnum('authentication_key') == $auth_key &&
+				session()->getAlnum('domain_key') == $this->getDomainKeyValue()
+				){
+					$authenticated = true;
+			}
+		}
+		return $authenticated;
+	}
+
+
+	/**
+	 * Returns true if the user has never logged in before
+	 * @param <type> $user_id
+	 * @return <type>
+	 */
+	public function isFirstLogin(){
+		return session()->getRaw('first_login');
+	}
+
+
+	/**
+	 * Checks if user has permissions to access an entire interface
 	 * @param string $interface
 	 * @param integer $user_id
 	 * @return boolean
@@ -413,49 +358,31 @@ class User {
 	 */
 	public function userHasInterfaceAccess($interface = false, $user_id = false){
 
-		if(!$this->APP->requireLogin()){
-			return true;
-		}
-
 		$authenticated 	= false;
 		$interface 		= $interface ? $interface : LOADING_SECTION;
-		$user_id		= $user_id ? $user_id : $this->APP->params->session->getInt('user_id');
+		$user_id		= $user_id ? $user_id : session()->getInt('user_id');
 
-		if($this->userHasGlobalAccess()){
-
+		if(IS_ADMIN){
 			$authenticated = true;
-
 		} else {
 
 			if($this->isLoggedIn()){
 
 				// first identify any groups this user belongs to
-				$this->APP->model->select('user_group_link', array('group_id'));
-				$this->APP->model->where('user_id', $user_id);
-				$groups = $this->APP->model->results();
+				$model = model()->open('user_group_link');
+				$model->select(array('group_id'));
+				$model->where('user_id', $user_id);
+				$groups = $model->results();
+				$groups = Utils::extract('/group_id', $groups);
 
-				$group_where = '';
-
-				if($groups['RECORDS']){
-					foreach($groups['RECORDS'] as $group){
-						$group_where .= '
-							OR group_id = ' . $group['group_id'];
+				foreach($this->permissions as $perm){
+					if(
+						($perm['interface'] == $interface || $perm['interface'] == '*') &&
+						(in_array($perm['group_id'], $groups) || $perm['user_id'] = $user_id)
+					){
+						$authenticated = true;
 					}
 				}
-
-
-				// auth if:
-				// interface matches current or is all
-				// module matches current or is all
-				// method matches current or is all
-				$strict_sql = sprintf('
-							SELECT * FROM permissions
-							WHERE (interface = "%s" OR interface = "*") AND (user_id = %s%s)',
-								$interface, $user_id, $group_where);
-
-				$stricts = $this->APP->model->query($strict_sql);
-				$authenticated = $stricts->RecordCount() ? true : false;
-
 			}
 		}
 
@@ -465,34 +392,82 @@ class User {
 
 
 	/**
-	 *
-	 * @param <type> $user_array
-	 * @return <type>
+	 * Checks if user has permissions to access a page
+	 * @param string $module
+	 * @param string $method
+	 * @param string $interface
+	 * @param integer $user_id
+	 * @return boolean
+	 * @access public
 	 */
-	public function singleAuthToken($user_array){
-		return sha1(implode(':',$user_array));
+	public function userHasAccess($module = false, $method = false, $interface = false, $user_id = false){
+
+       	$authenticated 	= false;
+		$module 		= $module ? ucwords($module) : router()->module();
+		$method 		= $method ?: router()->method();
+		$interface 		= $interface ?: LOADING_SECTION;
+		$user_id		= $user_id ?: session()->getInt('user_id');
+		$module 		= str_replace('_'.$interface, '', $module);
+
+		if(IS_ADMIN || $this->allowAnonymous($module, $method, $interface)){
+			$authenticated = true;
+		} else {
+
+			if($this->isLoggedIn() && $method != 'logout'){
+
+				// first identify any groups this user belongs to
+				if(is_array($this->users_groups)){
+					$groups = $this->users_groups;
+				} else {
+					$model = model()->open('user_group_link');
+					$model->select(array('group_id'));
+					$model->where('user_id', $user_id);
+					$groups = $model->results();
+					$groups = Utils::extract('/group_id', $groups);
+				}
+
+				foreach($this->permissions as $perm){
+					if(
+						($perm['interface'] == ucwords($interface) || $perm['interface'] == '*') &&
+						($perm['module'] == $module || $perm['module'] == '*') &&
+						($perm['method'] == $method || $perm['method'] == '*') &&
+						(in_array($perm['group_id'], $groups) || $perm['user_id'] == $user_id)
+					){
+						$authenticated = true;
+					}
+				}
+			}
+		}
+
+		return $authenticated;
+
 	}
 
 
 	/**
-	 * http://192.168.0.4/clients/WhackCMS/admin/pages/upload?single-auth-token=e08fcdf7b5cba2d26882a9e07bd2e2eeb1a35b3d
-	 * @custom
-	 * @return <type>
+	 * Checks whether or not anonymous access is allowed for the current page.
+	 * @param string $module
+	 * @param string $method
+	 * @param string $interface
+	 * @return boolean
+	 * @access public
 	 */
-	public function preAuthenticate(){
+	public function allowAnonymous($module = false, $method = false, $interface = false){
+		if($module == 'Install' &&  $interface == 'Admin'){
+			return true;
+		}
+		if(app()->isInstalled()){
+			$module = ucwords(str_replace('_'.$interface, '', strtolower($module)));
+			$interface = ucwords(strtolower($interface));
 
-		$token = $this->APP->params->get->getAlnum('single-auth-token');
-		if($token){
-
-			// pull all users
-			$this->APP->model->select('authentication');
-			$users = $this->APP->model->results();
-
-			if($users['RECORDS']){
-				foreach($users['RECORDS'] as $user){
-					if($this->singleAuthToken($user) == $token){
-						return true;
-					}
+			foreach($this->permissions as $perm){
+				if(
+					($perm['interface'] == $interface || $perm['interface'] == '*') &&
+					($perm['module'] == $module || $perm['module'] == '*') &&
+					($perm['method'] == $method || $perm['method'] == '*') &&
+					$perm['group_id'] === null && $perm['user_id'] == null
+				){
+					return true;
 				}
 			}
 		}
@@ -501,79 +476,7 @@ class User {
 
 
 	/**
-	 * @abstract Checks if user has permissions to access a page
-	 * @param string $module
-	 * @param string $method
-	 * @param string $interface
-	 * @return boolean
-	 * @access public
-	 */
-	public function userHasAccess($module = false, $method = false, $interface = false){
-
-		if(!$this->APP->requireLogin()){
-			return true;
-		}
-
-		$authenticated 	= false;
-		$module 		= $module ? $module : $this->APP->router->getSelectedModule();
-		$method 		= $method ? $method : $this->APP->router->getSelectedMethod();
-		$interface 		= $interface ? $interface : LOADING_SECTION;
-		$module 		= str_replace('_'.$interface, '', $module);
-
-		if($this->userHasGlobalAccess() || $this->preAuthenticate()){
-
-			$authenticated = true;
-
-		} else {
-
-			if($this->isLoggedIn() && $method != 'logout'){
-
-				// first identify any groups this user belongs to
-				$this->APP->model->select('user_group_link', array('group_id'));
-				$this->APP->model->where('user_id', $this->APP->params->session->getInt('user_id'));
-				$groups = $this->APP->model->results();
-
-				$group_where = '';
-
-				if($groups['RECORDS']){
-					foreach($groups['RECORDS'] as $group){
-						$group_where .= '
-							OR group_id = ' . $group['group_id'];
-					}
-				}
-
-
-				// auth if:
-				// interface matches current or is all
-				// module matches current or is all
-				// method matches current or is all
-				$strict_sql = sprintf('
-							SELECT * FROM permissions
-							WHERE (interface = "%s" OR interface = "*") AND (module = "%s" OR module = "*") AND (method="%s" OR method = "*") AND (user_id = %s%s)',
-								$interface, $module, $method, $this->APP->params->session->getInt('user_id'), $group_where);
-
-				$stricts = $this->APP->model->query($strict_sql);
-				$authenticated = $stricts->RecordCount() ? true : false;
-
-			} else {
-				if(
-					$module == 'Users' &&
-					($method == 'login' || $method == 'authenticate' || $method == 'logout' || $method == 'forgot') ||
-					$module == 'Install'){
-
-					$authenticated = true;
-
-				}
-			}
-		}
-
-		return $authenticated;
-
-	}
-
-
-	/**
-	 * @abstract Logs a user out
+	 * Logs a user out
 	 * @access public
 	 */
 	public function logout(){
@@ -583,174 +486,139 @@ class User {
 
 
 	/**
-	 * @abstract Returns whether a user is in a group
-	 * @param string $group_name
+	 * Returns whether a user is in a group
+	 * @param mixed $group
 	 * @param integer $user_id
 	 * @return boolean
 	 */
-	public function inGroup($group_name, $user_id = false){
+	public function inGroup($group, $user_id = false){
 
-		$ingroup = false;
+		$user_id = $user_id ?: session()->getInt('user_id');
 
-		if($user_id){
-
-			$this->APP->model->select('user_group_link');
-			$this->APP->model->leftJoin('groups', 'id', 'group_id', array('name'));
-			$this->APP->model->where('user_id', $user_id);
-			$this->APP->model->where('groups.name', $group_name);
-			$groups = $this->APP->model->results();
-
-			$ingroup = (boolean)$groups['RECORDS'];
-
+		$model = model()->open('user_group_link');
+		$model->leftJoin('groups', 'id', 'group_id', array('name'));
+		$model->where('user_id', $user_id);
+		if(is_string($group)){
+			$model->where('groups.name', $group);
 		}
-
-		return $ingroup;
+		if(is_int($group)){
+			$model->where('groups.id', $group);
+		}
+		$groups = $model->results();
+		return (boolean)$groups;
 
 	}
 
 
 	/**
-	 * @abstract Returns an array of groups the user is in
+	 * Returns an array of groups the user is in
 	 * @param integer $user_id
 	 * @return boolean
 	 * @access public
 	 */
 	public function usersGroups($user_id = false){
-
 		$ingroups = array();
-
-		if($user_id){
-
-			$this->APP->model->select('user_group_link');
-			$this->APP->model->leftJoin('groups', 'id', 'group_id', array('name'));
-			$this->APP->model->where('user_id', $user_id);
-			$groups = $this->APP->model->results();
-
-			if($groups['RECORDS']){
-				foreach($groups['RECORDS'] as $id => $group){
-					$ingroups[$group['group_id']] = $group['name'];
+		if($user_id && model()->tableExists('user_group_link')){
+			$model = model()->open('user_group_link');
+			$model->leftJoin('groups', 'id', 'group_id', array('name'));
+			$model->where('user_id', $user_id);
+			$groups = $model->results();
+			if($groups){
+				foreach($groups as $id => $group){
+					$ingroups[$id] = $group['name'];
 				}
 			}
 		}
-
 		return $ingroups;
-
 	}
 
 
 	/**
-	 * @abstract Returns whether or not user has global access (admin/superuser)
+	 * Returns whether or not user has global access (admin/superuser)
 	 * @return boolean
 	 * @access public
 	 */
 	public function userHasGlobalAccess(){
-
 		$has_access = false;
-
-		if($this->isLoggedIn()){
-
-			$this->APP->model->select('user_group_link');
-			$this->APP->model->where('user_id', $this->APP->params->session->getInt('user_id'));
-			$this->APP->model->where('group_id', 1);
-			$groups = $this->APP->model->results();
-
-			$has_access = $groups['RECORDS'] ? true : false;
-
+		if($this->isLoggedIn() && model()->tableExists('user_group_link')){
+			$model = model()->open('user_group_link');
+			$model->where('user_id', session()->getInt('user_id'));
+			$model->where('group_id', 1);
+			$groups = $model->results();
+			$has_access = $groups ? true : false;
 		}
-
 		return $has_access;
-
 	}
 
 
 	/**
-	 * @abstract Counts the number of user accounts
+	 * Counts the number of user accounts
 	 * @return integer
 	 * @access public
 	 */
 	public function userAccountCount(){
-
-		if($this->APP->checkDbConnection()){
-
-			$this->APP->model->select('authentication');
-			$accounts = $this->APP->model->results();
-			return count($accounts['RECORDS']);
-
+		if(app()->checkDbConnection() && model()->tableExists('users')){
+			$model = model()->open('users');
+			$accounts = $model->results();
+			return count($accounts);
 		} else {
-
 			return 1;
-
 		}
 	}
 
 
 	/**
-	 * @abstract Returns the default module for a specific user group
+	 * Returns the default module for a specific user group
 	 * @access public
 	 */
 	 public function getUserDefaultModule(){
-
-		$default = $this->APP->config('default_module');
-
-		if($user_id = $this->APP->params->session->getInt('user_id')){
-
-			$groups = array_keys( $this->usersGroups($user_id) );
-
-			$ug_defs = $this->APP->config('usergroup_default_modules');
-
-			foreach($groups as $group){
-				if(array_key_exists($group, $ug_defs)){
-					return $ug_defs[$group];
+		$default = app()->config('default_module');
+		if(app()->isInstalled() && model()->tableExists('config')){
+			if($user_id = session()->getInt('user_id')){
+				$groups = array_keys( $this->usersGroups($user_id) );
+				$ug_defs = app()->config('usergroup_default_modules');
+				foreach($groups as $group){
+					if(array_key_exists($group, $ug_defs)){
+						return $ug_defs[$group];
+					}
 				}
 			}
 		}
-
 		return $default;
 	}
 
 
 	/**
-	 * @abstract Generates new random password
+	 * Generates new random password
 	 * @param integer $length
 	 * @return string
 	 * @access public
 	 */
 	public function makePassword($length = 5){
-
 		$password = "";
 		$possible = "0123456789abcdfghjkmnpqrstvwxyz~!@#$%^&_-+";
 		$i = 0;
-
-		// add random characters to $password until $length is reached
 		while ($i < $length) {
-
-			// pick a random character from the possible ones
 			$char = substr($possible, mt_rand(0, strlen($possible)-1), 1);
-
-			// we don't want this character if it's already in the password
 			if (!strstr($password, $char)) {
 				$password .= $char;
 				$i++;
 			}
     	}
-
 		return $password;
-
 	}
 
 
 	/**
-	 * @abstract Returns a list of groups
+	 * Returns a list of groups
 	 * @return array
 	 * @access public
 	 */
 	public function groupList(){
-
-		$this->APP->model->select('groups');
-		$this->APP->model->orderBy('name');
-		$groups = $this->APP->model->results();
-		return $groups['RECORDS'];
-
+		$model = model()->open('groups');
+		$model->orderBy('name');
+		$groups = $model->results();
+		return $groups;
 	}
 }
 ?>
