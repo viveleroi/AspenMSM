@@ -71,10 +71,10 @@ class News {
 				$news = $model->results();
 				
 				// if a specific id is set, ensure it exists or 404
-				if($this->APP->cms_lib->getUriBit(1)){
+				if(app()->cms_lib->getUriBit(1)){
 					if(is_array($news)){
-						if(!isset($news[ $this->APP->cms_lib->getUriBit(1) ])){
-							$this->APP->cms_lib->error_404();
+						if(!isset($news[ app()->cms_lib->getUriBit(1) ])){
+							app()->cms_lib->error_404();
 						}
 					}
 				}
@@ -141,7 +141,7 @@ class News {
 	 * @param unknown_type $bits
 	 */
 	public function displaySection($section, $page, $bits){
-		$this->APP->display->loadSectionTemplate('modules/news', $section['template'], $section, $page, $bits);
+		app()->display->loadSectionTemplate('modules/news', $section['template'], $section, $page, $bits);
 	}
 	
 	

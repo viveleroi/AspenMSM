@@ -36,7 +36,7 @@ class Modules {
 	 */
 	public function callModuleHooks($guid = false){
 		
-		if($guid && $this->APP->checkDbConnection()){
+		if($guid && app()->checkDbConnection()){
 			
 			$autoload = array();
 			
@@ -54,7 +54,7 @@ class Modules {
 			// if modules found, let's load them!
 			if(count($autoload) > 0){
 				foreach($autoload as $load_guid){
-					$this->APP->loadModule($load_guid);
+					app()->loadModule($load_guid);
 				}
 			}
 		}
@@ -71,8 +71,8 @@ class Modules {
 	public function registerModuleHook($parent_guid = false, $depen_guid = false){
 
 		$sql = sprintf('UPDATE modules SET autoload_with = "%s" WHERE guid = "%s"',
-							$this->APP->security->dbescape($parent_guid),
-							$this->APP->security->dbescape($depen_guid));
+							app()->security->dbescape($parent_guid),
+							app()->security->dbescape($depen_guid));
 		
 		return $model->query($sql);
 		
@@ -87,7 +87,7 @@ class Modules {
 		
 		$nonbase = array();
 		
-		if($this->APP->checkDbConnection()){
+		if(app()->checkDbConnection()){
 		
 			// find any modules with autoload set to current guid
 			$model = model()->open('modules');
@@ -115,7 +115,7 @@ class Modules {
 		
 		$nonbase = array();
 		
-		foreach($this->APP->getModuleRegistry() as $module){
+		foreach(app()->getModuleRegistry() as $module){
 		
 			// find any modules with autoload set to current guid
 			$model = model()->open('modules');

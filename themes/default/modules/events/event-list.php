@@ -23,9 +23,9 @@
 		if($content['link_to_full_page'] && $page['page_id']){
 			if(!empty($event['content'])){
 				$detail_page = $content['detail_page_id'] ? $content['detail_page_id'] : $page['page_id'];
-				$link = $this->APP->url($detail_page, false, array('id' => $event['id']));
+				$link = app()->url($detail_page, false, array('id' => $event['id']));
 		?>
-		<h5><a href="<?php print $link; ?>" title="Click to view full event details"><?php print $this->APP->html->purify($event['title']); ?></a></h5>
+		<h5><a href="<?php print $link; ?>" title="Click to view full event details"><?php print app()->html->purify($event['title']); ?></a></h5>
 		<?php
 			}
 		} else {
@@ -37,7 +37,7 @@
 		<?php if(!$event['recurring']){ ?>
 			<span class="event-dates"><span class="start-date"><?php print date("D. M jS", strtotime($event['start_date'])); ?></span><?php print ($event['end_date'] != '0000-00-00' ? ' &#8211; <span class="end-date">' .  date("D. M jS", strtotime($event['end_date'])) . '</span>' : '') . ', <span>' . date("Y", strtotime($event['start_date'])); ?></span>
 		<?php } else { ?>
-			<span class="event-recurring"><?php print $this->APP->html->purify($event['recur_description']); ?></span>
+			<span class="event-recurring"><?php print app()->html->purify($event['recur_description']); ?></span>
 		<?php } ?>
 			
 			<span class="event-times"><?php ($event['start_time'] != '00:00:00' ? '<span class="start-time">'.date("g:i a", strtotime($event['start_time'])).'</span>' : '') . ($event['end_time'] != '00:00:00' ? ' &#8211; <span class="end-time">'.date("g:i a", strtotime($event['end_time'])).'</span>' : ''); ?></span>

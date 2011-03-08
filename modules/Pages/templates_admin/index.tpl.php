@@ -8,7 +8,7 @@
 			<span class="head-view">View</span>
 		</div>
 	</div>
-	<?php print $this->APP->Pages_Admin->displayPage($pages); ?>
+	<?php print app()->Pages_Admin->displayPage($pages); ?>
 	<div class="action">
 		<a class="button right" href="<?php print $this->xhtmlUrl('add', false, false); ?>" title="Click to Add A Page"><span>Add A Page</span></a>
 	</div>

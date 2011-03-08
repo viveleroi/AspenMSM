@@ -114,7 +114,7 @@ class Thumbnail {
     	
         //make sure the GD library is installed
     	if(!function_exists("gd_info")) {
-        	$this->APP->error->raise(1, 'The GD Library is not installed. It is required for thumbnail support.');
+        	app()->error->raise(1, 'The GD Library is not installed. It is required for thumbnail support.');
         }
         
     	//initialize variables
@@ -162,10 +162,10 @@ class Thumbnail {
 
             		if(function_exists('ImageCreateFromGif')){
 	                    if(!$this->oldImage = ImageCreateFromGif($this->fileName)){
-	                    	$this->APP->error->raise(2, 'ImageCreateFromGif failed.', __FILE__, __LINE__);
+	                    	app()->error->raise(2, 'ImageCreateFromGif failed.', __FILE__, __LINE__);
 	                    }
                 	} else {
-                		$this->APP->error->raise(2, 'Required function ImageCreateFromGif does not exist.', __FILE__, __LINE__);
+                		app()->error->raise(2, 'Required function ImageCreateFromGif does not exist.', __FILE__, __LINE__);
                 	}
                 	
                     break;
@@ -173,10 +173,10 @@ class Thumbnail {
 
                 	if(function_exists('ImageCreateFromJpeg')){
 	                    if(!$this->oldImage = ImageCreateFromJpeg($this->fileName)){
-	                    	$this->APP->error->raise(2, 'ImageCreateFromJpeg failed.', __FILE__, __LINE__);
+	                    	app()->error->raise(2, 'ImageCreateFromJpeg failed.', __FILE__, __LINE__);
 	                    }
                 	} else {
-                		$this->APP->error->raise(2, 'Required function ImageCreateFromJpeg does not exist.', __FILE__, __LINE__);
+                		app()->error->raise(2, 'Required function ImageCreateFromJpeg does not exist.', __FILE__, __LINE__);
                 	}
                 	
                     break;
@@ -184,10 +184,10 @@ class Thumbnail {
                     
            		 	if(function_exists('ImageCreateFromPng')){
 	                    if(!$this->oldImage = ImageCreateFromPng($this->fileName)){
-	                    	$this->APP->error->raise(2, 'ImageCreateFromPng failed.', __FILE__, __LINE__);
+	                    	app()->error->raise(2, 'ImageCreateFromPng failed.', __FILE__, __LINE__);
 	                    }
                 	} else {
-                		$this->APP->error->raise(2, 'Required function ImageCreateFromPng does not exist.', __FILE__, __LINE__);
+                		app()->error->raise(2, 'Required function ImageCreateFromPng does not exist.', __FILE__, __LINE__);
                 	}
                 	
                     break;
@@ -201,7 +201,7 @@ class Thumbnail {
         }
 
         if($this->error == true) {
-        	$this->APP->error->raise(2, $this->errmsg, __FILE__, __LINE__);
+        	app()->error->raise(2, $this->errmsg, __FILE__, __LINE__);
         	return false;
         }
     }
@@ -611,7 +611,7 @@ class Thumbnail {
 	        case 'JPG':
 	            if($name != '') {
 	                if(!ImageJpeg($this->newImage,$name,$quality)){
-	                	$this->APP->error->raise(1, 'Failed creating thumbnail ' . $name, __FILE__, __LINE__);
+	                	app()->error->raise(1, 'Failed creating thumbnail ' . $name, __FILE__, __LINE__);
 	                }
 	            }
 	            else {

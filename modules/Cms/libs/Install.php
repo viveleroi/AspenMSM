@@ -45,7 +45,7 @@ class Install {
 	private function checkSystemCompatibility(){
 	
 		$supported = extension_loaded('mysql');
-		$supported = $supported ? version_compare(PHP_VERSION, $this->APP->config('minimum_version_php'), '>=') : false;
+		$supported = $supported ? version_compare(PHP_VERSION, app()->config('minimum_version_php'), '>=') : false;
 		 
 		$this->supported = $supported;
 		
@@ -67,10 +67,10 @@ class Install {
 	 */
 	public function prereq(){
 		
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'index.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display();
+		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
+		template()->addView(template()->getModuleTemplateDir().DS . 'index.tpl.php');
+		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
+		template()->display();
 			
 	}
 	
@@ -86,18 +86,18 @@ class Install {
 		
 		if(!$this->isSupported()){
 
-			$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-			$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'index.tpl.php');
-			$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-			$this->APP->template->display();
+			template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
+			template()->addView(template()->getModuleTemplateDir().DS . 'index.tpl.php');
+			template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
+			template()->display();
 			
 		} else {
 	
 			// if the config file exists, proceed to creating an account
-			if($this->APP->checkUserConfigExists()){
-				$this->APP->router->redirect('account');
+			if(app()->checkUserConfigExists()){
+				app()->router->redirect('account');
 			} else {
-				$this->APP->router->redirect('setup');
+				app()->router->redirect('setup');
 			}
 		}
 	}
@@ -110,41 +110,41 @@ class Install {
 	public function setup($retry = false){
 		
 		// define the form
-		$this->APP->form->addFields(array('db_username', 'db_password', 'db_database', 'db_hostname'));
+		app()->form->addFields(array('db_username', 'db_password', 'db_database', 'db_hostname'));
 
 		// process the form if submitted
-		if($this->APP->form->isSubmitted('post', 'submit')){
+		if(app()->form->isSubmitted('post', 'submit')){
 
 			// validation
-			if(!$this->APP->form->isFilled('db_username')){
-				$this->APP->form->addError('db_username', 'You must enter a username');
+			if(!app()->form->isFilled('db_username')){
+				app()->form->addError('db_username', 'You must enter a username');
 			}
 			
-			if(!$this->APP->form->isFilled('db_database')){
-				$this->APP->form->addError('db_database', 'You must enter a database name.');
+			if(!app()->form->isFilled('db_database')){
+				app()->form->addError('db_database', 'You must enter a database name.');
 			}
 			
-			if(!$this->APP->form->isFilled('db_hostname')){
-				$this->APP->form->addError('db_hostname', 'You must enter a hostname or ip address.');
+			if(!app()->form->isFilled('db_hostname')){
+				app()->form->addError('db_hostname', 'You must enter a hostname or ip address.');
 			}
 			
 
 			// if no error, proceed with setting up config file
-			if(!$this->APP->form->error()){
+			if(!app()->form->error()){
 				
 				// save the config to a file
 				$fill = "<?php\n";
-				$fill .= '$config[\'db_hostname\'] = \''.	$this->APP->form->cv('db_hostname')	."';\n";
-				$fill .= '$config[\'db_database\'] = \''.	$this->APP->form->cv('db_database')	."';\n";
-				$fill .= '$config[\'db_username\'] = \''.	$this->APP->form->cv('db_username')	."';\n";
-				$fill .= '$config[\'db_password\'] = \''.	$this->APP->form->cv('db_password')	."';\n";
+				$fill .= '$config[\'db_hostname\'] = \''.	app()->form->cv('db_hostname')	."';\n";
+				$fill .= '$config[\'db_database\'] = \''.	app()->form->cv('db_database')	."';\n";
+				$fill .= '$config[\'db_username\'] = \''.	app()->form->cv('db_username')	."';\n";
+				$fill .= '$config[\'db_password\'] = \''.	app()->form->cv('db_password')	."';\n";
 				$fill .= '?>';
 
 				// check if we can write the config file ourselves
 				if(touch(APPLICATION_PATH . DS . 'config.php')){
 				
-					$this->APP->file->useFile(APPLICATION_PATH . DS . 'config.php');
-					if(!$this->APP->file->write($fill, 'w')){
+					app()->file->useFile(APPLICATION_PATH . DS . 'config.php');
+					if(!app()->file->write($fill, 'w')){
 					
 						$this->paste_config($fill);
 						exit;
@@ -160,16 +160,16 @@ class Install {
 		}
 		
 		// if the config file exists and db connection works, send on
-		if(!$this->APP->checkUserConfigExists() || $retry){
+		if(!app()->checkUserConfigExists() || $retry){
 
-			$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-			$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'setup_config.tpl.php');
-			$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-			$this->APP->template->display();
+			template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
+			template()->addView(template()->getModuleTemplateDir().DS . 'setup_config.tpl.php');
+			template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
+			template()->display();
 			
 		} else {
 			
-			$this->APP->router->redirect('account');
+			app()->router->redirect('account');
 			
 		}
 	}
@@ -182,13 +182,13 @@ class Install {
 	public function paste_config($config){
 
 		// check if config file exists
-		if(!$this->APP->checkUserConfigExists()){
-			$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-			$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'paste_config.tpl.php');
-			$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-			$this->APP->template->display(array('config' => $config));
+		if(!app()->checkUserConfigExists()){
+			template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
+			template()->addView(template()->getModuleTemplateDir().DS . 'paste_config.tpl.php');
+			template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
+			template()->display(array('config' => $config));
 		} else {
-			$this->APP->router->redirect('account');
+			app()->router->redirect('account');
 		}
 	}
 	
@@ -200,76 +200,76 @@ class Install {
 	public function account(){
 		
 		// If no config file present we cannot proceed - sends user back to setup config
-		if(!$this->APP->checkUserConfigExists()){
-			$this->APP->sml->addNewMessage('We were unable to find a configuration file. Please try again.');
-			$this->APP->router->redirect('setup', array('retry' => 'retry') );
+		if(!app()->checkUserConfigExists()){
+			app()->sml->addNewMessage('We were unable to find a configuration file. Please try again.');
+			app()->router->redirect('setup', array('retry' => 'retry') );
 		}
 
 		// if the config exists and we're not creating an account, attempt to install the base tables
-		if(!$this->APP->form->isSubmitted('post', 'submit')){
-			if($this->APP->db){
+		if(!app()->form->isSubmitted('post', 'submit')){
+			if(app()->db){
 				
 				// if no tables exist yet
-				if(!count($this->APP->db->MetaTables('TABLES'))){
+				if(!count(app()->db->MetaTables('TABLES'))){
 					// attempt to install our base tables
 					if(!$this->installBaseTables()){
 						unlink('../config.php');
-						$this->APP->sml->addNewMessage('There was an error installing database tables. Please try again.');
-						$this->APP->router->redirect('setup', array('retry' => 'retry') );
+						app()->sml->addNewMessage('There was an error installing database tables. Please try again.');
+						app()->router->redirect('setup', array('retry' => 'retry') );
 					}
 				}
 			} else {
 			
-				$this->APP->sml->addNewMessage('We were unable to connect to the database using your current configuration. Please try again.');
-				$this->APP->router->redirect('setup', array('retry' => 'retry') );
+				app()->sml->addNewMessage('We were unable to connect to the database using your current configuration. Please try again.');
+				app()->router->redirect('setup', array('retry' => 'retry') );
 			
 			}
 		}
 		
 		
-		$this->APP->form->addFields(array('email', 'nice_name', 'password_1', 'password_2'));
+		app()->form->addFields(array('email', 'nice_name', 'password_1', 'password_2'));
 
 		// process the form if submitted
-		if($this->APP->form->isSubmitted('post', 'submit')){
+		if(app()->form->isSubmitted('post', 'submit')){
 
 			// validation
-			if(!$this->APP->form->isEmail('email')){
-				$this->APP->form->addError('email', 'You must enter a valid email address.');
+			if(!app()->form->isEmail('email')){
+				app()->form->addError('email', 'You must enter a valid email address.');
 			}
 			
-			if(!$this->APP->form->isFilled('password_1')){
-				$this->APP->form->addError('password_1', 'You must enter a password.');
+			if(!app()->form->isFilled('password_1')){
+				app()->form->addError('password_1', 'You must enter a password.');
 			}
 			
-			if(!$this->APP->form->fieldsMatch('password_1', 'password_2')){
-				$this->APP->form->addError('password_1', 'Your passwords must match.');
+			if(!app()->form->fieldsMatch('password_1', 'password_2')){
+				app()->form->addError('password_1', 'Your passwords must match.');
 			}
 
-			if(!$this->APP->form->error()){
+			if(!app()->form->error()){
 
 				// create account
 				$account_sql_tmpl = 'INSERT INTO authentication (username, nice_name, password) VALUES ("%s", "%s", "%s")';
 				$account_sql = sprintf($account_sql_tmpl,
-											$this->APP->form->cv('email'),
-											$this->APP->form->cv('nice_name'),
-											sha1($this->APP->form->cv('password_1')));
+											app()->form->cv('email'),
+											app()->form->cv('nice_name'),
+											sha1(app()->form->cv('password_1')));
 			
 				if($model->query($account_sql)){
 				
-					$this->APP->router->redirect('success');
+					app()->router->redirect('success');
 				
 				} else {
 
-					$this->APP->sml->addNewMessage('We were unable to create your account. Please try again.');
+					app()->sml->addNewMessage('We were unable to create your account. Please try again.');
 				
 				}
 			}
 		}
 
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'create_account.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display();
+		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
+		template()->addView(template()->getModuleTemplateDir().DS . 'create_account.tpl.php');
+		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
+		template()->display();
 
 	}
 	
@@ -280,10 +280,10 @@ class Install {
 	 */
 	public function success(){
 		
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'success.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display();
+		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
+		template()->addView(template()->getModuleTemplateDir().DS . 'success.tpl.php');
+		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
+		template()->display();
 		
 	}
 	
@@ -296,7 +296,7 @@ class Install {
 		
 		$sql = array();
 		
-		$sql_path = $this->APP->router->getModulePath() . DS . 'sql' . DS. 'install.sql.php';
+		$sql_path = app()->router->getModulePath() . DS . 'sql' . DS. 'install.sql.php';
 		// include file with all install queries
 		if(file_exists($sql_path)){
 			include($sql_path);
@@ -322,7 +322,7 @@ class Install {
 	 * @access private
 	 */
 	private function recordCurrentBuild(){
-		$model->executeInsert('upgrade_history', array('current_build' => $this->APP->formatVersionNumber($this->APP->config('application_version')), 'upgrade_completed' => date("Y-m-d H:i:s")));
+		$model->executeInsert('upgrade_history', array('current_build' => app()->formatVersionNumber(app()->config('application_version')), 'upgrade_completed' => date("Y-m-d H:i:s")));
 	}
 	
 	
@@ -332,10 +332,10 @@ class Install {
 	 */
 	public function upgrade(){
 		
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'upgrade.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display();
+		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
+		template()->addView(template()->getModuleTemplateDir().DS . 'upgrade.tpl.php');
+		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
+		template()->display();
 		
 	}
 	
@@ -346,7 +346,7 @@ class Install {
 	 */
 	public function run_upgrade(){
 		
-		$sql_path = $this->APP->router->getModulePath() . DS . 'sql' . DS. 'upgrade.sql.php';
+		$sql_path = app()->router->getModulePath() . DS . 'sql' . DS. 'upgrade.sql.php';
 		$success = false;
 		
 		// include file with all upgrade queries
@@ -356,7 +356,7 @@ class Install {
 		
 		if(isset($sql) && is_array($sql)){
 			
-			$my_old_build = $this->APP->latestVersion();
+			$my_old_build = app()->latestVersion();
 			
 			foreach($sql as $query_build => $queries){
 				
@@ -377,14 +377,14 @@ class Install {
 				
 				$this->recordCurrentBuild();
 				
-				$this->APP->sml->addNewMessage('Your database has been upgraded.');
-				$this->APP->router->redirect('view', false, $this->APP->config('default_module'));
+				app()->sml->addNewMessage('Your database has been upgraded.');
+				app()->router->redirect('view', false, app()->config('default_module'));
 				
 			}
 		}
 		
-		$this->APP->sml->addNewMessage('No upgrade actions were performed.');
-		$this->APP->router->redirect('view', false, $this->APP->config('default_module'));
+		app()->sml->addNewMessage('No upgrade actions were performed.');
+		app()->router->redirect('view', false, app()->config('default_module'));
 		
 	}
 	
@@ -396,35 +396,35 @@ class Install {
 	 */
 	public function install_module($guid){
 		
-		$modules = $this->APP->getModulesAwaitingInstall();
+		$modules = app()->getModulesAwaitingInstall();
 		foreach($modules as $module){
 			if($guid == $module['guid']){
 				if($model->executeInsert('modules', array('guid' => $guid))){
 					
 					// refresh installed module guid list
-					$this->APP->listModules();
+					app()->listModules();
 					
 					// load the module and run the insert code
-					$tmp_reg = $this->APP->moduleRegistry($guid);
+					$tmp_reg = app()->moduleRegistry($guid);
 
 					if(isset($tmp_reg->classname)){
 					
 						$classname = $tmp_reg->classname . (LOADING_SECTION ? '_' . LOADING_SECTION : false);
-						$this->APP->loadModule($guid);
+						app()->loadModule($guid);
 						
 						// call module install process if it exists
-						if(method_exists($this->APP->{$classname}, 'install')){
-							$this->APP->{$classname}->install($guid);
+						if(method_exists(app()->{$classname}, 'install')){
+							app()->{$classname}->install($guid);
 						}
 						
-						$this->APP->sml->addNewMessage('The ' . $tmp_reg->classname . ' module has been installed successfully.');
+						app()->sml->addNewMessage('The ' . $tmp_reg->classname . ' module has been installed successfully.');
 						
 					}
 				}
 			}
 		}
 		
-		$this->APP->router->returnToReferrer();
+		app()->router->returnToReferrer();
 		
 	}
 	
@@ -437,15 +437,15 @@ class Install {
 	public function uninstall_module($guid){
 					
 		// load the module and run the uninstall code
-		$tmp_reg = $this->APP->moduleRegistry($guid);
+		$tmp_reg = app()->moduleRegistry($guid);
 
 		if(isset($tmp_reg->classname)){
 			$classname = $tmp_reg->classname . (LOADING_SECTION ? '_' . LOADING_SECTION : false);
-			$this->APP->loadModule($guid);
+			app()->loadModule($guid);
 			
 			// call module uninstall function if available
-			if(method_exists($this->APP->{$classname}, 'uninstall')){
-				$this->APP->{$classname}->uninstall($guid);
+			if(method_exists(app()->{$classname}, 'uninstall')){
+				app()->{$classname}->uninstall($guid);
 			}
 				
 			// remove all connections from databases
@@ -453,11 +453,11 @@ class Install {
 			$model->query('UPDATE modules SET autoload_with = "" WHERE autoload_with = "'.$guid.'"');
 			$model->query('DELETE FROM permissions WHERE module = "'.$tmp_reg->classname.'"');
 			
-			$this->APP->sml->addNewMessage('The ' . $tmp_reg->classname . ' module has been uninstalled successfully.');
+			app()->sml->addNewMessage('The ' . $tmp_reg->classname . ' module has been uninstalled successfully.');
 				
 		}
 		
-		$this->APP->router->returnToReferrer();
+		app()->router->returnToReferrer();
 		
 	}
 }

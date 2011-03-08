@@ -63,7 +63,7 @@
 				<label for="news_<?php print $next_id ?>_detail_page_id">Detail Page:</label>
 				<select id="news_<?php print $next_id ?>_detail_page_id" name="page_sections[<?php print $next_id ?>][detail_page_id]">
 				<option value="">Self</option>
-				<?php print $this->APP->Pages_Admin->pageOptionGroups(false, false, $section['content']['detail_page_id'], $section['meta']['page_id']); ?>
+				<?php print app()->Pages_Admin->pageOptionGroups(false, false, $section['content']['detail_page_id'], $section['meta']['page_id']); ?>
 				</select>
 			</li>
 		</ol>

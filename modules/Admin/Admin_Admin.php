@@ -42,41 +42,41 @@ class Admin_Admin extends App {
 			while($record = $records->FetchRow()){
 
 				$value = $record['current_value'] == '' ? $record['default_value'] : $record['current_value'];
-				$this->APP->form->addField($record['config_key'], $value, $value);
+				app()->form->addField($record['config_key'], $value, $value);
 				
 			}
 		}
 		
 		// process the form if submitted
-		if($this->APP->form->isSubmitted()){
+		if(app()->form->isSubmitted()){
 
-			if(!$this->APP->form->error()){
+			if(!app()->form->error()){
 
-				foreach($this->APP->params->getRawSource('post') as $field => $value){
+				foreach(app()->params->getRawSource('post') as $field => $value){
 
 					// create account
 					$sql = sprintf('UPDATE config SET current_value = "%s" WHERE config_key = "%s"', $value, $field);
 					$model->query($sql);
 				}
 				
-				$this->APP->sml->addNewMessage('Website settings have been updated successfully.');
+				app()->sml->addNewMessage('Website settings have been updated successfully.');
 				router()->redirect('view');
 			}
 		}
 		
-		$data['values'] = $this->APP->form->getCurrentValues();
+		$data['values'] = app()->form->getCurrentValues();
 		
 		$model = model()->open('pages');
 		$model->where('page_is_live', 1);
 		$data['pages'] = $model->results();
-		$data['mods'] = $this->APP->moduleControls();
+		$data['mods'] = app()->moduleControls();
 		$data['themes'] = $this->listThemes();
 		$data['live'] = settings()->getConfig('active_theme');
 
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'index.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display($data);
+		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
+		template()->addView(template()->getModuleTemplateDir().DS . 'index.tpl.php');
+		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
+		template()->display($data);
 		
 	}
 	

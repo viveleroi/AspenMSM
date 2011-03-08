@@ -51,7 +51,7 @@
 			<li class="auto">
 				<label for="contactgroup_<?php print $next_id ?>_group_id">Select Group:</label>
 				<select id="contactgroup_<?php print $next_id ?>_group_id" name="page_sections[<?php print $next_id ?>][group_id]">
-				<?php print $this->APP->template->getSelectOptions( $this->APP->template->grabSelectArray('contact_groups', 'name', 'DISTINCT', 'name'), $section['content']['group_id'], true); ?>
+				<?php print template()->getSelectOptions( template()->grabSelectArray('contact_groups', 'name', 'DISTINCT', 'name'), $section['content']['group_id'], true); ?>
 				</select>
 				<a class="help" href="<?php print router()->getModuleUrl('Contacts_Admin') ?>/help/section-group-select.htm" title="Select Form">Help</a>
 			</li>
@@ -73,7 +73,7 @@
 				<label for="contactgroup_<?php print $next_id ?>_detail_page_id">Detail Page:</label>
 				<select id="contactgroup_<?php print $next_id ?>_detail_page_id" name="page_sections[<?php print $next_id ?>][detail_page_id]">
 				<option value="">Self</option>
-				<?php print $this->APP->Pages_Admin->pageOptionGroups(false, false, $section['content']['detail_page_id'], $section['meta']['page_id']); ?>
+				<?php print app()->Pages_Admin->pageOptionGroups(false, false, $section['content']['detail_page_id'], $section['meta']['page_id']); ?>
 				</select>
 			</li>
 			

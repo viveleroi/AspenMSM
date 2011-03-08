@@ -64,13 +64,13 @@ class Contacts extends Display {
 						$results[$key] = array_merge($results[$key], $related);
 					}
 				} else {
-					$results = $model->quickSelectSingle('contacts', $this->APP->cms_lib->getUriBit(1));
+					$results = $model->quickSelectSingle('contacts', app()->cms_lib->getUriBit(1));
 					if($results){
 						$related = $this->pullRelatedContactContent($results['id']);
 						$results = array_merge($results, $related);
 						$section_content['contacts'] = array($results['id']=>$results);
 					} else {
-						$this->APP->cms_lib->error_404();
+						app()->cms_lib->error_404();
 					}
 				}
 				$data['section'] = $section_content;
@@ -191,10 +191,10 @@ class Contacts extends Display {
 	 */
 	public function displaySection($section, $page, $bits){
 		if($section['type'] == 'contacts_display'){
-			$this->APP->display->loadSectionTemplate('modules/contacts/contacts', $section['template'], $section, $page, $bits);
+			app()->display->loadSectionTemplate('modules/contacts/contacts', $section['template'], $section, $page, $bits);
 		}
 		if($section['type'] == 'contactgroup_display'){
-			$this->APP->display->loadSectionTemplate('modules/contacts/groups', $section['template'], $section, $page, $bits);
+			app()->display->loadSectionTemplate('modules/contacts/groups', $section['template'], $section, $page, $bits);
 		}
 	}
 
@@ -217,9 +217,9 @@ class Contacts extends Display {
 	public function search($keyword = false, $add_params = false){
 
 		$group		= false;
-		$first_name	= $this->APP->params->get->getRaw('first_name');
-		$last_name	= $this->APP->params->get->getRaw('last_name');
-		$specialty	= $this->APP->params->get->getRaw('specialty');
+		$first_name	= app()->params->get->getRaw('first_name');
+		$last_name	= app()->params->get->getRaw('last_name');
+		$specialty	= app()->params->get->getRaw('specialty');
 
 		if(is_array($add_params)){
 			foreach($add_params as $var => $value){
@@ -256,7 +256,7 @@ class Contacts extends Display {
 			$model->match($keyword, false, 'AND', array('contact_specialties.specialty'));
 		}
 
-		$model->paginate($this->APP->params->get->getRaw('page'), $this->APP->config('search_results_per_page'));
+		$model->paginate(app()->params->get->getRaw('page'), app()->config('search_results_per_page'));
 		$model->orderBy('match_relevance DESC, last_name, first_name');
 //		print $model->getBuildQuery();
 		$results = $model->results();
@@ -270,10 +270,10 @@ class Contacts extends Display {
 			}
 		}
 
-		$this->APP->search->paginator_info['records'] 	= $results['TOTAL_RECORDS_FOUND'];
-		$this->APP->search->paginator_info['current'] 	= $results['CURRENT_PAGE'];
-		$this->APP->search->paginator_info['per_page'] 	= $results['RESULTS_PER_PAGE'];
-		$this->APP->search->paginator_info['pages'] 	= $results['TOTAL_PAGE_COUNT'];
+		app()->search->paginator_info['records'] 	= $results['TOTAL_RECORDS_FOUND'];
+		app()->search->paginator_info['current'] 	= $results['CURRENT_PAGE'];
+		app()->search->paginator_info['per_page'] 	= $results['RESULTS_PER_PAGE'];
+		app()->search->paginator_info['pages'] 	= $results['TOTAL_PAGE_COUNT'];
 
 		return $results;
 

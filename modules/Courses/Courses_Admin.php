@@ -23,7 +23,7 @@ class Courses_Admin {
 		$this->APP = get_instance();
 		director()->registerPageSection(__CLASS__, 'Course Display', 'course_display');
 		director()->registerPageSection(__CLASS__, 'Course List Display', 'courselist_display');
-		$this->APP->setConfig('enable_uploads', true); // enable uploads
+		app()->setConfig('enable_uploads', true); // enable uploads
 	}
 
 	
@@ -55,10 +55,10 @@ class Courses_Admin {
 		
 		$data['course_groups'] = $groups;
 
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'index.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display($data);
+		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
+		template()->addView(template()->getModuleTemplateDir().DS . 'index.tpl.php');
+		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
+		template()->display($data);
 		
 	}
 
@@ -79,7 +79,7 @@ class Courses_Admin {
 	 */
 	public function edit($id = false){
 
-			$this->APP->form->loadRecord('courses', $id);
+			app()->form->loadRecord('courses', $id);
 			
 			// grab existing groups settings
 			$model = model()->open('course_groups_link');
@@ -93,44 +93,44 @@ class Courses_Admin {
 				}
 			}
 			
-			$this->APP->form->addField('groups', $groups, $groups);
+			app()->form->addField('groups', $groups, $groups);
 
 			// proces the form if submitted
-			if($this->APP->form->isSubmitted()){
+			if(app()->form->isSubmitted()){
 				
 				// validation
-				if(!$this->APP->form->isFilled('title')){
-					$this->APP->form->addError('title', 'You must enter a course title.');
+				if(!app()->form->isFilled('title')){
+					app()->form->addError('title', 'You must enter a course title.');
 				}
 	
 				// if we have no errors, process sql
-				if(!$this->APP->form->error()){
-					if($res_id = $this->APP->form->save($id)){
+				if(!app()->form->error()){
+					if($res_id = app()->form->save($id)){
 					
 						$id = $id ? $id : $res_id;
 						
 						// update course groups
 						$model->delete('course_groups_link', $id, 'course_id');
-						$groups = $this->APP->form->cv('groups');
+						$groups = app()->form->cv('groups');
 						foreach($groups as $group){
 							$sql = sprintf('INSERT INTO course_groups_link (course_id, group_id) VALUES ("%s", "%s")', $id, $group);
 							$model->query($sql);
 						}
 				      
 						// if successful insert, redirect to the list
-						$this->APP->sml->addNewMessage('The course has successfully been saved.');
+						app()->sml->addNewMessage('The course has successfully been saved.');
 						router()->redirect('view');
 	
 					}
 				}
 			}
 		
-		$data['values'] = $this->APP->form->getCurrentValues();
+		$data['values'] = app()->form->getCurrentValues();
 
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'edit.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display($data);
+		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
+		template()->addView(template()->getModuleTemplateDir().DS . 'edit.tpl.php');
+		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
+		template()->display($data);
 		
 	}
 	
@@ -142,7 +142,7 @@ class Courses_Admin {
 	 */
 	public function delete($id){
 		$model->delete('courses', $id);
-		$this->APP->sml->addNewMessage('The course has successfully been deleted.');
+		app()->sml->addNewMessage('The course has successfully been deleted.');
 		router()->redirect('view');
 	}
 	
@@ -184,22 +184,22 @@ class Courses_Admin {
 	 */
 	public function sectionEditor($type = false, $next_id = 1, $section = false, $page_id = false, $template = false){
 		
-		$template = $template ? $template : $this->APP->form->cv('page_template');
+		$template = $template ? $template : app()->form->cv('page_template');
 		
 		$next_id = isset($section['meta']['id']) ? $section['meta']['id'] : $next_id;
 		$model = model()->open('template_placement_group');
 		$model->where('template', $template);
 		$placement_groups = $model->results();
 		
-		$templates = $this->APP->display->sectionTemplates('modules/courses');
+		$templates = app()->display->sectionTemplates('modules/courses');
 		include(dirname(__FILE__).DS.'templates_admin'.DS.'section_menu.tpl.php');
 		
 		
 		if($type == 'course_display'){
-			$templates = $this->APP->display->sectionTemplates('modules/courses');
+			$templates = app()->display->sectionTemplates('modules/courses');
 			include(dirname(__FILE__).DS.'templates_admin'.DS.'section_course.tpl.php');
 		} else {
-			$templates = $this->APP->display->sectionTemplates('modules/courses');
+			$templates = app()->display->sectionTemplates('modules/courses');
 			include(dirname(__FILE__).DS.'templates_admin'.DS.'section_courselist.tpl.php');
 		}
 		
@@ -247,17 +247,17 @@ class Courses_Admin {
 			$model->query(sprintf('
 				INSERT INTO section_course_display (page_id, title, show_title, template, course_id)
 				VALUES ("%s", "%s", "%s", "%s", "%s")',
-					$this->APP->security->dbescape($page_id),
-					$this->APP->security->dbescape($section['title']),
-					$this->APP->security->dbescape($section['show_title']),
-					$this->APP->security->dbescape($section['template']),
-					$this->APP->security->dbescape($section['course_id'])));
+					app()->security->dbescape($page_id),
+					app()->security->dbescape($section['title']),
+					app()->security->dbescape($section['show_title']),
+					app()->security->dbescape($section['template']),
+					app()->security->dbescape($section['course_id'])));
 					
 			$sections[] = array(
 				'placement_group' => $section['placement_group'],
 				'type' => 'course_display',
 				'called_in_template' => $section['called_in_template'],
-				'id' => $this->APP->db->Insert_ID());
+				'id' => app()->db->Insert_ID());
 		
 		}
 		
@@ -285,17 +285,17 @@ class Courses_Admin {
 			$model->query(sprintf('
 				INSERT INTO section_courselist_display (page_id, title, show_title, template, group_id)
 				VALUES ("%s", "%s", "%s", "%s", "%s")',
-					$this->APP->security->dbescape($page_id),
-					$this->APP->security->dbescape($section['title']),
-					$this->APP->security->dbescape($section['show_title']),
-					$this->APP->security->dbescape($section['template']),
-					$this->APP->security->dbescape($section['group_id'])));
+					app()->security->dbescape($page_id),
+					app()->security->dbescape($section['title']),
+					app()->security->dbescape($section['show_title']),
+					app()->security->dbescape($section['template']),
+					app()->security->dbescape($section['group_id'])));
 					
 			$sections[] = array(
 				'placement_group' => $section['placement_group'],
 				'type' => 'courselist_display',
 				'called_in_template' => $section['called_in_template'],
-				'id' => $this->APP->db->Insert_ID());
+				'id' => app()->db->Insert_ID());
 		
 		}
 		
@@ -384,7 +384,7 @@ class Courses_Admin {
 		
 		// Autoload this class with the Pages module
 		if($success){
-			$success = $this->APP->modules->registerModuleHook('c3f28790-269f-11dd-bd0b-0800200c9a66', $my_guid);
+			$success = app()->modules->registerModuleHook('c3f28790-269f-11dd-bd0b-0800200c9a66', $my_guid);
 		}
 		
 		return $success;

@@ -15,16 +15,16 @@ if(is_array($content['news'])){
 <ul class="news-list">
 <?php
 foreach($content['news'] as $news){
-	$date = $this->APP->template->niceDate($news['timestamp'], "n/j/y", '-', true);
+	$date = template()->niceDate($news['timestamp'], "n/j/y", '-', true);
 	$detail_page = $content['detail_page_id'] ? $content['detail_page_id'] : $page['page_id'];
-	$link = $this->APP->url($detail_page, false, array('id' => $news['news_id']));
+	$link = app()->url($detail_page, false, array('id' => $news['news_id']));
 ?>
 	<li>
 		<h5><span class="date"><?php print $date ?></span>
-		<a href="<?php print $link ?>" title="Click to read full article"><?php print $this->APP->html->purify($news['title']) ?></a></h5>
+		<a href="<?php print $link ?>" title="Click to read full article"><?php print app()->html->purify($news['title']) ?></a></h5>
 		
 		<?php if(!empty($news['summary']) && $content['show_description']){ ?>
-		<p><?php print $this->APP->html->purify($news['summary']); ?></p>
+		<p><?php print app()->html->purify($news['summary']); ?></p>
 		<?php } ?>
 	</li>
 <?php } ?>
@@ -35,8 +35,8 @@ foreach($content['news'] as $news){
 <div class="news-article">
 <?php
 foreach($content['news'] as $news){
-	$date = $this->APP->template->niceDate($news['timestamp'], "n/j/y", '-', true);
-	$link = $this->APP->url($this->APP->config('news_page_id'), false, array('id' => $news['news_id']));
+	$date = template()->niceDate($news['timestamp'], "n/j/y", '-', true);
+	$link = app()->url(app()->config('news_page_id'), false, array('id' => $news['news_id']));
 	$title = sprintf('<h4><span class="date">%s</span> %s</h4>', $date, $news['title']);
 ?>
 	<?php print $title; ?>

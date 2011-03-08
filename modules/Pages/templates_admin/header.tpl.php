@@ -12,6 +12,6 @@
 
 <?php if(router()->method() != "view"){ ?>
 <script type="text/javascript">
-	var last_id = '<?php print $this->APP->Pages_Admin->section_count ?>';
+	var last_id = '<?php print app()->Pages_Admin->section_count ?>';
 </script>
 <?php } ?>

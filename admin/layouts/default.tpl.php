@@ -43,8 +43,8 @@
 	<?php if(user()->isLoggedIn()){ // if logged in ?>
 	<div id="status">
 		<ul>
-			<li class="user">User: <a href="<?php print $this->xhtmlUrl('my_account', false, 'Users') ?>" accesskey="u"><?php print session()->getRaw('nice_name'); ?></a></li>
-			<li class="logout"><?php print $this->createLink('Logout', 'logout', false, 'Users'); ?></li>
+			<li class="user">User: <a href="<?php print $this->xhtmlUrl('users/my_account') ?>" accesskey="u"><?php print session()->getRaw('nice_name'); ?></a></li>
+			<li class="logout"><?php print $this->link('Logout', 'users/logout'); ?></li>
 		</ul>
 	</div>
 	<?php } ?>
@@ -58,7 +58,7 @@
 			<?php if(user()->userHasAccess('Pages')){ ?>
 			<li<?php print router()->here('Pages_Admin') ? ' class="at"' : '' ?>><a href="<?php print $this->xhtmlUrl('view', false, 'Pages') ?>" accesskey="p">Site Pages</a></li>
 			<?php } ?>
-			<?php print $this->APP->generateNonBaseModuleLinks(); ?>
+			<?php //print app()->generateNonBaseModuleLinks(); ?>
 			
 			<?php if(IS_ADMIN){ ?>
 			<li<?php print router()->here('Users_Admin') ? ' class="at"' : '' ?>><a href="<?php print $this->xhtmlUrl('view', false, 'Users') ?>" accesskey="u">Manage Users</a></li>
@@ -74,7 +74,7 @@
 	</div>
 	<?php if(user()->isLoggedIn()){ // if logged in ?>
 	<div id="footer">
-		<p><strong>Questions?</strong> Contact Trellis Development <a href="mailto:botsko@gmail.com?subject=Bug Report: <?php print $this->APP->config('application_name') ?> v<?php print VERSION ?> @ <?php print $this->APP->params->server->getRaw('SERVER_NAME') ?>" title="Click to contact Trellis Development">support@trellisdev.com</a></p>
+		<p><strong>Questions?</strong> Contact Trellis Development <a href="mailto:botsko@gmail.com?subject=Bug Report: <?php print app()->config('application_name') ?> v<?php print VERSION ?> @ <?php print app()->params->server->getRaw('SERVER_NAME') ?>" title="Click to contact Trellis Development">support@trellisdev.com</a></p>
 	</div>
 	<?php } ?>
 	<?php $this->loadModuleFooter(); ?>

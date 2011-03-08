@@ -23,7 +23,7 @@ class Contacts_Admin {
 		$this->APP = get_instance();
 		director()->registerPageSection(__CLASS__, 'Contact Display', 'contacts_display');
 		director()->registerPageSection(__CLASS__, 'Contact Group Display', 'contactgroup_display');
-		$this->APP->setConfig('enable_uploads', true); // enable uploads
+		app()->setConfig('enable_uploads', true); // enable uploads
 	}
 
 	
@@ -56,10 +56,10 @@ class Contacts_Admin {
 		
 		$data['group_list'] = $groups;
 
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'index.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display($data);
+		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
+		template()->addView(template()->getModuleTemplateDir().DS . 'index.tpl.php');
+		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
+		template()->display($data);
 		
 	}
 
@@ -80,7 +80,7 @@ class Contacts_Admin {
 	 */
 	public function edit($id = false){
 
-		$this->APP->form->loadRecord('contacts', $id);
+		app()->form->loadRecord('contacts', $id);
 
 		// grab existing language settings
 		$model = model()->open('contact_languages_link');
@@ -93,7 +93,7 @@ class Contacts_Admin {
 				$languages[] = $languages_record['language_id'];
 			}
 		}
-		$this->APP->form->addField('languages', $languages, $languages);
+		app()->form->addField('languages', $languages, $languages);
 
 
 		// grab existing groups settings
@@ -107,7 +107,7 @@ class Contacts_Admin {
 				$groups[] = $groups_record['group_id'];
 			}
 		}
-		$this->APP->form->addField('groups', $groups, $groups);
+		app()->form->addField('groups', $groups, $groups);
 
 
 		// grab existing specialty settings
@@ -121,38 +121,38 @@ class Contacts_Admin {
 				$specialties[] = $specs_record['specialty_id'];
 			}
 		}
-		$this->APP->form->addField('specialties', $specialties, $specialties);
+		app()->form->addField('specialties', $specialties, $specialties);
 
 
 		// proces the form if submitted
-		if($this->APP->form->isSubmitted()){
+		if(app()->form->isSubmitted()){
 
 			// validation
-			if(!$this->APP->form->isFilled('first_name')){
-				$this->APP->form->addError('first_name', 'You must enter a first name.');
+			if(!app()->form->isFilled('first_name')){
+				app()->form->addError('first_name', 'You must enter a first name.');
 			}
 
-			if(!$this->APP->form->isFilled('last_name')){
-				$this->APP->form->addError('last_name', 'You must enter a last name.');
+			if(!app()->form->isFilled('last_name')){
+				app()->form->addError('last_name', 'You must enter a last name.');
 			}
 
 			// remove http:// if left empty
-			if($this->APP->form->cv('website') == 'http://'){
-				$this->APP->form->setCurrentValue('website', '');
+			if(app()->form->cv('website') == 'http://'){
+				app()->form->setCurrentValue('website', '');
 			}
 
 			// set html security rules
 			$model->setSecurityRule('bio', 'allow_html', true);
 
 			// if we have no errors, process sql
-			if(!$this->APP->form->error()){
-				if($res_id = $this->APP->form->save($id)){
+			if(!app()->form->error()){
+				if($res_id = app()->form->save($id)){
 
 					$id = $id ? $id : $res_id;
 
 					// update languages
 					$model->delete('contact_languages_link', $id, 'contact_id');
-					$languages = $this->APP->form->cv('languages');
+					$languages = app()->form->cv('languages');
 					foreach($languages as $language){
 						$sql = sprintf('INSERT INTO contact_languages_link (contact_id, language_id) VALUES ("%s", "%s")', $id, $language);
 						$model->query($sql);
@@ -160,7 +160,7 @@ class Contacts_Admin {
 
 					// update groups
 					$model->delete('contact_groups_link', $id, 'contact_id');
-					$groups = $this->APP->form->cv('groups');
+					$groups = app()->form->cv('groups');
 					foreach($groups as $group){
 						$sql = sprintf('INSERT INTO contact_groups_link (contact_id, group_id) VALUES ("%s", "%s")', $id, $group);
 						$model->query($sql);
@@ -168,25 +168,25 @@ class Contacts_Admin {
 
 					// update specialties
 					$model->delete('contact_specialties_link', $id, 'contact_id');
-					$specialties = $this->APP->form->cv('specialties');
+					$specialties = app()->form->cv('specialties');
 					foreach($specialties as $specialty){
 						$sql = sprintf('INSERT INTO contact_specialties_link (contact_id, specialty_id) VALUES ("%s", "%s")', $id, $specialty);
 						$model->query($sql);
 					}
 
 					// upload file
-					$this->APP->setConfig('upload_server_path', APPLICATION_PATH.DS.'files'.DS.'contacts'.DS.$id);
-					$this->APP->setConfig('enable_uploads', true); // enable uploads
+					app()->setConfig('upload_server_path', APPLICATION_PATH.DS.'files'.DS.'contacts'.DS.$id);
+					app()->setConfig('enable_uploads', true); // enable uploads
 
-					$uploads = $this->APP->file->upload('file_path');
+					$uploads = app()->file->upload('file_path');
 
 					// small thumb
-					$thm_width = $this->APP->config('contact_image_thm_maxwidth');
-					$thm_height = $this->APP->config('contact_image_thm_maxheight');
+					$thm_width = app()->config('contact_image_thm_maxwidth');
+					$thm_height = app()->config('contact_image_thm_maxheight');
 
 					// resized original
-					$orig_width = $this->APP->config('contact_image_maxwidth');
-					$orig_height = $this->APP->config('contact_image_maxheight');
+					$orig_width = app()->config('contact_image_maxwidth');
+					$orig_height = app()->config('contact_image_maxheight');
 
 					if(is_array($uploads) && !empty($uploads[0])){
 						foreach($uploads as $file){
@@ -199,8 +199,8 @@ class Contacts_Admin {
 							if (is_array($images)){
 								foreach($images as $image){
 									$base = APPLICATION_PATH.DS.'files'.DS.'contacts'.DS.$image['contact_id'];
-									$this->APP->file->delete($base.DS.$image['filename_orig']);
-									$this->APP->file->delete($base.DS.$image['filename_thumb']);
+									app()->file->delete($base.DS.$image['filename_orig']);
+									app()->file->delete($base.DS.$image['filename_thumb']);
 									$model->delete('contact_images', $image['id']);
 								}
 							}
@@ -237,14 +237,14 @@ class Contacts_Admin {
 						}
 					}
 
-				  $this->APP->sml->addNewMessage('Contact changes have been saved successfully.');
+				  app()->sml->addNewMessage('Contact changes have been saved successfully.');
 					router()->redirect('view');
 
 				}
 			}
 		}
 		
-		$data['values'] = $this->APP->form->getCurrentValues();
+		$data['values'] = app()->form->getCurrentValues();
 		
 		// get images
 		if($id){
@@ -255,10 +255,10 @@ class Contacts_Admin {
 			$data['images'] = false;
 		}
 
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'edit.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display($data);
+		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
+		template()->addView(template()->getModuleTemplateDir().DS . 'edit.tpl.php');
+		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
+		template()->display($data);
 		
 	}
 	
@@ -270,7 +270,7 @@ class Contacts_Admin {
 	 */
 	public function delete($id){
 		$model->delete('contacts', $id);
-		$this->APP->sml->addNewMessage('Contact has successfully been deleted.');
+		app()->sml->addNewMessage('Contact has successfully been deleted.');
 		router()->redirect('view');
 	}
 	
@@ -285,9 +285,9 @@ class Contacts_Admin {
 		$image = $model->quickSelectSingle('contact_images', $id);
 		$base = APPLICATION_PATH.DS.'files'.DS.'contacts'.DS.$image['contact_id'];
 
-		$this->APP->file->delete($base.DS.$image['filename_orig']);
-		$this->APP->file->delete($base.DS.$image['filename_thumb']);
-		$this->APP->file->delete($base);
+		app()->file->delete($base.DS.$image['filename_orig']);
+		app()->file->delete($base.DS.$image['filename_thumb']);
+		app()->file->delete($base);
 		
 		$model->delete('contact_images', $id);
 		
@@ -304,7 +304,7 @@ class Contacts_Admin {
 	 */
 	public function sectionEditor($type = false, $next_id = 1, $section = false, $page_id = false, $template = false){
 		
-		$template = $template ? $template : $this->APP->form->cv('page_template');
+		$template = $template ? $template : app()->form->cv('page_template');
 		
 		$next_id = isset($section['meta']['id']) ? $section['meta']['id'] : $next_id;
 		$model = model()->open('template_placement_group');
@@ -312,10 +312,10 @@ class Contacts_Admin {
 		$placement_groups = $model->results();
 		
 		if($type == 'contacts_display'){
-			$templates = $this->APP->display->sectionTemplates('modules/contacts/contacts');
+			$templates = app()->display->sectionTemplates('modules/contacts/contacts');
 			include(dirname(__FILE__).DS.'templates_admin'.DS.'section_contacts.tpl.php');
 		} else {
-			$templates = $this->APP->display->sectionTemplates('modules/contacts/groups');
+			$templates = app()->display->sectionTemplates('modules/contacts/groups');
 			include(dirname(__FILE__).DS.'templates_admin'.DS.'section_group.tpl.php');
 		}
 		
@@ -363,19 +363,19 @@ class Contacts_Admin {
 			$model->query(sprintf('
 				INSERT INTO section_contacts_display (page_id, title, show_title, template, link_to_full_page, detail_page_id, contact_id)
 				VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s")',
-					$this->APP->security->dbescape($page_id),
-					$this->APP->security->dbescape($section['title']),
-					$this->APP->security->dbescape($section['show_title']),
-					$this->APP->security->dbescape($section['template']),
-					$this->APP->security->dbescape($section['link_to_full_page']),
-					$this->APP->security->dbescape($section['detail_page_id']),
-					$this->APP->security->dbescape($section['contact_id'])));
+					app()->security->dbescape($page_id),
+					app()->security->dbescape($section['title']),
+					app()->security->dbescape($section['show_title']),
+					app()->security->dbescape($section['template']),
+					app()->security->dbescape($section['link_to_full_page']),
+					app()->security->dbescape($section['detail_page_id']),
+					app()->security->dbescape($section['contact_id'])));
 					
 			$sections[] = array(
 				'placement_group' => $section['placement_group'],
 				'type' => 'contacts_display',
 				'called_in_template' => $section['called_in_template'],
-				'id' => $this->APP->db->Insert_ID());
+				'id' => app()->db->Insert_ID());
 		
 		}
 		
@@ -403,20 +403,20 @@ class Contacts_Admin {
 			$model->query(sprintf('
 				INSERT INTO section_contactgroup_display (page_id, title, show_title, template, group_id, link_to_full_page, detail_page_id, sort_method)
 				VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")',
-					$this->APP->security->dbescape($page_id),
-					$this->APP->security->dbescape($section['title']),
-					$this->APP->security->dbescape($section['show_title']),
-					$this->APP->security->dbescape($section['template']),
-					$this->APP->security->dbescape($section['group_id']),
-					$this->APP->security->dbescape($section['link_to_full_page']),
-					$this->APP->security->dbescape($section['detail_page_id']),
-					$this->APP->security->dbescape($section['sort_method'])));
+					app()->security->dbescape($page_id),
+					app()->security->dbescape($section['title']),
+					app()->security->dbescape($section['show_title']),
+					app()->security->dbescape($section['template']),
+					app()->security->dbescape($section['group_id']),
+					app()->security->dbescape($section['link_to_full_page']),
+					app()->security->dbescape($section['detail_page_id']),
+					app()->security->dbescape($section['sort_method'])));
 					
 			$sections[] = array(
 				'placement_group' => $section['placement_group'],
 				'type' => 'contactgroup_display',
 				'called_in_template' => $section['called_in_template'],
-				'id' => $this->APP->db->Insert_ID());
+				'id' => app()->db->Insert_ID());
 		
 		}
 		
@@ -788,7 +788,7 @@ class Contacts_Admin {
 
 		// Autoload this class with the Pages module
 		if($success){
-			$success = $this->APP->modules->registerModuleHook('c3f28790-269f-11dd-bd0b-0800200c9a66', $my_guid);
+			$success = app()->modules->registerModuleHook('c3f28790-269f-11dd-bd0b-0800200c9a66', $my_guid);
 		}
 
 		return $success;

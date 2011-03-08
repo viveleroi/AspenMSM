@@ -1,5 +1,5 @@
 <h2><?php print $values['id'] ? 'Edit' : 'Add'; ?> Contact</h2>
-<?php $this->APP->form->printErrors(); ?>
+<?php app()->form->printErrors(); ?>
 <form action="<?php print $this->action() ?>" method="post" enctype="multipart/form-data">
 	<input type="hidden" name="id" id="contact_id" value="<?php print $values['id'] ?>" />
 	<div class="frame">

@@ -40,9 +40,9 @@ class Forms {
 		$results = false;
 		$error = '';
 
-		if($this->APP->params->post->getInt('form_id')){
+		if(app()->params->post->getInt('form_id')){
 			
-			if($form_db = $model->quickSelectSingle('forms', $this->APP->params->post->getInt('form_id'))){
+			if($form_db = $model->quickSelectSingle('forms', app()->params->post->getInt('form_id'))){
 		
 				if(sha1($form_db['structure']) == $form_db['hash']){
 					
@@ -57,7 +57,7 @@ class Forms {
 
 							if($field['class'] == 'input_text' || $field['class'] == 'textarea'){
 								
-								$val = $this->APP->params->post->getRaw( $this->elemId($field['values']));
+								$val = app()->params->post->getRaw( $this->elemId($field['values']));
 								
 								if($field['required'] && empty($val)){
 									$error .= '<li>Please complete the ' . $field['values'] . ' field.</li>' . "\n";
@@ -68,7 +68,7 @@ class Forms {
 							}
 							elseif($field['class'] == 'radio' || $field['class'] == 'select'){
 
-								$val = $this->APP->params->post->getRaw( $this->elemId($field['title']));
+								$val = app()->params->post->getRaw( $this->elemId($field['title']));
 								
 								if($field['required'] && empty($val)){
 									$error .= '<li>Please complete the ' . $field['title'] . ' field.</li>' . "\n";
@@ -86,13 +86,13 @@ class Forms {
 
 										$elem_id = $this->elemId($item['value'], $field['title']);
 										
-										$val = $this->APP->params->post->getRaw($elem_id);
+										$val = app()->params->post->getRaw($elem_id);
 		
 										if(!empty($val)){
 											$at_least_one_checked = true;
 										}
 										
-										$results[ $this->elemId($item['value']) ] = $this->APP->params->post->getRaw($elem_id);
+										$results[ $this->elemId($item['value']) ] = app()->params->post->getRaw($elem_id);
 									}
 									
 									if(!$at_least_one_checked && $field['required']){
@@ -111,7 +111,7 @@ class Forms {
 							$this->emailFormResults_user($results, $form_db);
 						}
 						
-						$return = $this->APP->cms_lib->url($form_db['return_page']);
+						$return = app()->cms_lib->url($form_db['return_page']);
 						if($return){
 							header("Location: " . $return);
 							exit;
@@ -136,12 +136,12 @@ class Forms {
 	private function emailFormResults_staff($results, $form){
 		
 		// SEND THE EMAIL TO THE WEBSITE STAFF
-		$this->APP->mail->AddAddress($form['email']);
-		$this->APP->mail->From      	= $this->APP->config('email_sender');
-		$this->APP->mail->FromName  	= $this->APP->config('email_sender_name');
-		$this->APP->mail->Mailer    	= "mail";
-		$this->APP->mail->ContentType 	= 'text/html';
-		$this->APP->mail->Subject   	= $form['title'] . " - Form Submission";
+		app()->mail->AddAddress($form['email']);
+		app()->mail->From      	= app()->config('email_sender');
+		app()->mail->FromName  	= app()->config('email_sender_name');
+		app()->mail->Mailer    	= "mail";
+		app()->mail->ContentType 	= 'text/html';
+		app()->mail->Subject   	= $form['title'] . " - Form Submission";
 		
 		$body = '<table>';
 		$body .= '<thead><tr><th colspan="2" style="text-align: left;">Online Form - ' . $form['title'] . '</th></tr></thead>';
@@ -150,11 +150,11 @@ class Forms {
 		}
 		$body .= '</table>';
 		
-		$this->APP->mail->Body 			= 'Hello,<br /><br />Below are the results from the latest form submission on your web site.<br /><br />' . $body;
+		app()->mail->Body 			= 'Hello,<br /><br />Below are the results from the latest form submission on your web site.<br /><br />' . $body;
 						
-		if(!$this->APP->mail->Send()){
+		if(!app()->mail->Send()){
 		}
-		$this->APP->mail->ClearAddresses();
+		app()->mail->ClearAddresses();
 		
 	}
 	
@@ -170,12 +170,12 @@ class Forms {
 		if($results['email']){
 		
 			// SEND THE EMAIL TO THE USER
-			$this->APP->mail->AddAddress($results['email']);
-			$this->APP->mail->From      	= $this->APP->config('email_sender');
-			$this->APP->mail->FromName  	= $this->APP->config('email_sender_name');
-			$this->APP->mail->Mailer    	= "mail";
-			$this->APP->mail->ContentType 	= 'text/html';
-			$this->APP->mail->Subject   	= "Thank You for Your " . $form['title'] . " Submission";
+			app()->mail->AddAddress($results['email']);
+			app()->mail->From      	= app()->config('email_sender');
+			app()->mail->FromName  	= app()->config('email_sender_name');
+			app()->mail->Mailer    	= "mail";
+			app()->mail->ContentType 	= 'text/html';
+			app()->mail->Subject   	= "Thank You for Your " . $form['title'] . " Submission";
 			
 			$body = '';
 			
@@ -189,15 +189,15 @@ class Forms {
 			}
 			
 			if(empty($form['email_to_user_text'])){
-				$this->APP->mail->Body = 'Hello,<br /><br />Thank you for your form submission.<br /><br />' . $body;
+				app()->mail->Body = 'Hello,<br /><br />Thank you for your form submission.<br /><br />' . $body;
 			} else {
-				$this->APP->mail->Body = $form['email_to_user_text'].'<br /><br />' . $body;
+				app()->mail->Body = $form['email_to_user_text'].'<br /><br />' . $body;
 			}
 							
-			if(!$this->APP->mail->Send()){
+			if(!app()->mail->Send()){
 			}
 			
-			$this->APP->mail->ClearAddresses();
+			app()->mail->ClearAddresses();
 			
 		}
 	}
@@ -259,7 +259,7 @@ class Forms {
 					print '</div>' . "\n";
 				}
 				
-				print '<form class="frm-bldr" method="post" action="'.$this->APP->cms_lib->url().'">' . "\n";
+				print '<form class="frm-bldr" method="post" action="'.app()->cms_lib->url().'">' . "\n";
 				printf('<input type="hidden" name="form_id" id="form_%s" value="%1$s" />'."\n", $section['form']['id']);
 				printf('<ol id="%s">'."\n", router()->encodeForRewriteUrl(strtolower($section['form']['title'])));
 				
@@ -322,7 +322,7 @@ class Forms {
 	 * @return <type> 
 	 */
 	private function getPostValue($key){
-		return $this->APP->params->post->getRaw($key);
+		return app()->params->post->getRaw($key);
 	}
 	
 	

@@ -109,7 +109,7 @@ class Pages {
 	 * @uses readSection
 	 */
 	public function displaySection($section, $page, $bits){
-		$this->APP->display->loadSectionTemplate('modules/pages', $section['template'], $section, $page, $bits);
+		app()->display->loadSectionTemplate('modules/pages', $section['template'], $section, $page, $bits);
 	}
 	
 	

@@ -62,10 +62,10 @@ class Customers_Admin {
 		$model->orderBy('username', 'ASC');
 		$data['users'] = $model->results();
 
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'index.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display($data);
+		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
+		template()->addView(template()->getModuleTemplateDir().DS . 'index.tpl.php');
+		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
+		template()->display($data);
 
 	}
 
@@ -77,17 +77,17 @@ class Customers_Admin {
 	public function add(){
 
 		if(user()->add()){
-			$this->APP->sml->addNewMessage('User account has been created successfully.');
+			app()->sml->addNewMessage('User account has been created successfully.');
 			router()->redirect('view');
 		}
 		
 		$data['groups'] = user()->groupList();
-		$data['values'] = $this->APP->form->getCurrentValues();
+		$data['values'] = app()->form->getCurrentValues();
 
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'add.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display($data);
+		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
+		template()->addView(template()->getModuleTemplateDir().DS . 'add.tpl.php');
+		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
+		template()->display($data);
 
 	}
 
@@ -100,17 +100,17 @@ class Customers_Admin {
 	public function edit($id){
 
 		if(user()->edit($id)){
-			$this->APP->sml->addNewMessage('User account changes have been saved successfully.');
+			app()->sml->addNewMessage('User account changes have been saved successfully.');
 			router()->redirect('view');
 		}
 		
 		$data['groups'] = user()->groupList();
-		$data['values'] = $this->APP->form->getCurrentValues();
+		$data['values'] = app()->form->getCurrentValues();
 
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'edit.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display($data);
+		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
+		template()->addView(template()->getModuleTemplateDir().DS . 'edit.tpl.php');
+		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
+		template()->display($data);
 
 	}
 	
@@ -122,14 +122,14 @@ class Customers_Admin {
 	public function my_account(){
 
 		if(user()->my_account()){
-			$this->APP->sml->addNewMessage('Your account has been updated successfully.');
+			app()->sml->addNewMessage('Your account has been updated successfully.');
 			router()->redirect('view', false, 'Index');
 		}
 
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'my_account.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display();
+		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
+		template()->addView(template()->getModuleTemplateDir().DS . 'my_account.tpl.php');
+		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
+		template()->display();
 
 	}
 
@@ -151,10 +151,10 @@ class Customers_Admin {
 	 * @access public
 	 */
 	public function denied(){
-		$this->APP->template->addView($this->APP->template->getTemplateDir() . '/header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'denied.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir() . '/footer.tpl.php');
-		$this->APP->template->display();
+		template()->addView(template()->getTemplateDir() . '/header.tpl.php');
+		template()->addView(template()->getModuleTemplateDir().DS . 'denied.tpl.php');
+		template()->addView(template()->getTemplateDir() . '/footer.tpl.php');
+		template()->display();
 	}
 	
 
@@ -166,10 +166,10 @@ class Customers_Admin {
 		
 		user()->login();
 		
-		$this->APP->template->addView($this->APP->template->getTemplateDir() . '/header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'login.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir() . '/footer.tpl.php');
-		$this->APP->template->display();
+		template()->addView(template()->getTemplateDir() . '/header.tpl.php');
+		template()->addView(template()->getModuleTemplateDir().DS . 'login.tpl.php');
+		template()->addView(template()->getTemplateDir() . '/footer.tpl.php');
+		template()->display();
 	}
 
 	
@@ -180,18 +180,18 @@ class Customers_Admin {
 	public function forgot(){
 
 		if(user()->forgot() == 1){
-			$this->APP->sml->addNewMessage('Your password has been reset. Please check your email.');
+			app()->sml->addNewMessage('Your password has been reset. Please check your email.');
 			router()->redirect('login');
 		}
 		elseif(user()->forgot() == -1){
-			$this->APP->sml->addNewMessage('We were unable to find any accounts matching that username.');
+			app()->sml->addNewMessage('We were unable to find any accounts matching that username.');
 			router()->redirect('forgot');
 		}
 
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'forgot.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display();
+		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
+		template()->addView(template()->getModuleTemplateDir().DS . 'forgot.tpl.php');
+		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
+		template()->display();
 
 	}
 }

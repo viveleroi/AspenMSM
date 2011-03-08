@@ -34,10 +34,10 @@ class Forms_Admin {
 		$model = model()->open('forms');
 		$data['forms'] = $model->results();
 
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'index.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display($data);
+		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
+		template()->addView(template()->getModuleTemplateDir().DS . 'index.tpl.php');
+		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
+		template()->display($data);
 
 	}
 
@@ -60,37 +60,37 @@ class Forms_Admin {
 	 */
 	public function edit($id = false){
 
-		$this->APP->form->loadRecord('forms', $id);
+		app()->form->loadRecord('forms', $id);
  
 		// if form has been submitted
-		if($this->APP->form->isSubmitted()){
+		if(app()->form->isSubmitted()){
 			
-			if(!$this->APP->form->isFilled('title')){
-				$this->APP->form->addError('body', 'You must enter a title.');
+			if(!app()->form->isFilled('title')){
+				app()->form->addError('body', 'You must enter a title.');
 			}
 			
-			if(!$this->APP->form->isFilled('body')){
-				$this->APP->form->addError('body', 'You must enter some content.');
+			if(!app()->form->isFilled('body')){
+				app()->form->addError('body', 'You must enter some content.');
 			}
 			
 			// if we have no errors, save the record
-			if(!$this->APP->form->error()){
+			if(!app()->form->error()){
 
 				// insert a new record with available data
-				if($this->APP->form->save($id)){
-					$this->APP->sml->addNewMessage('Form has been updated successfully.');
+				if(app()->form->save($id)){
+					app()->sml->addNewMessage('Form has been updated successfully.');
 					router()->redirect('view');
 				}
 			}
 		}
  
 		// make sure the template has access to all current values
-		$data['values'] = $this->APP->form->getCurrentValues();
+		$data['values'] = app()->form->getCurrentValues();
  
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'edit.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display($data);
+		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
+		template()->addView(template()->getModuleTemplateDir().DS . 'edit.tpl.php');
+		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
+		template()->display($data);
  
 	}
 	
@@ -104,21 +104,21 @@ class Forms_Admin {
 	 */
 	public function ajax_saveForm(){
 		
-		$form = $this->APP->security->dbescape( $this->APP->params->post->getRaw('ul') );
+		$form = app()->security->dbescape( app()->params->post->getRaw('ul') );
 		$form = serialize($form);
 		$hash = sha1($form);
 
 		$data = array(
-		'title'=>$this->APP->params->post->getRaw('title'),
-		'email'=>$this->APP->params->post->getRaw('email'),
-		'email_to_user'=>($this->APP->params->post->getAlpha('email_to_user') == 'true' ? 1 : 0),
-		'email_to_user_text'=>$this->APP->params->post->getRaw('email_to_user_text'),
-		'email_form_to_user'=>($this->APP->params->post->getAlpha('email_form_to_user') == 'true' ? 1 : 0),
-		'return_page'=>$this->APP->params->post->getInt('return_page'),
+		'title'=>app()->params->post->getRaw('title'),
+		'email'=>app()->params->post->getRaw('email'),
+		'email_to_user'=>(app()->params->post->getAlpha('email_to_user') == 'true' ? 1 : 0),
+		'email_to_user_text'=>app()->params->post->getRaw('email_to_user_text'),
+		'email_form_to_user'=>(app()->params->post->getAlpha('email_form_to_user') == 'true' ? 1 : 0),
+		'return_page'=>app()->params->post->getInt('return_page'),
 		'structure'=>$form,
 		'hash'=>$hash);
 		
-		$model->executeUpdate('forms', $data, $this->APP->params->post->getInt('id'));
+		$model->executeUpdate('forms', $data, app()->params->post->getInt('id'));
 
 	}
 	
@@ -147,20 +147,20 @@ class Forms_Admin {
 				
 				// input type="text"
 				if($field['class'] == "input_text"){
-					$xml .= sprintf('<field type="input_text" required="%s">%s</field>'."\n", $field['required'], $this->APP->xml->encode_for_xml($field['values']));
+					$xml .= sprintf('<field type="input_text" required="%s">%s</field>'."\n", $field['required'], app()->xml->encode_for_xml($field['values']));
 				}
 				
 				// textarea
 				if($field['class'] == "textarea"){
-					$xml .= sprintf('<field type="textarea" required="%s">%s</field>'."\n", $field['required'], $this->APP->xml->encode_for_xml($field['values']));
+					$xml .= sprintf('<field type="textarea" required="%s">%s</field>'."\n", $field['required'], app()->xml->encode_for_xml($field['values']));
 				}
 				
 				// input type="checkbox"
 				if($field['class'] == "checkbox"){
-					$xml .= sprintf('<field type="checkbox" required="%s" title="%s">'."\n", $field['required'], (isset($field['title']) ? $this->APP->xml->encode_for_xml($field['title']) : ''));
+					$xml .= sprintf('<field type="checkbox" required="%s" title="%s">'."\n", $field['required'], (isset($field['title']) ? app()->xml->encode_for_xml($field['title']) : ''));
 					if(is_array($field['values'])){
 						foreach($field['values'] as $input){
-							$xml .= sprintf('<checkbox checked="%s">%s</checkbox>'."\n", $input['default'], $this->APP->xml->encode_for_xml($input['value']));
+							$xml .= sprintf('<checkbox checked="%s">%s</checkbox>'."\n", $input['default'], app()->xml->encode_for_xml($input['value']));
 						}
 					}
 					$xml .= '</field>'."\n";
@@ -168,10 +168,10 @@ class Forms_Admin {
 				
 				// input type="radio"
 				if($field['class'] == "radio"){
-					$xml .= sprintf('<field type="radio" required="%s" title="%s">'."\n", $field['required'], (isset($field['title']) ? $this->APP->xml->encode_for_xml($field['title']) : ''));
+					$xml .= sprintf('<field type="radio" required="%s" title="%s">'."\n", $field['required'], (isset($field['title']) ? app()->xml->encode_for_xml($field['title']) : ''));
 					if(is_array($field['values'])){
 						foreach($field['values'] as $input){
-							$xml .= sprintf('<radio checked="%s">%s</radio>'."\n", $input['default'], $this->APP->xml->encode_for_xml($input['value']));
+							$xml .= sprintf('<radio checked="%s">%s</radio>'."\n", $input['default'], app()->xml->encode_for_xml($input['value']));
 						}
 					}
 					$xml .= '</field>'."\n";
@@ -179,10 +179,10 @@ class Forms_Admin {
 				
 				// select
 				if($field['class'] == "select"){
-					$xml .= sprintf('<field type="select" required="%s" multiple="%s" title="%s">'."\n", $field['required'], $field['multiple'], (isset($field['title']) ? $this->APP->xml->encode_for_xml($field['title']) : ''));
+					$xml .= sprintf('<field type="select" required="%s" multiple="%s" title="%s">'."\n", $field['required'], $field['multiple'], (isset($field['title']) ? app()->xml->encode_for_xml($field['title']) : ''));
 					if(is_array($field['values'])){
 						foreach($field['values'] as $input){
-							$xml .= sprintf('<option checked="%s">%s</option>'."\n", $input['default'], $this->APP->xml->encode_for_xml($input['value']));
+							$xml .= sprintf('<option checked="%s">%s</option>'."\n", $input['default'], app()->xml->encode_for_xml($input['value']));
 						}
 					}
 					$xml .= '</field>'."\n";
@@ -205,7 +205,7 @@ class Forms_Admin {
 	 */
 	public function delete($id = false){
 		if($model->delete('forms', $id)){
-			$this->APP->sml->addNewMessage('Your form has successfully been deleted.');
+			app()->sml->addNewMessage('Your form has successfully been deleted.');
 			router()->redirect('view');
 		}
 	}
@@ -219,7 +219,7 @@ class Forms_Admin {
 	 */
 	public function sectionEditor($type = false, $next_id = 1, $section = false, $page_id = false, $template = false){
 		
-		$template = $template ? $template : $this->APP->form->cv('page_template');
+		$template = $template ? $template : app()->form->cv('page_template');
 		
 		$next_id = isset($section['meta']['id']) ? $section['meta']['id'] : $next_id;
 		$model = model()->open('template_placement_group');
@@ -251,17 +251,17 @@ class Forms_Admin {
 			$model->query(sprintf('
 				INSERT INTO section_form_display (page_id, title, form_id, show_title)
 				VALUES ("%s", "%s", "%s", "%s")',
-					$this->APP->security->dbescape($page_id),
-					$this->APP->security->dbescape($section['title']),
-					$this->APP->security->dbescape($section['form_id']),
-					$this->APP->security->dbescape($section['show_title'])));
+					app()->security->dbescape($page_id),
+					app()->security->dbescape($section['title']),
+					app()->security->dbescape($section['form_id']),
+					app()->security->dbescape($section['show_title'])));
 					
 					
 			$sections[] = array(
 				'placement_group' => $section['placement_group'],
 				'type' => 'form_display',
 				'called_in_template' => $section['called_in_template'],
-				'id' => $this->APP->db->Insert_ID());
+				'id' => app()->db->Insert_ID());
 		}
 		
 		return $sections;
@@ -309,7 +309,7 @@ class Forms_Admin {
 		
 		// Autoload this class with the Pages module
 		if($success){
-			$success = $this->APP->modules->registerModuleHook('c3f28790-269f-11dd-bd0b-0800200c9a66', $my_guid);
+			$success = app()->modules->registerModuleHook('c3f28790-269f-11dd-bd0b-0800200c9a66', $my_guid);
 		}
 		
 		return $success;

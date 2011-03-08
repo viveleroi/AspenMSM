@@ -37,15 +37,15 @@ class Search {
 		$model->query('TRUNCATE search_content_index');
 
 		// load pages
-		$pages = $this->APP->cms_lib->pages();
+		$pages = app()->cms_lib->pages();
 
 		// loop pages
 		if(is_array($pages)){
 			foreach($pages as $page){
 
 				// get content for the page
-				$this->APP->cms_lib->content($page['page_id']);
-				$contents = $this->APP->cms_lib->getContent();
+				app()->cms_lib->content($page['page_id']);
+				$contents = app()->cms_lib->getContent();
 
 				if(is_array($contents) && !empty($contents)){
 					foreach($contents as $content){
@@ -65,7 +65,7 @@ class Search {
 		}
 
 		// reset page content for cms
-		$this->APP->cms_lib->content();
+		app()->cms_lib->content();
 
 	}
 
@@ -76,16 +76,16 @@ class Search {
 	 */
 	public function search($add_params = false){
 
-		$type 		= $this->APP->params->get->getAlnum('inmodule');
-		$keyword 	= $this->APP->params->get->getRaw('keyword');
+		$type 		= app()->params->get->getAlnum('inmodule');
+		$keyword 	= app()->params->get->getRaw('keyword');
 		$results 	= false;
 
 		// check if page needs to be rerouted for a special module search
-		if($type && array_key_exists($type, $this->APP->config('search_pages'))){
-			$pages = $this->APP->config('search_pages');
-			$url = $this->APP->cms_lib->url($pages[$type]);
-			if($url && $this->APP->cms_lib->getPage('page_id') != $pages[$type]){
-				$get = $this->APP->params->getRawSource('get');
+		if($type && array_key_exists($type, app()->config('search_pages'))){
+			$pages = app()->config('search_pages');
+			$url = app()->cms_lib->url($pages[$type]);
+			if($url && app()->cms_lib->getPage('page_id') != $pages[$type]){
+				$get = app()->params->getRawSource('get');
 				unset($get['redirected']);
 				header("Location: " . $url . '?' . http_build_query($get));
 				exit;
@@ -93,7 +93,7 @@ class Search {
 		}
 
 		// @todo this may need to be moved to a cron job
-		$this->APP->search->load_content();
+		app()->search->load_content();
 
 		// call module override if it exists
 		if($type){
@@ -105,12 +105,12 @@ class Search {
 			$model->enablePagination();
 			$model = model()->open('search_content_index');
 			$model->match($keyword);
-			$model->paginate($this->APP->params->get->getRaw('page'), $this->APP->config('search_results_per_page'));
+			$model->paginate(app()->params->get->getRaw('page'), app()->config('search_results_per_page'));
 			$results = $model->results();
 
 			if($results){
 				foreach($results as $key => $result){
-					$results[$key]['source_url'] = $this->APP->cms_lib->url($result['source_page_id']);
+					$results[$key]['source_url'] = app()->cms_lib->url($result['source_page_id']);
 				}
 			}
 		}
@@ -132,9 +132,9 @@ class Search {
 	 */
 	public function pagination(){
 
-		$url = $this->APP->cms_lib->url();
-		$url .= '?keyword=' . $this->APP->params->get->getRaw('keyword') . '&amp;';
-		$url .= 'inmodule=' . $this->APP->params->get->getRaw('inmodule') . '&amp;';
+		$url = app()->cms_lib->url();
+		$url .= '?keyword=' . app()->params->get->getRaw('keyword') . '&amp;';
+		$url .= 'inmodule=' . app()->params->get->getRaw('inmodule') . '&amp;';
 
 		// build the html list item
 		$html = '';

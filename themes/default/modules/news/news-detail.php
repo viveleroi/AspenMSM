@@ -13,8 +13,8 @@
 	</p>
 	<?php } ?>
 
-	<p class="date"><?php print $this->APP->template->niceDate($news['timestamp'], "l F j, Y", '-', true); ?></p>
-	<h3><?php print $this->APP->html->purify($news['title']); ?></h3>
+	<p class="date"><?php print template()->niceDate($news['timestamp'], "l F j, Y", '-', true); ?></p>
+	<h3><?php print app()->html->purify($news['title']); ?></h3>
 	<?php print $news['body']; ?>
 </div>
 

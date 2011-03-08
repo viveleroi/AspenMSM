@@ -61,11 +61,7 @@ class Pages_Admin extends Module {
 			$data['pages'] = $this->pages;
 		}
 
-
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'index.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display($data);
+		template()->display($data);
 		
 	}
 	
@@ -77,47 +73,47 @@ class Pages_Admin extends Module {
 	 */
 	public function add(){
 
-		$this->APP->form->loadTable('pages');
+		app()->form->loadTable('pages');
 
 		// process the form if submitted
-		if($this->APP->form->isSubmitted()){
+		if(app()->form->isSubmitted()){
 			
-			$this->APP->form->setCurrentValue('page_sort_order', ($model->quickValue('SELECT MAX(page_sort_order) FROM pages', 'MAX(page_sort_order)') + 1));
+			app()->form->setCurrentValue('page_sort_order', ($model->quickValue('SELECT MAX(page_sort_order) FROM pages', 'MAX(page_sort_order)') + 1));
 
 			// form field validation
-			if(!$this->APP->form->isFilled('page_title')){
-				$this->APP->form->addError('page_title', 'You must enter a page title.');
+			if(!app()->form->isFilled('page_title')){
+				app()->form->addError('page_title', 'You must enter a page title.');
 			}
 
 
 			// if we have no errors, save the record
-			if(!$this->APP->form->error()){
+			if(!app()->form->error()){
 				
 				// set the link text field to the page title if blank
-				if(!$this->APP->form->isFilled('page_link_text')){
-					$this->APP->form->setCurrentValue('page_link_text', $this->APP->form->cv('page_title'));
+				if(!app()->form->isFilled('page_link_text')){
+					app()->form->setCurrentValue('page_link_text', app()->form->cv('page_title'));
 				}
 				
-				if($page_id = $this->APP->form->save()){
+				if($page_id = app()->form->save()){
 
-					$this->APP->sml->addNewMessage('Your page has been created successfully.');
+					app()->sml->addNewMessage('Your page has been created successfully.');
 					router()->redirect('edit', array('id' => $page_id));
 
 				} else {
 
-					$this->APP->sml->addNewMessage('An error occurred. Please try again.');
+					app()->sml->addNewMessage('An error occurred. Please try again.');
 
 				}
 			}
 		}
 		
-		$data['values'] 	= $this->APP->form->getCurrentValues();
+		$data['values'] 	= app()->form->getCurrentValues();
 		$data['templates'] 	= $this->scanTemplateList();
 
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'add.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display($data);
+		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
+		template()->addView(template()->getModuleTemplateDir().DS . 'add.tpl.php');
+		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
+		template()->display($data);
 		
 	}
 	
@@ -131,7 +127,7 @@ class Pages_Admin extends Module {
 		$data['templates'] 			= $this->scanTemplateList();
 		$data['available_sections'] = director()->getPageSections();
 
-		$this->APP->form->loadRecord('pages', $id);
+		app()->form->loadRecord('pages', $id);
 		
 		// load sections
 		$data['sections'] = array();
@@ -156,36 +152,36 @@ class Pages_Admin extends Module {
 		
 		// add in section field names so our form handler can see them
 		foreach(director()->getPageSections() as $section_field){
-			$this->APP->form->addField($section_field['option_value']);
+			app()->form->addField($section_field['option_value']);
 		}
 
 		// process the form if submitted
-		if($this->APP->form->isSubmitted()){
+		if(app()->form->isSubmitted()){
 
 			// form field validation
-			if(!$this->APP->form->isFilled('page_title')){
-				$this->APP->form->addError('page_title', 'You must enter a page title.');
+			if(!app()->form->isFilled('page_title')){
+				app()->form->addError('page_title', 'You must enter a page title.');
 			}
 
 			// if we have no errors, process sql
-			if(!$this->APP->form->error()){
+			if(!app()->form->error()){
 				
 				// set checkboxes to false if they're not sent from browser
-				if(!$this->APP->params->post->keyExists('show_in_menu')){
-					$this->APP->form->setCurrentValue('show_in_menu', false);
+				if(!app()->params->post->keyExists('show_in_menu')){
+					app()->form->setCurrentValue('show_in_menu', false);
 				}
-				if(!$this->APP->params->post->keyExists('page_is_live')){
-					$this->APP->form->setCurrentValue('page_is_live', false);
+				if(!app()->params->post->keyExists('page_is_live')){
+					app()->form->setCurrentValue('page_is_live', false);
 				}
-				if(!$this->APP->params->post->keyExists('is_parent_default')){
-					$this->APP->form->setCurrentValue('is_parent_default', false);
+				if(!app()->params->post->keyExists('is_parent_default')){
+					app()->form->setCurrentValue('is_parent_default', false);
 				}
-				if(!$this->APP->params->post->keyExists('login_required')){
-					$this->APP->form->setCurrentValue('login_required', false);
+				if(!app()->params->post->keyExists('login_required')){
+					app()->form->setCurrentValue('login_required', false);
 				}
 
 				// update page information
-				if($this->APP->form->save($id)){
+				if(app()->form->save($id)){
 					
 					// remove all current sections references
 					$model->query(sprintf('DELETE FROM section_list WHERE page_id = "%s"', $id));
@@ -197,34 +193,34 @@ class Pages_Admin extends Module {
 						$sql = sprintf('
 							INSERT INTO section_list (page_id, section_type, section_id, sort_order, called_in_template, placement_group)
 							VALUES ("%s", "%s", "%s", "%s", "%s", "%s")',
-								$this->APP->security->dbescape($id),
-								$this->APP->security->dbescape($section['type']),
-								$this->APP->security->dbescape($section['id']),
+								app()->security->dbescape($id),
+								app()->security->dbescape($section['type']),
+								app()->security->dbescape($section['id']),
 								$key,
-								$this->APP->security->dbescape($section['called_in_template']),
-								$this->APP->security->dbescape($section['placement_group']));
+								app()->security->dbescape($section['called_in_template']),
+								app()->security->dbescape($section['placement_group']));
 							
 						$model->query($sql);
 					}
 
-					$this->APP->sml->addNewMessage('Page changes have been saved successfully. ' .
-											$this->APP->template->createLink('Edit Again', 'edit', array('id'=>$id)));
+					app()->sml->addNewMessage('Page changes have been saved successfully. ' .
+											template()->createLink('Edit Again', 'edit', array('id'=>$id)));
 					router()->redirect('view');
 					
 				} else {
 
-					$this->APP->sml->addNewMessage('An error occurred. Please try again.');
+					app()->sml->addNewMessage('An error occurred. Please try again.');
 
 				}
 			}
 		}
 
-		$data['values'] = $this->APP->form->getCurrentValues();
+		$data['values'] = app()->form->getCurrentValues();
 
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'edit.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display($data);
+		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
+		template()->addView(template()->getModuleTemplateDir().DS . 'edit.tpl.php');
+		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
+		template()->display($data);
 
 	}
 	
@@ -266,7 +262,7 @@ class Pages_Admin extends Module {
 		$filename = '';
 		$thm_name = '';
 		
-		$uploads = $this->APP->file->upload('image_'.$section['next_id']);
+		$uploads = app()->file->upload('image_'.$section['next_id']);
 
 		if(is_array($uploads) && isset($uploads[0]) && !empty($uploads[0])){
 			foreach($uploads as $upload){
@@ -278,18 +274,18 @@ class Pages_Admin extends Module {
 				if(!empty($upload['server_file_path'])){
 					
 					// resize original if needed
-					if($this->APP->config('text_image_maxwidth') || $this->APP->config('text_image_maxheight')){
+					if(app()->config('text_image_maxwidth') || app()->config('text_image_maxheight')){
 						$img_resize = Thumbnail::create($upload['server_file_path']);
-						$img_resize->adaptiveResize($this->APP->config('text_image_maxwidth'),$this->APP->config('text_image_maxheight'));
+						$img_resize->adaptiveResize(app()->config('text_image_maxwidth'),app()->config('text_image_maxheight'));
 						$img_resize->save($upload['server_file_path']);
 					}
 					
 					// create the smaller thumbnail
 					$thm_create = Thumbnail::create($upload['server_file_path']);
-					if($this->APP->config('text_image_crop_center')){
+					if(app()->config('text_image_crop_center')){
 						$thm_create->adaptiveResize();
 					}
-					$thm_create->adaptiveResize($this->APP->config('text_image_thm_maxwidth'),$this->APP->config('text_image_thm_maxheight'));
+					$thm_create->adaptiveResize(app()->config('text_image_thm_maxwidth'),app()->config('text_image_thm_maxheight'));
 					$thm_create->save($thm_path);
 				}
 			}
@@ -305,22 +301,22 @@ class Pages_Admin extends Module {
 		$model->query(sprintf('
 			INSERT INTO section_imagetext_editor (page_id, title, date_created, content, show_title, image_filename, image_thumbname, image_alt, template)
 			VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")',
-				$this->APP->security->dbescape($page_id),
-				$this->APP->security->dbescape($section['title']),
+				app()->security->dbescape($page_id),
+				app()->security->dbescape($section['title']),
 				date("Y-m-d H:i:s"),
-				$this->APP->security->dbescape($section['content'], true),
-				$this->APP->security->dbescape($section['show_title']),
+				app()->security->dbescape($section['content'], true),
+				app()->security->dbescape($section['show_title']),
 				$filename,
 				$thm_name,
-				$this->APP->security->dbescape($section['image_alt']),
-				$this->APP->security->dbescape($section['template'])
+				app()->security->dbescape($section['image_alt']),
+				app()->security->dbescape($section['template'])
 				));
 		
 		$sections[] = array(
 			'placement_group' => $section['placement_group'],
 			'type' => 'imagetext_editor',
 			'called_in_template' => $section['called_in_template'],
-			'id' => $this->APP->db->Insert_ID());
+			'id' => app()->db->Insert_ID());
 		
 		return $sections;
 		
@@ -341,18 +337,18 @@ class Pages_Admin extends Module {
 		$model->query(sprintf('
 			INSERT INTO section_basic_editor (page_id, title, date_created, content, show_title, template)
 			VALUES ("%s", "%s", "%s", "%s", "%s", "%s")',
-				$this->APP->security->dbescape($page_id),
-				$this->APP->security->dbescape($section['title']),
+				app()->security->dbescape($page_id),
+				app()->security->dbescape($section['title']),
 				date("Y-m-d H:i:s"),
-				$this->APP->security->dbescape($section['content'], true),
-				$this->APP->security->dbescape($section['show_title']),
-				$this->APP->security->dbescape($section['template'])));
+				app()->security->dbescape($section['content'], true),
+				app()->security->dbescape($section['show_title']),
+				app()->security->dbescape($section['template'])));
 		
 		$sections[] = array(
 			'placement_group' => $section['placement_group'],
 			'type' => 'basic_editor',
 			'called_in_template' => $section['called_in_template'],
-			'id' => $this->APP->db->Insert_ID());
+			'id' => app()->db->Insert_ID());
 		
 		return $sections;
 		
@@ -395,10 +391,10 @@ class Pages_Admin extends Module {
 						$html .= '<span class="page-title">' . $page['page']['page_title'] . '</span>';
 						$html .= '<span class="btns-right">';
 						$html .= sprintf('<a class="edit" href="%s" title="Click to Edit this page">Edit</a>',
-									$this->APP->template->xhtmlUrl('edit', array('id' => $page['page']['page_id'])));
+									template()->xhtmlUrl('edit', array('id' => $page['page']['page_id'])));
 						
 						$html .= sprintf('<a class="delete confirm" href="%s" title="Are you sure you want to delete this page and all it\'s content?">Delete</a>',
-										$this->APP->template->xhtmlUrl('delete', array('id' => $page['page']['page_id'])));
+										template()->xhtmlUrl('delete', array('id' => $page['page']['page_id'])));
 	
 
 						$html .= sprintf('<a class="vis_toggle %s" href="#" title="Click to %s this page" id="vis_toggle_%s">%s</a>',
@@ -453,7 +449,7 @@ class Pages_Admin extends Module {
 
 						if($editing_page_id !== $page['page']['page_id'] && !in_array($editing_page_id, $parents)){
 							$selected = $opt_selected == $page['page']['page_id'] ? ' selected="selected"' : '';
-							$html .= sprintf('<option value="%d"%s>%s</option>', $page['page']['page_id'], $selected, $this->APP->template->truncateString($page['page']['page_title'],35));
+							$html .= sprintf('<option value="%d"%s>%s</option>', $page['page']['page_id'], $selected, template()->truncateString($page['page']['page_title'],35));
 						}
 
 						if(isset($page['children'])){
@@ -477,9 +473,9 @@ class Pages_Admin extends Module {
 	 */
 	public function delete($id = false){
 		if($id){
-			$this->APP->db->Execute(sprintf("DELETE FROM pages WHERE page_id = %s", $this->APP->security->dbescape((int)$id)));
-			$this->APP->db->Execute(sprintf("UPDATE pages SET parent_id = 0 WHERE parent_id = %s", $this->APP->security->dbescape((int)$id)));
-			$this->APP->sml->addNewMessage('Page has been deleted successfully.');
+			app()->db->Execute(sprintf("DELETE FROM pages WHERE page_id = %s", app()->security->dbescape((int)$id)));
+			app()->db->Execute(sprintf("UPDATE pages SET parent_id = 0 WHERE parent_id = %s", app()->security->dbescape((int)$id)));
+			app()->sml->addNewMessage('Page has been deleted successfully.');
 			router()->redirect('view');
 		}
 	}
@@ -500,7 +496,7 @@ class Pages_Admin extends Module {
 		
 			$new_page = $page['page_is_live'] == 1 ? 0 : 1;
 			
-			$this->APP->db->Execute(
+			app()->db->Execute(
 				sprintf('UPDATE pages SET page_is_live = "%s" WHERE page_id = "%s"', $new_page, $id));
 			
 			$xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'."\n";
@@ -538,7 +534,7 @@ class Pages_Admin extends Module {
 				
 				$xml .= '<child_page_id>'.$page['page_id'].'</child_page_id>';
 				
-				$this->APP->db->Execute(
+				app()->db->Execute(
 					sprintf('UPDATE pages SET page_is_live = "%s" WHERE page_id = "%s" OR parent_id = "%s"', $new_page, $page['page_id'], $page['page_id']));
 					
 					// continue update for next generation of children
@@ -616,13 +612,13 @@ class Pages_Admin extends Module {
 	 */
 	public function ajax_nestPages(){
 		
-		$pages = $this->APP->params->get->getRaw('list');
+		$pages = app()->params->get->getRaw('list');
 		$order = 1;
 
 		foreach($pages as $page){
 			
 			// reset the parent associations
-			$this->APP->db->Execute(sprintf('UPDATE pages SET parent_id = "0", page_sort_order = "%s" WHERE page_id = "%s"', $order, $page['id']));
+			app()->db->Execute(sprintf('UPDATE pages SET parent_id = "0", page_sort_order = "%s" WHERE page_id = "%s"', $order, $page['id']));
 			$order++;
 			$this->nestPageProcess($page);
 			
@@ -645,8 +641,8 @@ class Pages_Admin extends Module {
 			foreach($arr['children'] as $child){
 
 				$sql = sprintf('UPDATE pages SET parent_id = "%s", page_sort_order = "%s" WHERE page_id = "%s"', $arr['id'], $order, $child['id']);
-				if(!$this->APP->db->Execute($sql)){
-					print $this->APP->db->ErrorMsg();
+				if(!app()->db->Execute($sql)){
+					print app()->db->ErrorMsg();
 				}
 				
 				$order++;
@@ -667,13 +663,13 @@ class Pages_Admin extends Module {
 	 */
 	public function sectionEditor($type = false, $next_id = 1, $section = false, $page_id = false, $template = false){
 		
-		$template = $template ? $template : $this->APP->form->cv('page_template');
+		$template = $template ? $template : app()->form->cv('page_template');
 
 		$next_id = isset($section['meta']['id']) ? $section['meta']['id'] : $next_id;
 		$model = model()->open('template_placement_group');
 		$model->where('template', $template);
 		$placement_groups = $model->results();
-		$templates = $this->APP->display->sectionTemplates('modules/pages');
+		$templates = app()->display->sectionTemplates('modules/pages');
 		
 		if($type == 'basic_editor'){
 			include(dirname(__FILE__).DS.'templates_admin'.DS.'section_basic.tpl.php');
@@ -713,7 +709,7 @@ class Pages_Admin extends Module {
 		$groups = '';
 		if($placement_groups){
 			foreach($placement_groups as $pg){
-				$groups .= sprintf('<group>%s</group>', $this->APP->xml->encode_for_xml($pg['group_name']));
+				$groups .= sprintf('<group>%s</group>', app()->xml->encode_for_xml($pg['group_name']));
 			}
 		}
 		
@@ -737,7 +733,7 @@ class Pages_Admin extends Module {
 	
 		$path = APPLICATION_PATH . '/themes/' . settings()->getConfig('active_theme');
 		
-		$files = $this->APP->file->dirList($path);
+		$files = app()->file->dirList($path);
 		$page_templates = array ();
 	
 		foreach($files as $file){
@@ -747,7 +743,7 @@ class Pages_Admin extends Module {
 			// if the file found is a directory, look inside it
 			if(is_dir($dir)){
 			
-				$subfiles = $this->APP->file->dirList($dir);
+				$subfiles = app()->file->dirList($dir);
 				foreach($subfiles as $subfile){
 					if(strpos($subfile, 'tpl.php')){
 						$fileinfo = $this->parseTemplateFile($dir, $subfile);

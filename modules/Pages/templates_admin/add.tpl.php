@@ -37,7 +37,7 @@
 					<label for="parent_id">Page Parent:</label>
 					<select id="parent_id" name="parent_id">
 						<option value="0">--</option>
-						<?php print $this->APP->Pages_Admin->pageOptionGroups(false, false, $values['parent_id']); ?>
+						<?php print app()->Pages_Admin->pageOptionGroups(false, false, $values['parent_id']); ?>
 					</select>
 					<a class="help" href="<?php print router()->getModuleUrl() ?>/help/settings-choose_parent.htm" title="Page Parent">Help</a>
 				</li>

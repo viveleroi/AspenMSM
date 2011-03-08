@@ -49,7 +49,7 @@ class Events {
 				$section_content['link_to_full_page'] = $section_content['link_to_full_page'];
 				$section_content['placement_group'] = $section_data['group_name'];
 
-				if(!$this->APP->cms_lib->getUriBit(1)){
+				if(!app()->cms_lib->getUriBit(1)){
 				
 					// pull events
 					$model = model()->open('events', array('*, YEAR(start_date) as years, MONTHNAME(start_date) as months'));
@@ -81,8 +81,8 @@ class Events {
 						$model->where('group_id', $section_content['group_id']);
 					}
 
-					if($this->APP->params->get->getInt('year')){
-						$model->where('YEAR(start_date)', $this->APP->params->get->getInt('year'));
+					if(app()->params->get->getInt('year')){
+						$model->where('YEAR(start_date)', app()->params->get->getInt('year'));
 					}
 
 					$model->where('public', 1);
@@ -105,12 +105,12 @@ class Events {
 
 				} else {
 
-					$event = $model->quickSelectSingle('events', $this->APP->cms_lib->getUriBit(1));
+					$event = $model->quickSelectSingle('events', app()->cms_lib->getUriBit(1));
 
 					if($event){
 						$section_content['events'] = array($event['id']=>$event);
 					} else {
-						$this->APP->cms_lib->error_404();
+						app()->cms_lib->error_404();
 					}
 				}
 				
@@ -134,7 +134,7 @@ class Events {
 	 * @param unknown_type $bits
 	 */
 	public function displaySection($section, $page, $bits){
-		$this->APP->display->loadSectionTemplate('modules/events', $section['template'], $section, $page, $bits);
+		app()->display->loadSectionTemplate('modules/events', $section['template'], $section, $page, $bits);
 	}
 	
 	

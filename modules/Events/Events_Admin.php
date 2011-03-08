@@ -99,10 +99,10 @@ class Events_Admin {
 			}
 		}
 
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'index.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display($data);
+		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
+		template()->addView(template()->getModuleTemplateDir().DS . 'index.tpl.php');
+		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
+		template()->display($data);
 		
 	}
 	
@@ -114,13 +114,13 @@ class Events_Admin {
 	 */
 	private function timeString($field){
 		
-		$hour = $this->APP->form->cv($field . '_hour');
-		$minute = $this->APP->form->cv($field . '_minute');
-		$ampm = $this->APP->form->cv($field . '_ampm');
+		$hour = app()->form->cv($field . '_hour');
+		$minute = app()->form->cv($field . '_minute');
+		$ampm = app()->form->cv($field . '_ampm');
 
 		if(!empty($hour) && !empty($minute) && !empty($ampm)){
 			$time = date("H:i:s", strtotime($hour.':'.$minute.' '.$ampm));
-			$this->APP->form->setDefaultValue($field . '_time', $time);
+			app()->form->setDefaultValue($field . '_time', $time);
 		}
 	}
 	
@@ -131,21 +131,21 @@ class Events_Admin {
 	 */
 	private function validate(){
 		
-		if(!$this->APP->form->isFilled('title')){
-			$this->APP->form->addError('title', 'You must enter a title.');
+		if(!app()->form->isFilled('title')){
+			app()->form->addError('title', 'You must enter a title.');
 		}
 		
-		if(!$this->APP->form->isFilled('recurring') && !$this->APP->form->isDate('start_date')){
-			$this->APP->form->addError('start_date', 'Please enter a valid start date.');
+		if(!app()->form->isFilled('recurring') && !app()->form->isDate('start_date')){
+			app()->form->addError('start_date', 'Please enter a valid start date.');
 		}
 		
-		if($this->APP->form->isFilled('end_date')){
-			if($this->APP->form->isDate('end_date')){
-				if(strtotime($this->APP->form->cv('start_date')) > strtotime($this->APP->form->cv('end_date'))){
-					$this->APP->form->addError('content', 'Please choose a starting date that occurs before the end date.');
+		if(app()->form->isFilled('end_date')){
+			if(app()->form->isDate('end_date')){
+				if(strtotime(app()->form->cv('start_date')) > strtotime(app()->form->cv('end_date'))){
+					app()->form->addError('content', 'Please choose a starting date that occurs before the end date.');
 				}
 			} else {
-				$this->APP->form->addError('end_date', 'Please enter a valid end date.');
+				app()->form->addError('end_date', 'Please enter a valid end date.');
 			}
 		}
 	}
@@ -157,28 +157,28 @@ class Events_Admin {
 	 */
 	public function add_event(){
 
-		$this->APP->form->loadTable('events');
-		$this->APP->form->setDefaultValue('start_date', date("Y-m-d"));
-		$this->APP->form->setDefaultValue('end_date', '');
-		$this->APP->form->addField('groups', array(), array());
-		$this->APP->form->addField('start_hour');
-		$this->APP->form->addField('start_minute');
-		$this->APP->form->addField('start_ampm');
-		$this->APP->form->addField('end_hour');
-		$this->APP->form->addField('end_minute');
-		$this->APP->form->addField('end_ampm');
+		app()->form->loadTable('events');
+		app()->form->setDefaultValue('start_date', date("Y-m-d"));
+		app()->form->setDefaultValue('end_date', '');
+		app()->form->addField('groups', array(), array());
+		app()->form->addField('start_hour');
+		app()->form->addField('start_minute');
+		app()->form->addField('start_ampm');
+		app()->form->addField('end_hour');
+		app()->form->addField('end_minute');
+		app()->form->addField('end_ampm');
 
 		// proces the form if submitted
-		if($this->APP->form->isSubmitted()){
+		if(app()->form->isSubmitted()){
 			
 			$this->timeString('start');
 			$this->timeString('end');
 
-			if(!$this->APP->params->post->keyExists('recurring')){
-				$this->APP->form->setCurrentValue('recurring', false);
+			if(!app()->params->post->keyExists('recurring')){
+				app()->form->setCurrentValue('recurring', false);
 			} else {
-				$this->APP->form->setCurrentValue('start_date', '');
-				$this->APP->form->setCurrentValue('end_date', '');
+				app()->form->setCurrentValue('start_date', '');
+				app()->form->setCurrentValue('end_date', '');
 			}
 
 			// validation
@@ -186,37 +186,37 @@ class Events_Admin {
 
 			// set security rules
 			$model->setSecurityRule('content', 'allow_html', true);
-			$this->APP->form->setCurrentValue('public', 1);
+			app()->form->setCurrentValue('public', 1);
 
 			// if we have no errors, process sql
-			if(!$this->APP->form->error()){
-				if($id = $this->APP->form->save()){
+			if(!app()->form->error()){
+				if($id = app()->form->save()){
 					
 					// update groups
-					$groups = $this->APP->form->cv('groups');
+					$groups = app()->form->cv('groups');
 					foreach($groups as $group){
 						$sql = sprintf('INSERT INTO event_groups_link (event_id, group_id) VALUES ("%s", "%s")', $id, $group);
 						$model->query($sql);
 					}
 					
-					$this->APP->sml->addNewMessage('Event entry has successfully been added.');
-					header("Location: " . $this->APP->template->createUrl('view'));
+					app()->sml->addNewMessage('Event entry has successfully been added.');
+					header("Location: " . template()->createUrl('view'));
 					exit;
 
 				} else {
 
-					$this->APP->sml->addNewMessage('An error occurred. Please try again.');
+					app()->sml->addNewMessage('An error occurred. Please try again.');
 
 				}
 			}
 		}
 		
-		$data['values'] = $this->APP->form->getCurrentValues();
+		$data['values'] = app()->form->getCurrentValues();
 		
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'add_event.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display($data);
+		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
+		template()->addView(template()->getModuleTemplateDir().DS . 'add_event.tpl.php');
+		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
+		template()->display($data);
 		
 	}
 
@@ -230,48 +230,48 @@ class Events_Admin {
 
 		if($id){
 			
-			$this->APP->form->loadRecord('events', $id);
-			$this->APP->form->addField('groups', array(), array());
+			app()->form->loadRecord('events', $id);
+			app()->form->addField('groups', array(), array());
 
-			if($this->APP->form->cv('end_date') == '0000-00-00'){
-				$this->APP->form->setDefaultValue('end_date', '');
+			if(app()->form->cv('end_date') == '0000-00-00'){
+				app()->form->setDefaultValue('end_date', '');
 			}
 			
-			$start_time = strtotime($this->APP->form->cv('start_time'));
-			if($this->APP->form->cv('start_time') != '00:00:00'){
-				$this->APP->form->addField('start_hour', date("h", $start_time), date("h", $start_time));
-				$this->APP->form->addField('start_minute', date("i", $start_time), date("i", $start_time));
-				$this->APP->form->addField('start_ampm', date("a", $start_time), date("a", $start_time));
+			$start_time = strtotime(app()->form->cv('start_time'));
+			if(app()->form->cv('start_time') != '00:00:00'){
+				app()->form->addField('start_hour', date("h", $start_time), date("h", $start_time));
+				app()->form->addField('start_minute', date("i", $start_time), date("i", $start_time));
+				app()->form->addField('start_ampm', date("a", $start_time), date("a", $start_time));
 			} else {
-				$this->APP->form->addField('start_hour');
-				$this->APP->form->addField('start_minute');
-				$this->APP->form->addField('start_ampm');
+				app()->form->addField('start_hour');
+				app()->form->addField('start_minute');
+				app()->form->addField('start_ampm');
 			}
 			
-			$end_time = strtotime($this->APP->form->cv('end_time'));
-			if($this->APP->form->cv('end_time') != '00:00:00'){
-				$this->APP->form->addField('end_hour', date("h", $end_time), date("h", $end_time));
-				$this->APP->form->addField('end_minute', date("i", $end_time), date("i", $end_time));
-				$this->APP->form->addField('end_ampm', date("a", $end_time), date("a", $end_time));
+			$end_time = strtotime(app()->form->cv('end_time'));
+			if(app()->form->cv('end_time') != '00:00:00'){
+				app()->form->addField('end_hour', date("h", $end_time), date("h", $end_time));
+				app()->form->addField('end_minute', date("i", $end_time), date("i", $end_time));
+				app()->form->addField('end_ampm', date("a", $end_time), date("a", $end_time));
 			} else {
-				$this->APP->form->addField('end_hour');
-				$this->APP->form->addField('end_minute');
-				$this->APP->form->addField('end_ampm');
+				app()->form->addField('end_hour');
+				app()->form->addField('end_minute');
+				app()->form->addField('end_ampm');
 			}
 			
-			$data['values'] = $this->APP->form->getCurrentValues();
+			$data['values'] = app()->form->getCurrentValues();
 
 			// proces the form if submitted
-			if($this->APP->form->isSubmitted()){
+			if(app()->form->isSubmitted()){
 				
 				$this->timeString('start');
 				$this->timeString('end');
 
-				if(!$this->APP->params->post->keyExists('recurring')){
-					$this->APP->form->setCurrentValue('recurring', false);
+				if(!app()->params->post->keyExists('recurring')){
+					app()->form->setCurrentValue('recurring', false);
 				} else {
-					$this->APP->form->setCurrentValue('start_date', '');
-					$this->APP->form->setCurrentValue('end_date', '');
+					app()->form->setCurrentValue('start_date', '');
+					app()->form->setCurrentValue('end_date', '');
 				}
 				
 				// validation
@@ -281,34 +281,34 @@ class Events_Admin {
 				$model->setSecurityRule('content', 'allow_html', true);
 	
 				// if we have no errors, process sql
-				if(!$this->APP->form->error()){
-					if($this->APP->form->save($id)){
+				if(!app()->form->error()){
+					if(app()->form->save($id)){
 						
 						// update groups
 						$model->delete('event_groups_link', $id, 'event_id');
-						$groups = $this->APP->form->cv('groups');
+						$groups = app()->form->cv('groups');
 						foreach($groups as $group){
 							$sql = sprintf('INSERT INTO event_groups_link (event_id, group_id) VALUES ("%s", "%s")', $id, $group);
 							$model->query($sql);
 						}
 						
-						$this->APP->sml->addNewMessage('Event has successfully been updated.');
-						header("Location: " . $this->APP->template->createUrl('view'));
+						app()->sml->addNewMessage('Event has successfully been updated.');
+						header("Location: " . template()->createUrl('view'));
 						exit;
 	
 					} else {
 	
-						$this->APP->sml->addNewMessage('An error occurred. Please try again.');
+						app()->sml->addNewMessage('An error occurred. Please try again.');
 	
 					}
 				}
 			}
 		}
 
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'edit_event.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display($data);
+		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
+		template()->addView(template()->getModuleTemplateDir().DS . 'edit_event.tpl.php');
+		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
+		template()->display($data);
 		
 	}
 	
@@ -320,7 +320,7 @@ class Events_Admin {
 	 */
 	public function delete($id = false){
 		if($model->delete('events', $id)){
-			$this->APP->sml->addNewMessage('Event entry has successfully been deleted.');
+			app()->sml->addNewMessage('Event entry has successfully been deleted.');
 			router()->redirect('view');
 		}
 	}
@@ -362,13 +362,13 @@ class Events_Admin {
 	 */
 	public function sectionEditor($type = false, $next_id = 1, $section = false, $page_id = false, $template = false){
 		
-		$template = $template ? $template : $this->APP->form->cv('page_template');
+		$template = $template ? $template : app()->form->cv('page_template');
 		
 		$next_id = isset($section['meta']['id']) ? $section['meta']['id'] : $next_id;
 		$model = model()->open('template_placement_group');
 		$model->where('template', $template);
 		$placement_groups = $model->results();
-		$templates = $this->APP->display->sectionTemplates('modules/events');
+		$templates = app()->display->sectionTemplates('modules/events');
 		
 		include(dirname(__FILE__).DS.'templates_admin'.DS.'section_events.tpl.php');
 	}
@@ -398,24 +398,24 @@ class Events_Admin {
 			$model->query(sprintf('
 				INSERT INTO section_events_display (page_id, title, hide_expired, show_recurring, show_nonrecurring, display_num, link_to_full_page, detail_page_id, show_title, show_description, group_id, template)
 				VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")',
-					$this->APP->security->dbescape($page_id),
-					$this->APP->security->dbescape($section['title']),
-					$this->APP->security->dbescape($section['hide_expired']),
-					$this->APP->security->dbescape($section['show_recurring']),
-					$this->APP->security->dbescape($section['show_nonrecurring']),
-					$this->APP->security->dbescape($section['display_num']),
-					$this->APP->security->dbescape($section['link_to_full_page']),
-					$this->APP->security->dbescape($section['detail_page_id']),
-					$this->APP->security->dbescape($section['show_title']),
-					$this->APP->security->dbescape($section['show_description']),
-					$this->APP->security->dbescape($section['group_id']),
-					$this->APP->security->dbescape($section['template'])));
+					app()->security->dbescape($page_id),
+					app()->security->dbescape($section['title']),
+					app()->security->dbescape($section['hide_expired']),
+					app()->security->dbescape($section['show_recurring']),
+					app()->security->dbescape($section['show_nonrecurring']),
+					app()->security->dbescape($section['display_num']),
+					app()->security->dbescape($section['link_to_full_page']),
+					app()->security->dbescape($section['detail_page_id']),
+					app()->security->dbescape($section['show_title']),
+					app()->security->dbescape($section['show_description']),
+					app()->security->dbescape($section['group_id']),
+					app()->security->dbescape($section['template'])));
 					
 			$sections[] = array(
 				'placement_group' => $section['placement_group'],
 				'type' => 'events_display',
 				'called_in_template' => $section['called_in_template'],
-				'id' => $this->APP->db->Insert_ID());
+				'id' => app()->db->Insert_ID());
 		
 		}
 		
@@ -547,7 +547,7 @@ class Events_Admin {
 		
 		// Autoload this class with the Pages module
 		if($success){
-			$success = $this->APP->modules->registerModuleHook('c3f28790-269f-11dd-bd0b-0800200c9a66', $my_guid);
+			$success = app()->modules->registerModuleHook('c3f28790-269f-11dd-bd0b-0800200c9a66', $my_guid);
 		}
 		
 		return $success;

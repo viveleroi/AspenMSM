@@ -1,6 +1,6 @@
 
 	<h2><span>Currently Editing Page:</span> <?php print $values['page_title'] ?></h2>
-	<a href="<?php print $this->APP->cms_lib->url($values['page_id']); ?>">View Page</a>
+	<a href="<?php print app()->cms_lib->url($values['page_id']); ?>">View Page</a>
 	<?= $form->printErrors(); ?>
 	<?= sml()->printMessage(); ?>
 	<form id="page-edit"  class="cms-frm" method="post" action="<?php print $this->action(); ?>" enctype="multipart/form-data">
@@ -59,7 +59,7 @@
 							<label for="parent_id">Page Parent:</label>
 							<select id="parent_id" name="parent_id">
 								<option value="0">--</option>
-								<?php print $this->APP->Pages_Admin->pageOptionGroups(false, false, $values['parent_id'], $values['page_id']); ?>
+								<?php print app()->Pages_Admin->pageOptionGroups(false, false, $values['parent_id'], $values['page_id']); ?>
 							</select>
 							<a class="help" href="<?php print router()->getModuleUrl() ?>/help/settings-choose_parent.htm" title="Choose Parent">Help</a>
 						</li>

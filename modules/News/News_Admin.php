@@ -20,9 +20,9 @@ class News_Admin {
 	public function __construct(){
 		$this->APP = get_instance();
 		director()->registerPageSection(__CLASS__, 'News Display', 'news_display');
-		$this->APP->setConfig('enable_uploads', true); // enable uploads
+		app()->setConfig('enable_uploads', true); // enable uploads
 		if(router()->module() == __CLASS__){
-			$this->APP->setConfig('upload_server_path', APPLICATION_PATH.DS.'files'.DS.'news');
+			app()->setConfig('upload_server_path', APPLICATION_PATH.DS.'files'.DS.'news');
 		}
 	}
 	
@@ -45,14 +45,14 @@ class News_Admin {
 		$model->limit(5,100);
 		$data['past_news'] = $model->results();
 		
-		if(!$this->APP->file->setUploadDirectory()){
-			$this->APP->sml->addNewMessage("The file upload directory does not appear to be writable. Please create the folder and set proper permissions.");
+		if(!app()->file->setUploadDirectory()){
+			app()->sml->addNewMessage("The file upload directory does not appear to be writable. Please create the folder and set proper permissions.");
 		}
 
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'index.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display($data);
+		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
+		template()->addView(template()->getModuleTemplateDir().DS . 'index.tpl.php');
+		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
+		template()->display($data);
 
 	}
 
@@ -63,51 +63,51 @@ class News_Admin {
 	 */
 	public function add(){
  
-		$this->APP->form->loadTable('news');
-		$this->APP->form->setCurrentValue('timestamp', date("Y-m-d H:i:s"));
+		app()->form->loadTable('news');
+		app()->form->setCurrentValue('timestamp', date("Y-m-d H:i:s"));
  
 		// if form has been submitted
-		if($this->APP->form->isSubmitted()){
+		if(app()->form->isSubmitted()){
 			
-			if(!$this->APP->form->isFilled('title')){
-				$this->APP->form->addError('body', 'You must enter a title.');
+			if(!app()->form->isFilled('title')){
+				app()->form->addError('body', 'You must enter a title.');
 			}
 			
-			if(!$this->APP->form->isFilled('body')){
-				$this->APP->form->addError('body', 'You must enter some content.');
+			if(!app()->form->isFilled('body')){
+				app()->form->addError('body', 'You must enter some content.');
 			}
 			
 			// if we have no errors, save the record
-			if(!$this->APP->form->error()){
+			if(!app()->form->error()){
 			
-				$file = $this->APP->file->upload('pdf_filename');
+				$file = app()->file->upload('pdf_filename');
 				
-				$this->APP->form->setCurrentValue('user_id', session()->getInt('user_id'));
-				$this->APP->form->setCurrentValue('public', 1);
+				app()->form->setCurrentValue('user_id', session()->getInt('user_id'));
+				app()->form->setCurrentValue('public', 1);
 				
 				if(isset($file[0]) && is_array($file[0])){
-					$this->APP->form->setCurrentValue('pdf_filename', $file[0]['file_name']);
+					app()->form->setCurrentValue('pdf_filename', $file[0]['file_name']);
 				}
 				
 				// set html security rules
 				$model->setSecurityRule('body', 'allow_html', true);
 	
 				// insert a new record with available data
-				if($this->APP->form->save()){
+				if(app()->form->save()){
 					// if successful insert, redirect to the list
-					$this->APP->sml->addNewMessage('News entry has successfully been added.');
+					app()->sml->addNewMessage('News entry has successfully been added.');
 					router()->redirect('view');
 				}
 			}
 		}
  
 		// make sure the template has access to all current values
-		$data['values'] = $this->APP->form->getCurrentValues();
+		$data['values'] = app()->form->getCurrentValues();
  
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'add.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display($data);
+		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
+		template()->addView(template()->getModuleTemplateDir().DS . 'add.tpl.php');
+		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
+		template()->display($data);
  
 	}
 
@@ -120,50 +120,50 @@ class News_Admin {
 	 */
 	public function edit($id = false){
 		
-		if(!$this->APP->file->setUploadDirectory()){
-			$this->APP->sml->addNewMessage("The file upload directory does not appear to be writable. Please create the folder and set proper permissions.");
+		if(!app()->file->setUploadDirectory()){
+			app()->sml->addNewMessage("The file upload directory does not appear to be writable. Please create the folder and set proper permissions.");
 		}
 
-		$this->APP->form->loadRecord('news', $id);
+		app()->form->loadRecord('news', $id);
  
 		// if form has been submitted
-		if($this->APP->form->isSubmitted()){
+		if(app()->form->isSubmitted()){
 			
-			if(!$this->APP->form->isFilled('title')){
-				$this->APP->form->addError('body', 'You must enter a title.');
+			if(!app()->form->isFilled('title')){
+				app()->form->addError('body', 'You must enter a title.');
 			}
 			
-			if(!$this->APP->form->isFilled('body')){
-				$this->APP->form->addError('body', 'You must enter some content.');
+			if(!app()->form->isFilled('body')){
+				app()->form->addError('body', 'You must enter some content.');
 			}
 			
 			// if we have no errors, save the record
-			if(!$this->APP->form->error()){
+			if(!app()->form->error()){
 			
-				$file = $this->APP->file->upload('pdf_filename');
+				$file = app()->file->upload('pdf_filename');
 				if(is_array($file) && !empty($file[0])){
-					$this->APP->form->setCurrentValue('pdf_filename', $file[0]['file_name']);
+					app()->form->setCurrentValue('pdf_filename', $file[0]['file_name']);
 				}
 				
 				// set html security rules
 				$model->setSecurityRule('body', 'allow_html', true);
 
 				// insert a new record with available data
-				if($this->APP->form->save($id)){
+				if(app()->form->save($id)){
 					// if successful insert, redirect to the list
-					$this->APP->sml->addNewMessage('News entry has successfully been updated.');
+					app()->sml->addNewMessage('News entry has successfully been updated.');
 					router()->redirect('view');
 				}
 			}
 		}
  
 		// make sure the template has access to all current values
-		$data['values'] = $this->APP->form->getCurrentValues();
+		$data['values'] = app()->form->getCurrentValues();
  
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'edit.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display($data);
+		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
+		template()->addView(template()->getModuleTemplateDir().DS . 'edit.tpl.php');
+		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
+		template()->display($data);
  
 	}
 	
@@ -175,7 +175,7 @@ class News_Admin {
 	 */
 	public function delete($id = false){
 		if($model->delete('news', $id)){
-			$this->APP->sml->addNewMessage('News entry has successfully been deleted.');
+			app()->sml->addNewMessage('News entry has successfully been deleted.');
 			router()->redirect('view');
 		}
 	}
@@ -217,13 +217,13 @@ class News_Admin {
 	 */
 	public function sectionEditor($type = false, $next_id = 1, $section = false, $page_id = false, $template = false){
 		
-		$template = $template ? $template : $this->APP->form->cv('page_template');
+		$template = $template ? $template : app()->form->cv('page_template');
 		
 		$next_id = isset($section['meta']['id']) ? $section['meta']['id'] : $next_id;
 		$model = model()->open('template_placement_group');
 		$model->where('template', $template);
 		$placement_groups = $model->results();
-		$templates = $this->APP->display->sectionTemplates('modules/news');
+		$templates = app()->display->sectionTemplates('modules/news');
 		
 		include(dirname(__FILE__).DS.'templates_admin'.DS.'section_news.tpl.php');
 	}
@@ -250,20 +250,20 @@ class News_Admin {
 			$model->query(sprintf('
 				INSERT INTO section_news_display (page_id, title, display_num, link_to_full_page, detail_page_id, show_title, show_description, template)
 				VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")',
-					$this->APP->security->dbescape($page_id),
-					$this->APP->security->dbescape($section['title']),
-					$this->APP->security->dbescape($section['display_num']),
-					$this->APP->security->dbescape($section['link_to_full_page']),
-					$this->APP->security->dbescape($section['detail_page_id']),
-					$this->APP->security->dbescape($section['show_title']),
-					$this->APP->security->dbescape($section['show_description']),
-					$this->APP->security->dbescape($section['template'])));
+					app()->security->dbescape($page_id),
+					app()->security->dbescape($section['title']),
+					app()->security->dbescape($section['display_num']),
+					app()->security->dbescape($section['link_to_full_page']),
+					app()->security->dbescape($section['detail_page_id']),
+					app()->security->dbescape($section['show_title']),
+					app()->security->dbescape($section['show_description']),
+					app()->security->dbescape($section['template'])));
 					
 			$sections[] = array(
 				'placement_group' => $section['placement_group'],
 				'type' => 'news_display',
 				'called_in_template' => $section['called_in_template'],
-				'id' => $this->APP->db->Insert_ID());
+				'id' => app()->db->Insert_ID());
 		}
 		
 		return $sections;
@@ -314,7 +314,7 @@ class News_Admin {
 		
 		// Autoload this class with the Pages module
 		if($success){
-			$success = $this->APP->modules->registerModuleHook('c3f28790-269f-11dd-bd0b-0800200c9a66', $my_guid);
+			$success = app()->modules->registerModuleHook('c3f28790-269f-11dd-bd0b-0800200c9a66', $my_guid);
 		}
 		
 		return $success;

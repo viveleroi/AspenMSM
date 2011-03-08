@@ -69,7 +69,7 @@ class Menus extends Display {
 	 */
 	public function displaySection($section, $page, $bits){
 		$section['template'] = 'basic.tpl.php';
-		$this->APP->display->loadSectionTemplate('modules/menus/basic', $section['template'], $section, $page, $bits);
+		app()->display->loadSectionTemplate('modules/menus/basic', $section['template'], $section, $page, $bits);
 		
 	}
 
