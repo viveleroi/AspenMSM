@@ -1,40 +1,40 @@
-<h2><?php print $values['id'] ? 'Edit' : 'Add'; ?> Contact</h2>
+<h2><?php print $form->cv('id') ? 'Edit' : 'Add'; ?> Contact</h2>
 <?php $form->printErrors(); ?>
 <form action="<?php print $this->action() ?>" method="post" enctype="multipart/form-data">
-	<input type="hidden" name="id" id="contact_id" value="<?php print $values['id'] ?>" />
+	<input type="hidden" name="id" id="contact_id" value="<?php print $form->cv('id') ?>" />
 	<div class="frame">
 		<h3>Contact Details</h3>
 		<fieldset>
 			<ol>
 				<li class="half">
 					<label for="title">Honorific Title:</label>
-					<input type="text" name="title" id="title" value="<?php print $values['title'] ?>" />
+					<input type="text" name="title" id="title" value="<?php print $form->cv('title') ?>" />
 				</li>
 				<li>
 					<label for="first_name">First name:</label>
-					<input type="text" name="first_name" id="first_name" value="<?php print $values['first_name'] ?>" />
+					<input type="text" name="first_name" id="first_name" value="<?php print $form->cv('first_name') ?>" />
 				</li>
 				<li>
 					<label for="middle_name">Middle name:</label>
-					<input type="text" name="middle_name" id="middle_name" value="<?php print $values['middle_name'] ?>" />
+					<input type="text" name="middle_name" id="middle_name" value="<?php print $form->cv('middle_name') ?>" />
 				</li>
 				<li>
 					<label for="last_name">Last name:</label>
-					<input type="text" name="last_name" id="last_name" value="<?php print $values['last_name'] ?>" />
+					<input type="text" name="last_name" id="last_name" value="<?php print $form->cv('last_name') ?>" />
 				</li>
 			</ol>
 			<ol>
 				<li>
 					<label for="accreditation">Accreditation:</label>
-					<input type="text" name="accreditation" id="accreditation" value="<?php print $values['accreditation'] ?>" />
+					<input type="text" name="accreditation" id="accreditation" value="<?php print $form->cv('accreditation') ?>" />
 				</li>
 				<li>
 					<label for="job_title">Job Title:</label>
-					<input type="text" name="job_title" id="job_title" value="<?php print $values['job_title'] ?>" />
+					<input type="text" name="job_title" id="job_title" value="<?php print $form->cv('job_title') ?>" />
 				</li>
 				<li>
 					<label for="company">Company/Practice:</label>
-					<input type="text" name="company" id="company" value="<?php print $values['company'] ?>" />
+					<input type="text" name="company" id="company" value="<?php print $form->cv('company') ?>" />
 				</li>
 				<li>
 					<label for="website">Website:</label>
@@ -48,23 +48,23 @@
 				</li>
 				<li>
 					<label for="city">City:</label>
-					<input type="text" name="city" id="city" value="<?php print $values['city'] ?>" />
+					<input type="text" name="city" id="city" value="<?php print $form->cv('city') ?>" />
 				</li>
 				<li>
 					<label for="state">State:</label>
-					<input type="text" name="state" id="state" value="<?php print $values['state'] ?>" />
+					<input type="text" name="state" id="state" value="<?php print $form->cv('state') ?>" />
 				</li>
 				<li>
 					<label for="postal">Zip Code:</label>
-					<input type="text" name="postal" id="postal" value="<?php print $values['postal'] ?>" />
+					<input type="text" name="postal" id="postal" value="<?php print $form->cv('postal') ?>" />
 				</li>
 				<li>
 					<label for="email">E-mail:</label>
-					<input type="text" name="email" id="email" value="<?php print $values['email']; ?>" />
+					<input type="text" name="email" id="email" value="<?php print $form->cv('email'); ?>" />
 				</li>
 				<li>
 					<label for="telephone">Telephone:</label>
-					<input type="text" name="telephone" id="telephone" value="<?php print $values['telephone'] ?>" />
+					<input type="text" name="telephone" id="telephone" value="<?php print $form->cv('telephone') ?>" />
 				</li>
 				<li>
 					<label for="telephone_2">Second Telephone:</label>
@@ -72,17 +72,17 @@
 				</li>
 				<li>
 					<label for="fax">Fax:</label>
-					<input type="text" name="fax" id="fax" value="<?php print $values['fax'] ?>" />
+					<input type="text" name="fax" id="fax" value="<?php print $form->cv('fax') ?>" />
 				</li>
 			</ol>
 			<ol>
 				<li>
 					<label for="brief_bio">Brief Bio:</label>
-					<textarea name="brief_bio" id="brief_bio" rows="10" cols="60"><?php print $values['brief_bio'] ?></textarea>
+					<textarea name="brief_bio" id="brief_bio" rows="10" cols="60"><?php print $form->cv('brief_bio') ?></textarea>
 				</li>
 				<li class="tmce">
 					<label for="bio">Full Bio:</label>
-					<textarea name="bio" id="bio" class="mce-editor content-area" rows="10" cols="60"><?php print $values['bio'] ?></textarea>
+					<textarea name="bio" id="bio" class="mce-editor content-area" rows="10" cols="60"><?php print $form->cv('bio') ?></textarea>
 				</li>
 			</ol>
 			<ol>

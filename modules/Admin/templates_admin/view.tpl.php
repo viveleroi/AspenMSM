@@ -69,12 +69,12 @@
 					<ol>
 						<li>
 							<label for="website_title">Website Title:</label>
-							<input type="text" name="website_title" id="website_title" value="<?php print $values['website_title'] ?>" />
+							<input type="text" name="website_title" id="website_title" value="<?php print $form->cv('website_title') ?>" />
 							<a class="help" href="<?php print router()->getModuleUrl() ?>/help/admin-website_title.htm" title="Website Title">Help</a>
 						</li>
 						<li>
 							<label for="cms_title">CMS Title:</label>
-							<input type="text" name="cms_title" id="cms_title" value="<?php print $values['cms_title'] ?>" />
+							<input type="text" name="cms_title" id="cms_title" value="<?php print $form->cv('cms_title') ?>" />
 							<a class="help" href="<?php print router()->getModuleUrl() ?>/help/admin-cms_title.htm" title="CMS Title">Help</a>
 						</li>
 						<li class="auto">
@@ -84,7 +84,7 @@
 							if($pages){
 								foreach($pages as $page){
 							?>
-								<option value="<?php print $page['page_id'] ?>"<?php print $values['home_page'] == $page['page_id'] ? ' selected="selected"' : false ?>><?php print $page['page_title'] ?></option>
+								<option value="<?php print $page['page_id'] ?>"<?php print $form->cv('home_page') == $page['page_id'] ? ' selected="selected"' : false ?>><?php print $page['page_title'] ?></option>
 							<?php
 								}
 							}
@@ -96,12 +96,12 @@
 					<ol>
 						<li>
 							<label for="meta_keywords">Meta Keywords:</label>
-							<textarea name="meta_keywords" id="meta_keywords"  rows="5" cols="50"><?php print $values['meta_keywords'] ?></textarea>
+							<textarea name="meta_keywords" id="meta_keywords"  rows="5" cols="50"><?php print $form->cv('meta_keywords') ?></textarea>
 							<a class="help" href="<?php print router()->getModuleUrl() ?>/help/admin-meta_keywords.htm" title="Meta Keywords">Help</a>
 						</li>
 						<li>
 							<label for="meta_description">Meta Description:</label>
-							<textarea name="meta_description" id="meta_description"  rows="5" cols="50"><?php print $values['meta_description'] ?></textarea>
+							<textarea name="meta_description" id="meta_description"  rows="5" cols="50"><?php print $form->cv('meta_description') ?></textarea>
 							<a class="help" href="<?php print router()->getModuleUrl() ?>/help/admin-meta_description.htm" title="Meta Description">Help</a>
 						</li>
 					</ol>

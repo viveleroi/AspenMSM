@@ -9,33 +9,33 @@
 				<ol>
 					<li class="full">
 						<label for="title">Event Title:</label>
-						<input id="title" name="title" type="text" value="<?php print $values['title'] ?>" />
+						<input id="title" name="title" type="text" value="<?php print $form->cv('title') ?>" />
 						<a class="help" href="<?php print router()->getModuleUrl() ?>/help/events-event_title.htm" title="Event Title">Help</a>
 					</li>
 					<li class="full">
 						<label for="description">Brief Description:</label>
-						<textarea id="description" name="description" rows="5" cols="30"><?php print $values['description'] ?></textarea>
+						<textarea id="description" name="description" rows="5" cols="30"><?php print $form->cv('description') ?></textarea>
 					</li>
 				</ol>
 				<ol>
 					<li class="full">
 						<label for="recurring">Recurring Event</label>
-						<input id="recurring" name="recurring" type="checkbox" value="1"<?php print $values['recurring'] ? ' checked="checked"' : '' ?> />
+						<input id="recurring" name="recurring" type="checkbox" value="1"<?php print $form->cv('recurring') ? ' checked="checked"' : '' ?> />
 					</li>
 					<li class="full">
 						<label for="recur_description">Recurring Details</label>
-						<input id="recur_description" name="recur_description" type="text" value="<?php print $values['recur_description'] ?>" />
+						<input id="recur_description" name="recur_description" type="text" value="<?php print $form->cv('recur_description') ?>" />
 					</li>
 				</ol>
 				<ol>
 					<li class="auto">
 						<label for="start_date">Start Date:</label>
-						<input id="start_date" name="start_date" type="text" value="<?php print $values['start_date'] ?>" size="10" maxlength="10" class="dateformat-Y-ds-m-ds-d" />
+						<input id="start_date" name="start_date" type="text" value="<?php print $form->cv('start_date') ?>" size="10" maxlength="10" class="dateformat-Y-ds-m-ds-d" />
 						<a class="help" href="<?php print router()->getModuleUrl() ?>/help/events-start_date.htm" title="Start Date">Help</a>
 					</li>
 					<li class="third auto clear">
 						<label for="end_date">Expiration Date:</label>
-						<input id="end_date" name="end_date" type="text" value="<?php print $values['end_date'] ?>" size="10" maxlength="10" class="dateformat-Y-ds-m-ds-d" />
+						<input id="end_date" name="end_date" type="text" value="<?php print $form->cv('end_date') ?>" size="10" maxlength="10" class="dateformat-Y-ds-m-ds-d" />
 						<a class="help" href="<?php print router()->getModuleUrl() ?>/help/events-expiration_date.htm" title="Expiration Date">Help</a>
 					</li>
 				</ol>

@@ -1,35 +1,35 @@
-	<h2><span>Currently Editing:</span> <?php print $values['title']; ?></h2>
+	<h2><span>Currently Editing:</span> <?php print $form->cv('title'); ?></h2>
 	<?= $form->printErrors(); ?>
 	<?= sml()->printMessage(); ?>
 	<form action="<?php print $this->action(); ?>" method="post">
 		<div class="frame">
 			<h3>Form Information</h3>
-			<input type="hidden" name="id" id="id" value="<?php print $values['id']; ?>" />
+			<input type="hidden" name="id" id="id" value="<?php print $form->cv('id'); ?>" />
 			<fieldset>
 				<ol>
 					<li>
 						<label for="title">Title:</label>
-						<input id="title" name="title" type="text" value="<?php print $values['title']; ?>" />
+						<input id="title" name="title" type="text" value="<?php print $form->cv('title'); ?>" />
 						<a class="help" href="<?php print router()->getModuleUrl() ?>/help/formbuilder-settings-title.htm" title="Title">Help</a>
 					</li>
 					<li>
 						<label for="email">E-mail Form to:</label>
-						<input id="email" name="email" type="text" value="<?php print $values['email']; ?>" />
+						<input id="email" name="email" type="text" value="<?php print $form->cv('email'); ?>" />
 						<a class="help" href="<?php print router()->getModuleUrl() ?>/help/formbuilder-settings-email.htm" title="Email Form To">Help</a>
 					</li>
 					<li>
 						<label for="email_to_user">E-mail User:</label>
-						<input id="email_to_user" name="email_to_user" type="checkbox" value="1"<?php print $values['email_to_user'] ? ' checked="checked"' : ''; ?> />
+						<input id="email_to_user" name="email_to_user" type="checkbox" value="1"<?php print $form->cv('email_to_user') ? ' checked="checked"' : ''; ?> />
 						<a class="help" href="<?php print router()->getModuleUrl() ?>/help/formbuilder-settings-email_user.htm" title="E-mail User">Help</a>
 					</li>
 					<li>
 						<label for="email_to_user_text">E-mail Message:</label>
-						<textarea id="email_to_user_text" name="email_to_user_text"><?php print $values['email_to_user_text']; ?></textarea>
+						<textarea id="email_to_user_text" name="email_to_user_text"><?php print $form->cv('email_to_user_text'); ?></textarea>
 						<a class="help" href="<?php print router()->getModuleUrl() ?>/help/formbuilder-settings-email_message.htm" title="E-mail Message">Help</a>
 					</li>
 					<li>
 						<label for="email_form_to_user">Include Form Data:</label>
-						<input id="email_form_to_user" name="email_form_to_user" type="checkbox" value="1"<?php print $values['email_form_to_user'] ? ' checked="checked"' : ''; ?> />
+						<input id="email_form_to_user" name="email_form_to_user" type="checkbox" value="1"<?php print $form->cv('email_form_to_user') ? ' checked="checked"' : ''; ?> />
 						<a class="help" href="<?php print router()->getModuleUrl() ?>/help/formbuilder-settings-include_data.htm" title="Include Form Data">Help</a>
 					</li>
 					<li>

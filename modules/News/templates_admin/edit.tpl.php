@@ -1,4 +1,4 @@
-	<h2><span>Currently Editing:</span> <?php print $values['title']; ?></h2>
+	<h2><span>Currently Editing:</span> <?php print $form->cv('title'); ?></h2>
 	<?= $form->printErrors(); ?>
 	<?= sml()->printMessage(); ?>
 	<form action="<?php print $this->action(); ?>" method="post" enctype="multipart/form-data">

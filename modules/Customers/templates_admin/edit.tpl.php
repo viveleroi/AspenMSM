@@ -1,19 +1,19 @@
-	<h2><span>Editing User:</span> <strong><?php print $values['nice_name'] ?></strong></h2>
+	<h2><span>Editing User:</span> <strong><?php print $form->cv('nice_name') ?></strong></h2>
 	<?= $form->printErrors(); ?>
 	<?= sml()->printMessage(); ?>
 	<form id="adminform" method="post" action="<?php print $this->action() ?>">
 		<div class="frame">
 			<h3>Account Information</h3>
 			<fieldset>
-				<input type="hidden" name="id" value="<?php print $values['id'] ?>" />
+				<input type="hidden" name="id" value="<?php print $form->cv('id') ?>" />
 				<ol>
 					<li>
 						<label for="nice_name">Name:</label>
-						<input id="nice_name" name="nice_name" type="text" value="<?php print $values['nice_name'] ?>" />
+						<input id="nice_name" name="nice_name" type="text" value="<?php print $form->cv('nice_name') ?>" />
 					</li>
 					<li>
 						<label for="username">User Name:</label>
-						<input id="username" name="username" type="text" value="<?php print $values['username'] ?>" />
+						<input id="username" name="username" type="text" value="<?php print $form->cv('username') ?>" />
 						<span class="note">Your username will be your email</span>
 					</li>
 				</ol>
@@ -31,7 +31,7 @@
 				<ol>
 					<li>
 						<label for="allow_login">Allow Login:</label>
-						<input id="allow_login" name="allow_login" type="checkbox"<?php print $values['allow_login'] ? ' checked="checked"' : '' ?> value="1" />
+						<input id="allow_login" name="allow_login" type="checkbox"<?php print $form->cv('allow_login') ? ' checked="checked"' : '' ?> value="1" />
 					</li>
 					<li>
 						<div class="false-label">Access Groups:</div>

@@ -8,29 +8,29 @@
 				<ol>
 					<li>
 						<label for="page_title">Page Title:</label>
-						<input id="page_title" name="page_title" type="text" value="<?php print $values['page_title'] ?>" />
+						<input id="page_title" name="page_title" type="text" value="<?php print $form->cv('page_title') ?>" />
 						<a class="help" href="<?php print router()->getModuleUrl() ?>/help/settings-page_title.htm" title="Page Title">Help</a>
 					</li>
 					<li>
 						<label for="page_window_title">Window Title:</label>
-						<input id="page_window_title" name="page_window_title" type="text" value="<?php print $values['page_window_title'] ?>" />
+						<input id="page_window_title" name="page_window_title" type="text" value="<?php print $form->cv('page_window_title') ?>" />
 						<a class="help" href="<?php print router()->getModuleUrl() ?>/help/settings-window_title.htm" title="Window Title">Help</a>
 					</li>
 					<?php if(IS_ADMIN){ ?>
 					<li>
 						<label for="page_body_id">Body ID:</label>
-						<input id="page_body_id" name="page_body_id" type="text" value="<?php print $values['page_body_id'] ?>" />
+						<input id="page_body_id" name="page_body_id" type="text" value="<?php print $form->cv('page_body_id') ?>" />
 						<a class="help" href="<?php print router()->getModuleUrl() ?>/help/settings-body_id.htm" title="Body ID">Help</a>
 					</li>
 					<?php } ?>
 					<li>
 						<label for="page_link_text">Link Text:</label>
-						<input id="page_link_text" name="page_link_text" type="text" class="inputtext3" value="<?php print $values['page_link_text'] ?>" />
+						<input id="page_link_text" name="page_link_text" type="text" class="inputtext3" value="<?php print $form->cv('page_link_text') ?>" />
 						<a class="help" href="<?php print router()->getModuleUrl() ?>/help/settings-link_text.htm" title="Link Title">Help</a>
 					</li>
 					<li>
 						<label for="page_link_text">Link Hover Title:</label>
-						<input id="page_link_hover" name="page_link_hover" type="text" class="inputtext3" value="<?php print $values['page_link_hover'] ?>" />
+						<input id="page_link_hover" name="page_link_hover" type="text" class="inputtext3" value="<?php print $form->cv('page_link_hover') ?>" />
 						<a class="help" href="<?php print router()->getModuleUrl() ?>/help/settings-link_title.htm" title="Link Hover Title">Help</a>
 					</li>
 				<li class="auto">

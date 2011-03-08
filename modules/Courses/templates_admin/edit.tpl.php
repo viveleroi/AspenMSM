@@ -1,10 +1,10 @@
-<h2><?php print $values['id'] ? 'Edit' : 'Add'; ?> Course</h2>
+<h2><?php print $form->cv('id') ? 'Edit' : 'Add'; ?> Course</h2>
 
 	<?php $form->printErrors(); ?>
 	<form action="<?php print $this->action(); ?>" method="post">
 		<div class="frame">
 			<h3>Course Details</h3>
-			<input type="hidden" name="id" id="course_id" value="<?php print $values['id'] ?>" />
+			<input type="hidden" name="id" id="course_id" value="<?php print $form->cv('id') ?>" />
 			<fieldset>
 				<ol>
 					<li>
@@ -25,18 +25,18 @@
 					</li>
 					<li class="short">
 						<label for="code">Course Code:</label>
-						<input type="text" name="code" id="code" value="<?php print $values['code']; ?>" />
+						<input type="text" name="code" id="code" value="<?php print $form->cv('code'); ?>" />
 					</li>
 					<li>
 						<label for="duration">Duration:</label>
-						<input type="text" name="duration" id="duration" value="<?php print $values['duration']; ?>" />
+						<input type="text" name="duration" id="duration" value="<?php print $form->cv('duration'); ?>" />
 					</li>
 					<li>
 						<span class="false-label">Pricing:</span>
 						<span class="multi cost">
-							<label for="pricing_single">Single <input type="text" name="pricing_single" id="pricing_single" value="<?php print $values['pricing_single']; ?>" /></label>
-							<label for="pricing_few">2-5 <input type="text" name="pricing_few" id="pricing_few" value="<?php print $values['pricing_few']; ?>" /></label>
-							<label for="pricing_many">6+<input type="text" name="pricing_many" id="pricing_many" value="<?php print $values['pricing_many']; ?>" /></label>
+							<label for="pricing_single">Single <input type="text" name="pricing_single" id="pricing_single" value="<?php print $form->cv('pricing_single'); ?>" /></label>
+							<label for="pricing_few">2-5 <input type="text" name="pricing_few" id="pricing_few" value="<?php print $form->cv('pricing_few'); ?>" /></label>
+							<label for="pricing_many">6+<input type="text" name="pricing_many" id="pricing_many" value="<?php print $form->cv('pricing_many'); ?>" /></label>
 						</span>
 					</li>
 				</ol>
@@ -51,9 +51,9 @@
 							<span class="false-location-label">Location:</span>
 							<span class="false-seating-label">Seating:</span>
 							<div class="individual">
-								<input class="sch-date" type="text" name="date" id="date" value="<?php print $values['date'] ?>" />
+								<input class="sch-date" type="text" name="date" id="date" value="<?php print $form->cv('date') ?>" />
 								<input class="sch-location" type="text" name="location" id="location" value="<?php print htmlentities($values['location'], ENT_QUOTES, 'UTF-8'); ?>" />
-								<input class="sch-seating" type="text" name="seating" id="seating" value="<?php print $values['seating'] ?>" />
+								<input class="sch-seating" type="text" name="seating" id="seating" value="<?php print $form->cv('seating') ?>" />
 							</div>
 						</span>
 -->
