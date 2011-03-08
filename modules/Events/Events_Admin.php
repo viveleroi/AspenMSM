@@ -21,7 +21,7 @@ class Events_Admin {
 	 */
 	public function __construct(){
 		$this->APP = get_instance();
-		$this->APP->director->registerPageSection(__CLASS__, 'Events Display', 'events_display');
+		director()->registerPageSection(__CLASS__, 'Events Display', 'events_display');
 	}
 
 	
@@ -31,20 +31,20 @@ class Events_Admin {
 	 */
 	public function view(){
 		
-		$this->APP->model->select('events');
-		$this->APP->model->whereFuture('CONCAT(start_date," ", start_time)');
-		$this->APP->model->where('recurring', 0);
-		$this->APP->model->orderBy('id', 'DESC', 'events:list');
-		$data['cur_events'] = $this->APP->model->results();
+		$model = model()->open('events');
+		$model->whereFuture('CONCAT(start_date," ", start_time)');
+		$model->where('recurring', 0);
+		$model->orderBy('id', 'DESC', 'events:list');
+		$data['cur_events'] = $model->results();
 
 		// attach groups
 		if($data['cur_events']['RECORDS']){
 			foreach($data['cur_events']['RECORDS'] as $key => $event){
-				$this->APP->model->select('event_groups');
-				$this->APP->model->leftJoin('event_groups_link','group_id', 'id', array('event_id'));
-				$this->APP->model->where('event_groups_link.event_id', $event['id']);
-				$this->APP->model->orderBy('event_groups.name');
-				$groups = $this->APP->model->results();
+				$model = model()->open('event_groups');
+				$model->leftJoin('event_groups_link','group_id', 'id', array('event_id'));
+				$model->where('event_groups_link.event_id', $event['id']);
+				$model->orderBy('event_groups.name');
+				$groups = $model->results();
 	
 				if($groups['RECORDS']){
 					foreach($groups['RECORDS'] as $group){
@@ -54,20 +54,20 @@ class Events_Admin {
 			}
 		}
 		
-		$this->APP->model->select('events');
-		$this->APP->model->wherePast('CONCAT(start_date," ", start_time)');
-		$this->APP->model->where('recurring', 0);
-		$this->APP->model->orderBy('id', 'DESC', 'events:list');
-		$data['past_events'] = $this->APP->model->results();
+		$model = model()->open('events');
+		$model->wherePast('CONCAT(start_date," ", start_time)');
+		$model->where('recurring', 0);
+		$model->orderBy('id', 'DESC', 'events:list');
+		$data['past_events'] = $model->results();
 
 		// attach groups
 		if($data['past_events']['RECORDS']){
 			foreach($data['past_events']['RECORDS'] as $key => $event){
-				$this->APP->model->select('event_groups');
-				$this->APP->model->leftJoin('event_groups_link','group_id', 'id', array('event_id'));
-				$this->APP->model->where('event_id', $event['id']);
-				$this->APP->model->orderBy('name');
-				$groups = $this->APP->model->results();
+				$model = model()->open('event_groups');
+				$model->leftJoin('event_groups_link','group_id', 'id', array('event_id'));
+				$model->where('event_id', $event['id']);
+				$model->orderBy('name');
+				$groups = $model->results();
 	
 				if($groups['RECORDS']){
 					foreach($groups['RECORDS'] as $group){
@@ -77,19 +77,19 @@ class Events_Admin {
 			}
 		}
 
-		$this->APP->model->select('events');
-		$this->APP->model->where('recurring', 1);
-		$this->APP->model->orderBy('id', 'DESC', 'events:list');
-		$data['recurring_events'] = $this->APP->model->results();
+		$model = model()->open('events');
+		$model->where('recurring', 1);
+		$model->orderBy('id', 'DESC', 'events:list');
+		$data['recurring_events'] = $model->results();
 
 		// attach groups
 		if($data['recurring_events']['RECORDS']){
 			foreach($data['recurring_events']['RECORDS'] as $key => $event){
-				$this->APP->model->select('event_groups');
-				$this->APP->model->leftJoin('event_groups_link','group_id', 'id', array('event_id'));
-				$this->APP->model->where('event_id', $event['id']);
-				$this->APP->model->orderBy('name');
-				$groups = $this->APP->model->results();
+				$model = model()->open('event_groups');
+				$model->leftJoin('event_groups_link','group_id', 'id', array('event_id'));
+				$model->where('event_id', $event['id']);
+				$model->orderBy('name');
+				$groups = $model->results();
 	
 				if($groups['RECORDS']){
 					foreach($groups['RECORDS'] as $group){
@@ -185,7 +185,7 @@ class Events_Admin {
 			$this->validate();
 
 			// set security rules
-			$this->APP->model->setSecurityRule('content', 'allow_html', true);
+			$model->setSecurityRule('content', 'allow_html', true);
 			$this->APP->form->setCurrentValue('public', 1);
 
 			// if we have no errors, process sql
@@ -196,7 +196,7 @@ class Events_Admin {
 					$groups = $this->APP->form->cv('groups');
 					foreach($groups as $group){
 						$sql = sprintf('INSERT INTO event_groups_link (event_id, group_id) VALUES ("%s", "%s")', $id, $group);
-						$this->APP->model->query($sql);
+						$model->query($sql);
 					}
 					
 					$this->APP->sml->addNewMessage('Event entry has successfully been added.');
@@ -278,18 +278,18 @@ class Events_Admin {
 				$this->validate();
 	
 				// set security rules
-				$this->APP->model->setSecurityRule('content', 'allow_html', true);
+				$model->setSecurityRule('content', 'allow_html', true);
 	
 				// if we have no errors, process sql
 				if(!$this->APP->form->error()){
 					if($this->APP->form->save($id)){
 						
 						// update groups
-						$this->APP->model->delete('event_groups_link', $id, 'event_id');
+						$model->delete('event_groups_link', $id, 'event_id');
 						$groups = $this->APP->form->cv('groups');
 						foreach($groups as $group){
 							$sql = sprintf('INSERT INTO event_groups_link (event_id, group_id) VALUES ("%s", "%s")', $id, $group);
-							$this->APP->model->query($sql);
+							$model->query($sql);
 						}
 						
 						$this->APP->sml->addNewMessage('Event has successfully been updated.');
@@ -319,7 +319,7 @@ class Events_Admin {
 	 * @access public
 	 */
 	public function delete($id = false){
-		if($this->APP->model->delete('events', $id)){
+		if($model->delete('events', $id)){
 			$this->APP->sml->addNewMessage('Event entry has successfully been deleted.');
 			router()->redirect('view');
 		}
@@ -336,11 +336,11 @@ class Events_Admin {
 		
 		// obtain original state
 		$public = 0;
-		$record = $this->APP->model->quickSelectSingle('events', $id);
+		$record = $model->quickSelectSingle('events', $id);
 		
 		if($record){
 			$public = ($record['public'] == 1 ? 0 : 1);
-			$this->APP->model->executeUpdate('events', array('public'=>$public), $id);
+			$model->executeUpdate('events', array('public'=>$public), $id);
 		}
 		
 		$xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'."\n";
@@ -365,9 +365,9 @@ class Events_Admin {
 		$template = $template ? $template : $this->APP->form->cv('page_template');
 		
 		$next_id = isset($section['meta']['id']) ? $section['meta']['id'] : $next_id;
-		$this->APP->model->select('template_placement_group');
-		$this->APP->model->where('template', $template);
-		$placement_groups = $this->APP->model->results();
+		$model = model()->open('template_placement_group');
+		$model->where('template', $template);
+		$placement_groups = $model->results();
 		$templates = $this->APP->display->sectionTemplates('modules/events');
 		
 		include(dirname(__FILE__).DS.'templates_admin'.DS.'section_events.tpl.php');
@@ -395,7 +395,7 @@ class Events_Admin {
 			$section['show_title'] = isset($section['show_title']) ? $section['show_title'] : false;
 			$section['show_description'] = isset($section['show_description']) ? $section['show_description'] : false;
 			
-			$this->APP->model->query(sprintf('
+			$model->query(sprintf('
 				INSERT INTO section_events_display (page_id, title, hide_expired, show_recurring, show_nonrecurring, display_num, link_to_full_page, detail_page_id, show_title, show_description, group_id, template)
 				VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")',
 					$this->APP->security->dbescape($page_id),
@@ -435,7 +435,7 @@ class Events_Admin {
 			SELECT event_groups.*, IF(event_groups.id IN (SELECT group_id FROM event_groups_link WHERE event_id = "%s"), 1, 0 ) as selected
 			FROM event_groups
 			ORDER BY event_groups.name ASC', $id);
-		$groups = $this->APP->model->results(false, $sql);
+		$groups = $model->results(false, $sql);
 		
 		print json_encode( array('groups'=>$groups['RECORDS']) );
 		
@@ -450,7 +450,7 @@ class Events_Admin {
 	
 		$id = false;
 		if(!empty($name)){
-			$id = $this->APP->model->executeInsert('event_groups', array('name'=>$name));
+			$id = $model->executeInsert('event_groups', array('name'=>$name));
 		}
 		
 		print json_encode( array('success'=>(bool)$id, 'id'=>$id, 'name'=>$name) );
@@ -466,10 +466,10 @@ class Events_Admin {
 	
 		$result = false;
 		if($id && ctype_digit($id)){
-			$result = $this->APP->model->delete('event_groups', $id);
+			$result = $model->delete('event_groups', $id);
 			
 			if($result){
-				$result = $this->APP->model->delete('event_groups_link', $id, 'group_id');
+				$result = $model->delete('event_groups_link', $id, 'group_id');
 			}
 		}
 		
@@ -500,7 +500,7 @@ class Events_Admin {
 			  `public` tinyint(1) NOT NULL default '0',
 			  PRIMARY KEY  (`id`)
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
-		$success = $this->APP->model->query($sql);
+		$success = $model->query($sql);
 		
 		
 		$sql = "
@@ -520,7 +520,7 @@ class Events_Admin {
 			  `template` varchar(155) NOT NULL,
 			  PRIMARY KEY  (`id`)
 			) ENGINE=MyISAM  DEFAULT CHARSET=latin1;";
-		$success = $this->APP->model->query($sql);
+		$success = $model->query($sql);
 		
 		
 		$sql = "
@@ -529,7 +529,7 @@ class Events_Admin {
 			  `name` varchar(255) NOT NULL,
 			  PRIMARY KEY  (`id`)
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
-		$success = $this->APP->model->query($sql);
+		$success = $model->query($sql);
 		
 		
 		$sql = "
@@ -539,11 +539,11 @@ class Events_Admin {
 			  `group_id` int(10) unsigned NOT NULL,
 			  PRIMARY KEY  (`id`)
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
-		$success = $this->APP->model->query($sql);
+		$success = $model->query($sql);
 		
 		
 		$sql = "INSERT INTO `permissions` (`user_id`, `group_id`, `interface`, `module`, `method`) VALUES (0, 2, 'Admin', 'Events', '*');";
-		$success = $this->APP->model->query($sql);
+		$success = $model->query($sql);
 		
 		// Autoload this class with the Pages module
 		if($success){
@@ -563,12 +563,12 @@ class Events_Admin {
 	 */
 	public function uninstall($my_guid = false){
 		
-		$this->APP->model->query('DROP TABLE `events`');
-		$this->APP->model->query('DROP TABLE `section_event_display`');
-		$this->APP->model->query('DELETE FROM section_list WHERE type = "events_display"');
-		$this->APP->model->query(sprintf('DELETE FROM modules WHERE guid = "%s"', $my_guid));
-		$this->APP->model->query(sprintf('UPDATE modules SET autoload_with = "" WHERE autoload_with = "%s"', $my_guid));
-		$this->APP->model->query(sprintf('DELETE FROM permissions WHERE module = "%s"', __CLASS__));
+		$model->query('DROP TABLE `events`');
+		$model->query('DROP TABLE `section_event_display`');
+		$model->query('DELETE FROM section_list WHERE type = "events_display"');
+		$model->query(sprintf('DELETE FROM modules WHERE guid = "%s"', $my_guid));
+		$model->query(sprintf('UPDATE modules SET autoload_with = "" WHERE autoload_with = "%s"', $my_guid));
+		$model->query(sprintf('DELETE FROM permissions WHERE module = "%s"', __CLASS__));
 		
 		return true;
 		

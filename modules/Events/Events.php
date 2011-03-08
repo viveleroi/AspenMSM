@@ -27,7 +27,7 @@ class Events {
 	 */
 	public function __construct(){
 		$this->APP = get_instance();
-		$this->APP->director->registerCmsSection(__CLASS__, 'events_display');
+		director()->registerCmsSection(__CLASS__, 'events_display');
 	}
 	
 	
@@ -41,7 +41,7 @@ class Events {
 		$data = array();
 		
 		// pull the section for the database
-		$section_results = $this->APP->model->query(sprintf('SELECT * FROM section_events_display WHERE id = "%s"', $section_data['section_id']));
+		$section_results = $model->query(sprintf('SELECT * FROM section_events_display WHERE id = "%s"', $section_data['section_id']));
 		
 		if($section_results->RecordCount()){
 			while($section_content = $section_results->FetchRow()){
@@ -52,46 +52,46 @@ class Events {
 				if(!$this->APP->cms_lib->getUriBit(1)){
 				
 					// pull events
-					$this->APP->model->select('events', array('*, YEAR(start_date) as years, MONTHNAME(start_date) as months'));
+					$model = model()->open('events', array('*, YEAR(start_date) as years, MONTHNAME(start_date) as months'));
 
-					$this->APP->model->parenthStart();
+					$model->parenthStart();
 
 					$match = 'AND';
 					if($section_content['show_recurring'] && $section_content['show_nonrecurring']){
-						$this->APP->model->where('recurring', 1);
+						$model->where('recurring', 1);
 						$match = 'OR';
 					}
 					else if($section_content['show_recurring'] && !$section_content['show_nonrecurring']){
-						$this->APP->model->where('recurring', 1);
+						$model->where('recurring', 1);
 					}
 					elseif($section_content['show_nonrecurring']){
-						$this->APP->model->where('recurring', 0);
+						$model->where('recurring', 0);
 					} else {
-						$this->APP->model->where('recurring', 2);
+						$model->where('recurring', 2);
 					}
 
 					if($section_content['show_nonrecurring'] && $section_content['hide_expired']){
-						$this->APP->model->whereFuture('CONCAT(start_date," ", start_time)', false, $match);
+						$model->whereFuture('CONCAT(start_date," ", start_time)', false, $match);
 					}
 
-					$this->APP->model->parenthEnd();
+					$model->parenthEnd();
 
 					if(isset($section_content['group_id']) && $section_content['group_id']){
-						$this->APP->model->leftJoin('event_groups_link', 'event_id', 'id', array('group_id'));
-						$this->APP->model->where('group_id', $section_content['group_id']);
+						$model->leftJoin('event_groups_link', 'event_id', 'id', array('group_id'));
+						$model->where('group_id', $section_content['group_id']);
 					}
 
 					if($this->APP->params->get->getInt('year')){
-						$this->APP->model->where('YEAR(start_date)', $this->APP->params->get->getInt('year'));
+						$model->where('YEAR(start_date)', $this->APP->params->get->getInt('year'));
 					}
 
-					$this->APP->model->where('public', 1);
-					$this->APP->model->orderBy('start_date', 'ASC');
+					$model->where('public', 1);
+					$model->orderBy('start_date', 'ASC');
 					if($section_content['display_num']){
-						$this->APP->model->limit(0, $section_content['display_num']);
+						$model->limit(0, $section_content['display_num']);
 					}
-					$events = $this->APP->model->results();
-//					print $this->APP->model->getLastQuery();
+					$events = $model->results();
+//					print $model->getLastQuery();
 					$section_content['events'] = $events['RECORDS'];
 
 					// append month names
@@ -105,7 +105,7 @@ class Events {
 
 				} else {
 
-					$event = $this->APP->model->quickSelectSingle('events', $this->APP->cms_lib->getUriBit(1));
+					$event = $model->quickSelectSingle('events', $this->APP->cms_lib->getUriBit(1));
 
 					if($event){
 						$section_content['events'] = array($event['id']=>$event);

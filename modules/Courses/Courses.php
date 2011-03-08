@@ -16,7 +16,7 @@ class Menus extends Display {
 	public function __construct(){
 		//parent::__construct('menu_display', __CLASS__);
 		parent::__construct();
-		$this->APP->director->registerCmsSection(__CLASS__, 'menu_display');
+		director()->registerCmsSection(__CLASS__, 'menu_display');
 	}
 	
 	
@@ -30,7 +30,7 @@ class Menus extends Display {
 		
 		$data = array();
 
-		$section_results = $this->APP->model->query(sprintf('SELECT * FROM section_%s WHERE id = "%s"', $section_data['section_type'], $section_data['section_id']));
+		$section_results = $model->query(sprintf('SELECT * FROM section_%s WHERE id = "%s"', $section_data['section_type'], $section_data['section_id']));
 
 		if($section_results->RecordCount()){
 			while($section_content = $section_results->FetchRow()){
@@ -39,13 +39,13 @@ class Menus extends Display {
 				$section_content['placement_group'] = $section_data['group_name'];
 
 				// pull the groups
-				$menu = $this->APP->model->quickSelectSingle('menu_groups', $section_content['group_id']);
+				$menu = $model->quickSelectSingle('menu_groups', $section_content['group_id']);
 					
-				$this->APP->model->select('menu_items');
-				$this->APP->model->leftJoin('menu_link', 'item_id', 'id', array('menu_id'));
-				$this->APP->model->where('menu_id', $menu['id']);
-				$this->APP->model->orderBy('item');
-				$menu['menu_items'] = $this->APP->model->results();
+				$model = model()->open('menu_items');
+				$model->leftJoin('menu_link', 'item_id', 'id', array('menu_id'));
+				$model->where('menu_id', $menu['id']);
+				$model->orderBy('item');
+				$menu['menu_items'] = $model->results();
 				
 				$section_content['results'] = $menu;
 				$data['section'] = $section_content;

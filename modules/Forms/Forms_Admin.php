@@ -19,7 +19,7 @@ class Forms_Admin {
 	 */
 	public function __construct(){
 		$this->APP = get_instance();
-		$this->APP->director->registerPageSection(__CLASS__, 'Form Display', 'form_display');
+		director()->registerPageSection(__CLASS__, 'Form Display', 'form_display');
 	}
 	
 	
@@ -31,8 +31,8 @@ class Forms_Admin {
 	
 		$data = array();
  
-		$this->APP->model->select('forms');
-		$data['forms'] = $this->APP->model->results();
+		$model = model()->open('forms');
+		$data['forms'] = $model->results();
 
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
 		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'index.tpl.php');
@@ -47,7 +47,7 @@ class Forms_Admin {
 	 * @access public
 	 */
 	public function add(){
-		$form_id = $this->APP->model->executeInsert('forms', array('title' => ''));
+		$form_id = $model->executeInsert('forms', array('title' => ''));
 		router()->redirect('edit', array('id'=>$form_id));
 	}
 
@@ -118,7 +118,7 @@ class Forms_Admin {
 		'structure'=>$form,
 		'hash'=>$hash);
 		
-		$this->APP->model->executeUpdate('forms', $data, $this->APP->params->post->getInt('id'));
+		$model->executeUpdate('forms', $data, $this->APP->params->post->getInt('id'));
 
 	}
 	
@@ -131,7 +131,7 @@ class Forms_Admin {
 	public function ajax_loadForm($id){
 		
 		// pull the record from the db
-		$form = $this->APP->model->quickSelectSingle('forms', $id);
+		$form = $model->quickSelectSingle('forms', $id);
 		
 		$editor = false;
 		if(sha1($form['structure']) == $form['hash']){
@@ -204,7 +204,7 @@ class Forms_Admin {
 	 * @access public
 	 */
 	public function delete($id = false){
-		if($this->APP->model->delete('forms', $id)){
+		if($model->delete('forms', $id)){
 			$this->APP->sml->addNewMessage('Your form has successfully been deleted.');
 			router()->redirect('view');
 		}
@@ -222,9 +222,9 @@ class Forms_Admin {
 		$template = $template ? $template : $this->APP->form->cv('page_template');
 		
 		$next_id = isset($section['meta']['id']) ? $section['meta']['id'] : $next_id;
-		$this->APP->model->select('template_placement_group');
-		$this->APP->model->where('template', $template);
-		$placement_groups = $this->APP->model->results();
+		$model = model()->open('template_placement_group');
+		$model->where('template', $template);
+		$placement_groups = $model->results();
 		
 		include(dirname(__FILE__).DS.'templates_admin'.DS.'section_form.tpl.php');
 	
@@ -248,7 +248,7 @@ class Forms_Admin {
 			$section['link_to_full_page'] = isset($section['link_to_full_page']) ? $section['link_to_full_page'] : false;
 			$section['show_title'] = isset($section['show_title']) ? $section['show_title'] : false;
 			
-			$this->APP->model->query(sprintf('
+			$model->query(sprintf('
 				INSERT INTO section_form_display (page_id, title, form_id, show_title)
 				VALUES ("%s", "%s", "%s", "%s")',
 					$this->APP->security->dbescape($page_id),
@@ -290,7 +290,7 @@ class Forms_Admin {
 			  `hash` varchar(50) NOT NULL,
 			  PRIMARY KEY  (`id`)
 			) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
-		$success = $this->APP->model->query($sql);
+		$success = $model->query($sql);
 		
 		
 		$sql = "
@@ -302,10 +302,10 @@ class Forms_Admin {
 			  `show_title` tinyint(1) NOT NULL default '1',
 			  PRIMARY KEY  (`id`)
 			) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
-		$success = $this->APP->model->query($sql);
+		$success = $model->query($sql);
 		
 		$sql = "INSERT INTO `permissions` (`user_id`, `group_id`, `interface`, `module`, `method`) VALUES (0, 2, 'Admin', 'Forms', '*');";
-		$success = $this->APP->model->query($sql);
+		$success = $model->query($sql);
 		
 		// Autoload this class with the Pages module
 		if($success){
@@ -324,9 +324,9 @@ class Forms_Admin {
 	 */
 	public function uninstall($my_guid = false){
 		
-		$this->APP->model->query('DROP TABLE `forms`');
-		$this->APP->model->query('DROP TABLE `section_form_display`');
-		$this->APP->model->query('DELETE FROM section_list WHERE type = "form_display"');
+		$model->query('DROP TABLE `forms`');
+		$model->query('DROP TABLE `section_form_display`');
+		$model->query('DELETE FROM section_list WHERE type = "form_display"');
 		
 		return true;
 		

@@ -37,7 +37,7 @@ class Admin_Admin extends App {
 		
 		// add all config variables to our form
 		$sql = sprintf('SELECT * FROM config');
-		$records = $this->APP->model->query($sql);
+		$records = $model->query($sql);
 		if($records->RecordCount()){
 			while($record = $records->FetchRow()){
 
@@ -56,7 +56,7 @@ class Admin_Admin extends App {
 
 					// create account
 					$sql = sprintf('UPDATE config SET current_value = "%s" WHERE config_key = "%s"', $value, $field);
-					$this->APP->model->query($sql);
+					$model->query($sql);
 				}
 				
 				$this->APP->sml->addNewMessage('Website settings have been updated successfully.');
@@ -66,9 +66,9 @@ class Admin_Admin extends App {
 		
 		$data['values'] = $this->APP->form->getCurrentValues();
 		
-		$this->APP->model->select('pages');
-		$this->APP->model->where('page_is_live', 1);
-		$data['pages'] = $this->APP->model->results();
+		$model = model()->open('pages');
+		$model->where('page_is_live', 1);
+		$data['pages'] = $model->results();
 		$data['mods'] = $this->APP->moduleControls();
 		$data['themes'] = $this->listThemes();
 		$data['live'] = settings()->getConfig('active_theme');

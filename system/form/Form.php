@@ -134,7 +134,7 @@ class Form  {
 
 			$field = $field ? $field : $this->_primary_key_field;
 
-			$model->select();
+			$model = model()->open();
 			$model->where($this->table.'.'.$field, app()->security->dbescape($id));
 			$records = $model->results();
 

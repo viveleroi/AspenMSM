@@ -26,7 +26,7 @@ class Forms {
 	 */
 	public function __construct(){
 		$this->APP = get_instance();
-		$this->APP->director->registerCmsSection(__CLASS__, 'form_display');
+		director()->registerCmsSection(__CLASS__, 'form_display');
 		$this->processSubmission();
 	}
 	
@@ -42,7 +42,7 @@ class Forms {
 
 		if($this->APP->params->post->getInt('form_id')){
 			
-			if($form_db = $this->APP->model->quickSelectSingle('forms', $this->APP->params->post->getInt('form_id'))){
+			if($form_db = $model->quickSelectSingle('forms', $this->APP->params->post->getInt('form_id'))){
 		
 				if(sha1($form_db['structure']) == $form_db['hash']){
 					
@@ -215,7 +215,7 @@ class Forms {
 		$data = array();
 		
 		// pull the section for the database
-		$section_results = $this->APP->model->query(sprintf('SELECT * FROM section_form_display WHERE id = "%s"', $section_data['section_id']));
+		$section_results = $model->query(sprintf('SELECT * FROM section_form_display WHERE id = "%s"', $section_data['section_id']));
 		
 		if($section_results->RecordCount()){
 			while($section_content = $section_results->FetchRow()){
@@ -223,7 +223,7 @@ class Forms {
 				$section_content['type'] = $section_data['section_type'];
 				$section_content['placement_group'] = $section_data['group_name'];
 
-				$section_content['form'] = $this->APP->model->quickSelectSingle('forms', $section_content['form_id']);
+				$section_content['form'] = $model->quickSelectSingle('forms', $section_content['form_id']);
 				$data['section'] = $section_content;
 			
 				if(!$section_data['called_in_template']){

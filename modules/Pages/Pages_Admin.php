@@ -9,13 +9,7 @@
  * @author Michael Botsko, Botsko.net LLC
  * @uses Admin
  */
-class Pages_Admin {
-
-	/**
-	 * @var object Holds our original application
-	 * @access private
-	 */
-	private $APP;
+class Pages_Admin extends Module {
 
 	/**
 	 * @var object Holds an array of pages for nesting purposes
@@ -36,9 +30,8 @@ class Pages_Admin {
 	 * @access public
 	 */
 	public function __construct(){
-		$this->APP = get_instance();
-		$this->APP->director->registerPageSection(__CLASS__, 'Text Content', 'basic_editor');
-/* 		$this->APP->director->registerPageSection(__CLASS__, 'Text with Image Content', 'imagetext_editor'); */
+		director()->registerPageSection(__CLASS__, 'Text Content', 'basic_editor');
+/* 		director()->registerPageSection(__CLASS__, 'Text with Image Content', 'imagetext_editor'); */
 	}
 
 
@@ -48,9 +41,10 @@ class Pages_Admin {
 	 */
 	public function view(){
 		
-		$this->APP->model->select('pages');
-		$this->APP->model->orderBy('page_sort_order', 'ASC', 'pages:list');
-		$this->pages = $this->APP->model->results();
+		$model = model()->open('pages');
+		$model = model()->open('pages');
+		$model->orderBy('page_sort_order', 'ASC', 'pages:list');
+		$this->pages = $model->results();
 		$this->pages = $this->pages['RECORDS'];
 
 		if($this->pages){
@@ -89,7 +83,7 @@ class Pages_Admin {
 		// process the form if submitted
 		if($this->APP->form->isSubmitted()){
 			
-			$this->APP->form->setCurrentValue('page_sort_order', ($this->APP->model->quickValue('SELECT MAX(page_sort_order) FROM pages', 'MAX(page_sort_order)') + 1));
+			$this->APP->form->setCurrentValue('page_sort_order', ($model->quickValue('SELECT MAX(page_sort_order) FROM pages', 'MAX(page_sort_order)') + 1));
 
 			// form field validation
 			if(!$this->APP->form->isFilled('page_title')){
@@ -136,7 +130,7 @@ class Pages_Admin {
 	public function edit($id){
 		
 		$data['templates'] 			= $this->scanTemplateList();
-		$data['available_sections'] = $this->APP->director->getPageSections();
+		$data['available_sections'] = director()->getPageSections();
 
 		$this->APP->form->loadRecord('pages', $id);
 		
@@ -144,12 +138,12 @@ class Pages_Admin {
 		$data['sections'] = array();
 		
 		// pull all references to sections for this page
-		$sections = $this->APP->model->query(sprintf('SELECT * FROM section_list WHERE page_id = "%s" ORDER BY id', $id));
+		$sections = $model->query(sprintf('SELECT * FROM section_list WHERE page_id = "%s" ORDER BY id', $id));
 		if($sections->RecordCount()){
 			while($section = $sections->FetchRow()){
 				
 				// pull the section for the database
-				$section_results = $this->APP->model->query(sprintf('SELECT * FROM section_%s WHERE id = "%s"',
+				$section_results = $model->query(sprintf('SELECT * FROM section_%s WHERE id = "%s"',
 																strtolower($section['section_type']), $section['section_id']));
 				if($section_results->RecordCount()){
 					while($section_content = $section_results->FetchRow()){
@@ -162,7 +156,7 @@ class Pages_Admin {
 		}
 		
 		// add in section field names so our form handler can see them
-		foreach($this->APP->director->getPageSections() as $section_field){
+		foreach(director()->getPageSections() as $section_field){
 			$this->APP->form->addField($section_field['option_value']);
 		}
 
@@ -195,9 +189,9 @@ class Pages_Admin {
 				if($this->APP->form->save($id)){
 					
 					// remove all current sections references
-					$this->APP->model->query(sprintf('DELETE FROM section_list WHERE page_id = "%s"', $id));
+					$model->query(sprintf('DELETE FROM section_list WHERE page_id = "%s"', $id));
 					
-					$sections = $this->APP->director->savePageSections($id);
+					$sections = director()->savePageSections($id);
 						
 					// store references to the specifc sections
 					foreach($sections as $key => $section){
@@ -211,7 +205,7 @@ class Pages_Admin {
 								$this->APP->security->dbescape($section['called_in_template']),
 								$this->APP->security->dbescape($section['placement_group']));
 							
-						$this->APP->model->query($sql);
+						$model->query($sql);
 					}
 
 					$this->APP->sml->addNewMessage('Page changes have been saved successfully. ' .
@@ -309,7 +303,7 @@ class Pages_Admin {
 		
 		
 		// save the data back
-		$this->APP->model->query(sprintf('
+		$model->query(sprintf('
 			INSERT INTO section_imagetext_editor (page_id, title, date_created, content, show_title, image_filename, image_thumbname, image_alt, template)
 			VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")',
 				$this->APP->security->dbescape($page_id),
@@ -345,7 +339,7 @@ class Pages_Admin {
 		
 		$section['show_title'] = isset($section['show_title']) ? $section['show_title'] : false;
 			
-		$this->APP->model->query(sprintf('
+		$model->query(sprintf('
 			INSERT INTO section_basic_editor (page_id, title, date_created, content, show_title, template)
 			VALUES ("%s", "%s", "%s", "%s", "%s", "%s")',
 				$this->APP->security->dbescape($page_id),
@@ -371,10 +365,10 @@ class Pages_Admin {
 	 * @param integer $id
 	 */
 	public function ajax_removeSection($id){
-		$section = $this->APP->model->quickSelectSingle('section_list', $id);
+		$section = $model->quickSelectSingle('section_list', $id);
 		if(is_array($section)){
-			$section = $this->APP->model->delete('section_'.$section['section_type'], $section['section_id']);
-			$section = $this->APP->model->delete('section_list', $id);
+			$section = $model->delete('section_'.$section['section_type'], $section['section_id']);
+			$section = $model->delete('section_list', $id);
 		}
 	}
 	
@@ -501,7 +495,7 @@ class Pages_Admin {
 		
 		
 		// obtain original state
-		$page = $this->APP->model->quickSelectSingle('pages', $id, 'page_id');
+		$page = $model->quickSelectSingle('pages', $id, 'page_id');
 		
 		if($page){
 		
@@ -536,9 +530,9 @@ class Pages_Admin {
 		
 		$xml = '';
 		
-		$this->APP->model->select('pages');
-		$this->APP->model->where('parent_id' , $id);
-		$pages = $this->APP->model->results();
+		$model = model()->open('pages');
+		$model->where('parent_id' , $id);
+		$pages = $model->results();
 		
 		if($pages['RECORDS']){
 			foreach($pages['RECORDS'] as $page){
@@ -565,9 +559,9 @@ class Pages_Admin {
 	 */
 	private function loadPages(){
 
-		$this->APP->model->select('pages');
-		$this->APP->model->orderBy('page_sort_order', 'ASC', 'pages:list');
-		$this->pages = $this->APP->model->results();
+		$model = model()->open('pages');
+		$model->orderBy('page_sort_order', 'ASC', 'pages:list');
+		$this->pages = $model->results();
 		$this->pages = $this->pages['RECORDS'];
 
 		if($this->pages){
@@ -677,9 +671,9 @@ class Pages_Admin {
 		$template = $template ? $template : $this->APP->form->cv('page_template');
 
 		$next_id = isset($section['meta']['id']) ? $section['meta']['id'] : $next_id;
-		$this->APP->model->select('template_placement_group');
-		$this->APP->model->where('template', $template);
-		$placement_groups = $this->APP->model->results();
+		$model = model()->open('template_placement_group');
+		$model->where('template', $template);
+		$placement_groups = $model->results();
 		$templates = $this->APP->display->sectionTemplates('modules/pages');
 		
 		if($type == 'basic_editor'){
@@ -701,7 +695,7 @@ class Pages_Admin {
 	 */
 	public function ajax_loadBlankSection($section = false, $next_id = 0, $page_id = false, $template = false){
 		if($section){
-			$this->APP->director->loadPageSection($section, $next_id, false, $page_id, $template);
+			director()->loadPageSection($section, $next_id, false, $page_id, $template);
 		}
 	}
 	
@@ -713,9 +707,9 @@ class Pages_Admin {
 	 */
 	public function ajax_getPlacementGroups($template = false){
 		
-		$this->APP->model->select('template_placement_group');
-		$this->APP->model->where('template', $template);
-		$placement_groups = $this->APP->model->results();
+		$model = model()->open('template_placement_group');
+		$model->where('template', $template);
+		$placement_groups = $model->results();
 		
 		$groups = '';
 		if($placement_groups['RECORDS']){

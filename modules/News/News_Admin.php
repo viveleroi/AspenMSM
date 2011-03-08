@@ -19,7 +19,7 @@ class News_Admin {
 	 */
 	public function __construct(){
 		$this->APP = get_instance();
-		$this->APP->director->registerPageSection(__CLASS__, 'News Display', 'news_display');
+		director()->registerPageSection(__CLASS__, 'News Display', 'news_display');
 		$this->APP->setConfig('enable_uploads', true); // enable uploads
 		if(router()->module() == __CLASS__){
 			$this->APP->setConfig('upload_server_path', APPLICATION_PATH.DS.'files'.DS.'news');
@@ -35,15 +35,15 @@ class News_Admin {
 	
 		$data = array();
 		
-		$this->APP->model->select('news');
-		$this->APP->model->orderBy('timestamp', 'DESC');
-		$this->APP->model->limit(0,5);
-		$data['cur_news'] = $this->APP->model->results();
+		$model = model()->open('news');
+		$model->orderBy('timestamp', 'DESC');
+		$model->limit(0,5);
+		$data['cur_news'] = $model->results();
 		
-		$this->APP->model->select('news');
-		$this->APP->model->orderBy('timestamp', 'DESC');
-		$this->APP->model->limit(5,100);
-		$data['past_news'] = $this->APP->model->results();
+		$model = model()->open('news');
+		$model->orderBy('timestamp', 'DESC');
+		$model->limit(5,100);
+		$data['past_news'] = $model->results();
 		
 		if(!$this->APP->file->setUploadDirectory()){
 			$this->APP->sml->addNewMessage("The file upload directory does not appear to be writable. Please create the folder and set proper permissions.");
@@ -90,7 +90,7 @@ class News_Admin {
 				}
 				
 				// set html security rules
-				$this->APP->model->setSecurityRule('body', 'allow_html', true);
+				$model->setSecurityRule('body', 'allow_html', true);
 	
 				// insert a new record with available data
 				if($this->APP->form->save()){
@@ -146,7 +146,7 @@ class News_Admin {
 				}
 				
 				// set html security rules
-				$this->APP->model->setSecurityRule('body', 'allow_html', true);
+				$model->setSecurityRule('body', 'allow_html', true);
 
 				// insert a new record with available data
 				if($this->APP->form->save($id)){
@@ -174,7 +174,7 @@ class News_Admin {
 	 * @access public
 	 */
 	public function delete($id = false){
-		if($this->APP->model->delete('news', $id)){
+		if($model->delete('news', $id)){
 			$this->APP->sml->addNewMessage('News entry has successfully been deleted.');
 			router()->redirect('view');
 		}
@@ -191,11 +191,11 @@ class News_Admin {
 		
 		// obtain original state
 		$public = 0;
-		$record = $this->APP->model->quickSelectSingle('news', $id, 'news_id');
+		$record = $model->quickSelectSingle('news', $id, 'news_id');
 		
 		if($record){
 			$public = ($record['public'] == 1 ? 0 : 1);
-			$this->APP->model->executeUpdate('news', array('public'=>$public), $id, 'news_id');
+			$model->executeUpdate('news', array('public'=>$public), $id, 'news_id');
 		}
 		
 		$xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'."\n";
@@ -220,9 +220,9 @@ class News_Admin {
 		$template = $template ? $template : $this->APP->form->cv('page_template');
 		
 		$next_id = isset($section['meta']['id']) ? $section['meta']['id'] : $next_id;
-		$this->APP->model->select('template_placement_group');
-		$this->APP->model->where('template', $template);
-		$placement_groups = $this->APP->model->results();
+		$model = model()->open('template_placement_group');
+		$model->where('template', $template);
+		$placement_groups = $model->results();
 		$templates = $this->APP->display->sectionTemplates('modules/news');
 		
 		include(dirname(__FILE__).DS.'templates_admin'.DS.'section_news.tpl.php');
@@ -247,7 +247,7 @@ class News_Admin {
 			$section['show_title'] = isset($section['show_title']) ? $section['show_title'] : false;
 			$section['show_description'] = isset($section['show_description']) ? $section['show_description'] : false;
 			
-			$this->APP->model->query(sprintf('
+			$model->query(sprintf('
 				INSERT INTO section_news_display (page_id, title, display_num, link_to_full_page, detail_page_id, show_title, show_description, template)
 				VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")',
 					$this->APP->security->dbescape($page_id),
@@ -290,7 +290,7 @@ class News_Admin {
 			  `public` tinyint(1) NOT NULL,
 			  PRIMARY KEY  (`news_id`)
 			) ENGINE=MyISAM DEFAULT CHARSET=latin1;';
-		$success = $this->APP->model->query($sql);
+		$success = $model->query($sql);
 		
 		
 		$sql = "
@@ -306,11 +306,11 @@ class News_Admin {
 			  `template` varchar(155) NOT NULL,
 			  PRIMARY KEY  (`id`)
 			) ENGINE=MyISAM  DEFAULT CHARSET=latin1;";
-		$success = $this->APP->model->query($sql);
+		$success = $model->query($sql);
 		
 		
 		$sql = "INSERT INTO `permissions` (`user_id`, `group_id`, `interface`, `module`, `method`) VALUES (0, 2, 'Admin', 'News', '*');";
-		$success = $this->APP->model->query($sql);
+		$success = $model->query($sql);
 		
 		// Autoload this class with the Pages module
 		if($success){
@@ -329,9 +329,9 @@ class News_Admin {
 	 */
 	public function uninstall($my_guid = false){
 		
-		$this->APP->model->query('DROP TABLE `news`');
-		$this->APP->model->query('DROP TABLE `section_news_display`');
-		$this->APP->model->query('DELETE FROM section_list WHERE type = "news_display"');
+		$model->query('DROP TABLE `news`');
+		$model->query('DROP TABLE `section_news_display`');
+		$model->query('DELETE FROM section_list WHERE type = "news_display"');
 		
 		return true;
 		

@@ -21,8 +21,8 @@ class Courses_Admin {
 	 */
 	public function __construct(){
 		$this->APP = get_instance();
-		$this->APP->director->registerPageSection(__CLASS__, 'Course Display', 'course_display');
-		$this->APP->director->registerPageSection(__CLASS__, 'Course List Display', 'courselist_display');
+		director()->registerPageSection(__CLASS__, 'Course Display', 'course_display');
+		director()->registerPageSection(__CLASS__, 'Course List Display', 'courselist_display');
 		$this->APP->setConfig('enable_uploads', true); // enable uploads
 	}
 
@@ -33,22 +33,22 @@ class Courses_Admin {
 	 */
 	public function view(){
 		
-		$this->APP->model->select('courses');
-		$this->APP->model->orderBy('title');
-		$data['course_list'] = $this->APP->model->results();
+		$model = model()->open('courses');
+		$model->orderBy('title');
+		$data['course_list'] = $model->results();
 		
 		// pull the menus
-		$this->APP->model->select('course_groups');
-		$groups = $this->APP->model->results();
+		$model = model()->open('course_groups');
+		$groups = $model->results();
 		
 		if($groups['RECORDS']){
 			foreach($groups['RECORDS'] as $g_id => $group){
 				
-				$this->APP->model->select('courses');
-				$this->APP->model->leftJoin('course_groups_link', 'course_id', 'id', array('group_id'));
-				$this->APP->model->where('group_id', $g_id);
-				$this->APP->model->orderBy('name');
-				$groups['RECORDS'][$g_id]['courses'] = $this->APP->model->results();
+				$model = model()->open('courses');
+				$model->leftJoin('course_groups_link', 'course_id', 'id', array('group_id'));
+				$model->where('group_id', $g_id);
+				$model->orderBy('name');
+				$groups['RECORDS'][$g_id]['courses'] = $model->results();
 				
 			}
 		}
@@ -82,9 +82,9 @@ class Courses_Admin {
 			$this->APP->form->loadRecord('courses', $id);
 			
 			// grab existing groups settings
-			$this->APP->model->select('course_groups_link');
-			$this->APP->model->where('course_id', $id);
-			$group_records = $this->APP->model->results();
+			$model = model()->open('course_groups_link');
+			$model->where('course_id', $id);
+			$group_records = $model->results();
 			
 			$groups = array();
 			if($group_records['RECORDS']){
@@ -110,11 +110,11 @@ class Courses_Admin {
 						$id = $id ? $id : $res_id;
 						
 						// update course groups
-						$this->APP->model->delete('course_groups_link', $id, 'course_id');
+						$model->delete('course_groups_link', $id, 'course_id');
 						$groups = $this->APP->form->cv('groups');
 						foreach($groups as $group){
 							$sql = sprintf('INSERT INTO course_groups_link (course_id, group_id) VALUES ("%s", "%s")', $id, $group);
-							$this->APP->model->query($sql);
+							$model->query($sql);
 						}
 				      
 						// if successful insert, redirect to the list
@@ -141,7 +141,7 @@ class Courses_Admin {
 	 * @access public
 	 */
 	public function delete($id){
-		$this->APP->model->delete('courses', $id);
+		$model->delete('courses', $id);
 		$this->APP->sml->addNewMessage('The course has successfully been deleted.');
 		router()->redirect('view');
 	}
@@ -158,11 +158,11 @@ class Courses_Admin {
 		
 		// obtain original state
 		$public = 0;
-		$record = $this->APP->model->quickSelectSingle('courses', $id, 'id');
+		$record = $model->quickSelectSingle('courses', $id, 'id');
 		
 		if($record){
 			$public = ($record['public'] == 1 ? 0 : 1);
-			$this->APP->model->executeUpdate('courses', array('public'=>$public), $id, 'id');
+			$model->executeUpdate('courses', array('public'=>$public), $id, 'id');
 		}
 		
 		$xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'."\n";
@@ -187,9 +187,9 @@ class Courses_Admin {
 		$template = $template ? $template : $this->APP->form->cv('page_template');
 		
 		$next_id = isset($section['meta']['id']) ? $section['meta']['id'] : $next_id;
-		$this->APP->model->select('template_placement_group');
-		$this->APP->model->where('template', $template);
-		$placement_groups = $this->APP->model->results();
+		$model = model()->open('template_placement_group');
+		$model->where('template', $template);
+		$placement_groups = $model->results();
 		
 		$templates = $this->APP->display->sectionTemplates('modules/courses');
 		include(dirname(__FILE__).DS.'templates_admin'.DS.'section_menu.tpl.php');
@@ -244,7 +244,7 @@ class Courses_Admin {
 			
 			$section['show_title'] = isset($section['show_title']) ? $section['show_title'] : false;
 			
-			$this->APP->model->query(sprintf('
+			$model->query(sprintf('
 				INSERT INTO section_course_display (page_id, title, show_title, template, course_id)
 				VALUES ("%s", "%s", "%s", "%s", "%s")',
 					$this->APP->security->dbescape($page_id),
@@ -282,7 +282,7 @@ class Courses_Admin {
 			
 			$section['show_title'] = isset($section['show_title']) ? $section['show_title'] : false;
 			
-			$this->APP->model->query(sprintf('
+			$model->query(sprintf('
 				INSERT INTO section_courselist_display (page_id, title, show_title, template, group_id)
 				VALUES ("%s", "%s", "%s", "%s", "%s")',
 					$this->APP->security->dbescape($page_id),
@@ -320,7 +320,7 @@ class Courses_Admin {
 			  `description` varchar(255) NOT NULL,
 			  PRIMARY KEY  (`id`)
 			) ENGINE=MyISAM AUTO_INCREMENT=59 DEFAULT CHARSET=utf8;";
-		$success = $this->APP->model->query($sql);
+		$success = $model->query($sql);
 		
 		
 		$sql = "
@@ -330,7 +330,7 @@ class Courses_Admin {
 			  `group_id` int(10) unsigned NOT NULL,
 			  PRIMARY KEY  (`id`)
 			) ENGINE=MyISAM AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;";
-		$success = $this->APP->model->query($sql);
+		$success = $model->query($sql);
 		
 		
 		$sql = "
@@ -351,7 +351,7 @@ class Courses_Admin {
 			  `public` tinyint(1) NOT NULL,
 			  PRIMARY KEY  (`id`)
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
-		$success = $this->APP->model->query($sql);
+		$success = $model->query($sql);
 		
 		
 		$sql = "
@@ -364,7 +364,7 @@ class Courses_Admin {
 			  `course_id` int(11) NOT NULL,
 			  PRIMARY KEY  (`id`)
 			) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
-		$success = $this->APP->model->query($sql);
+		$success = $model->query($sql);
 		
 		$sql = "
 			CREATE TABLE `section_courselist_display` (
@@ -376,11 +376,11 @@ class Courses_Admin {
 			  `group_id` int(11) NOT NULL,
 			  PRIMARY KEY  (`id`)
 			) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
-		$success = $this->APP->model->query($sql);
+		$success = $model->query($sql);
 		
 		
 		$sql = "INSERT INTO `permissions` (`user_id`, `group_id`, `interface`, `module`, `method`) VALUES (0, 2, 'Admin', 'Menus', '*');";
-		$success = $this->APP->model->query($sql);
+		$success = $model->query($sql);
 		
 		// Autoload this class with the Pages module
 		if($success){
@@ -400,14 +400,14 @@ class Courses_Admin {
 	 */
 	public function uninstall($my_guid = false){
 		
-		$this->APP->model->query('DROP TABLE `course_groups`');
-		$this->APP->model->query('DROP TABLE `course_groups_link`');
-		$this->APP->model->query('DROP TABLE `courses`');
-		$this->APP->model->query('DROP TABLE `section_course_display`');
-		$this->APP->model->query('DROP TABLE `section_courselist_display`');
+		$model->query('DROP TABLE `course_groups`');
+		$model->query('DROP TABLE `course_groups_link`');
+		$model->query('DROP TABLE `courses`');
+		$model->query('DROP TABLE `section_course_display`');
+		$model->query('DROP TABLE `section_courselist_display`');
 		
-		$this->APP->model->query('DELETE FROM section_list WHERE type = "course_display"');
-		$this->APP->model->query('DELETE FROM section_list WHERE type = "courselist_display"');
+		$model->query('DELETE FROM section_list WHERE type = "course_display"');
+		$model->query('DELETE FROM section_list WHERE type = "courselist_display"');
 		
 		return true;
 		

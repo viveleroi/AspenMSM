@@ -1,7 +1,5 @@
 <?xml version="1.0"?>
-
 <package>
-
 	<type>Module</type>
 	<guid>2f406120-3f1e-11dd-ae16-0800200c9a66</guid>
 	<classname>Cms</classname>
@@ -11,12 +9,14 @@
 	<vendor>Trellis Development, LLC</vendor>
 	<pressUrl>http://www.trellisdevelopment.com</pressUrl>
 	<updateUrl>http://www.trellisdevelopment.com</updateUrl>
-
 	<targetApplication>
 		<name>AspenMSM</name>
 		<guid>a4cd8de0-197b-11de-8c30-0800200c9a66</guid>
 		<minVersion>1.0.0</minVersion>
 		<maxVersion>1.0.0</maxVersion>
 	</targetApplication>
-
+	<library>
+		<classname>Director</classname>
+		<autoload>true</autoload>
+	</library>
 </package>

@@ -20,7 +20,7 @@
 	
 	// default module if none specific in URL
 	if(LOADING_SECTION == 'Admin'){
-		$config['default_module'] = 'Pages_Admin';
+		$config['default_module'] = 'Pages';
 	}
 	
 	// text w/image thumbnail size
@@ -121,7 +121,6 @@
 	//$config['load_add_core_class'][] = array('classname' => 'Json', 'folder' => 'formats');
 	
 //	$config['load_add_core_class'][] = array('classname' => 'Thumbnail', 'autoload' => false);
-//	$config['load_add_core_class'][] = array('classname' => 'Director');
 //	$config['load_add_core_class'][] = array('classname' => 'Search');
 //	$config['load_add_core_class'][] = array('classname' => 'Cms_lib');
 //	$config['load_add_core_class'][] = array('classname' => 'Pages_lib');

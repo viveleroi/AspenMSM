@@ -115,7 +115,7 @@
 						foreach($sections as $section){
 							
 							print '<li id="editor_'.$section['meta']['id'].'_sort" class="list">' . "\n";
-							$this->APP->director->loadPageSection($section['meta']['section_type'], false, $section);
+							director()->loadPageSection($section['meta']['section_type'], false, $section);
 							print '</li>';
 		
 						}

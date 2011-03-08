@@ -21,8 +21,8 @@ class Pages {
 	 */
 	public function __construct(){
 		$this->APP = get_instance();
-		$this->APP->director->registerCmsSection(__CLASS__, 'basic_editor');
-		$this->APP->director->registerCmsSection(__CLASS__, 'imagetext_editor');
+		director()->registerCmsSection(__CLASS__, 'basic_editor');
+		director()->registerCmsSection(__CLASS__, 'imagetext_editor');
 	}
 	
 	
@@ -53,7 +53,7 @@ class Pages {
 		$data = array();
 	
 		// pull the section for the database
-		$section_results = $this->APP->model->query(sprintf('SELECT * FROM section_basic_editor WHERE id = "%s"', $section_data['section_id']));
+		$section_results = $model->query(sprintf('SELECT * FROM section_basic_editor WHERE id = "%s"', $section_data['section_id']));
 		if($section_results->RecordCount()){
 			while($section_content = $section_results->FetchRow()){
 				
@@ -83,7 +83,7 @@ class Pages {
 		$data = array();
 	
 		// pull the section for the database
-		$section_results = $this->APP->model->query(sprintf('SELECT * FROM section_imagetext_editor WHERE id = "%s"', $section_data['section_id']));
+		$section_results = $model->query(sprintf('SELECT * FROM section_imagetext_editor WHERE id = "%s"', $section_data['section_id']));
 		if($section_results->RecordCount()){
 			while($section_content = $section_results->FetchRow()){
 				

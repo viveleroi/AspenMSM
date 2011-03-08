@@ -15,8 +15,8 @@ class Contacts extends Display {
 	 */
 	public function __construct(){
 		parent::__construct();
-		$this->APP->director->registerCmsSection(__CLASS__, 'contacts_display');
-		$this->APP->director->registerCmsSection(__CLASS__, 'contactgroup_display');
+		director()->registerCmsSection(__CLASS__, 'contacts_display');
+		director()->registerCmsSection(__CLASS__, 'contactgroup_display');
 	}
 	
 	
@@ -44,7 +44,7 @@ class Contacts extends Display {
 		
 		$data = array();
 
-		$section_results = $this->APP->model->query(sprintf('SELECT * FROM section_%s WHERE id = "%s"', $section_data['section_type'], $section_data['section_id']));
+		$section_results = $model->query(sprintf('SELECT * FROM section_%s WHERE id = "%s"', $section_data['section_type'], $section_data['section_id']));
 
 		if($section_results->RecordCount()){
 			while($section_content = $section_results->FetchRow()){
@@ -52,9 +52,9 @@ class Contacts extends Display {
 				$section_content['type'] = $section_data['section_type'];
 				$section_content['placement_group'] = $section_data['group_name'];
 
-				$this->APP->model->select('contacts');
-				$this->APP->model->where('id', $section_content['contact_id']);
-				$results = $this->APP->model->results();
+				$model = model()->open('contacts');
+				$model->where('id', $section_content['contact_id']);
+				$results = $model->results();
 				
 				$section_content['results'] = $results['RECORDS'];
 
@@ -64,7 +64,7 @@ class Contacts extends Display {
 						$results['RECORDS'][$key] = array_merge($results['RECORDS'][$key], $related);
 					}
 				} else {
-					$results = $this->APP->model->quickSelectSingle('contacts', $this->APP->cms_lib->getUriBit(1));
+					$results = $model->quickSelectSingle('contacts', $this->APP->cms_lib->getUriBit(1));
 					if($results){
 						$related = $this->pullRelatedContactContent($results['id']);
 						$results = array_merge($results, $related);
@@ -93,7 +93,7 @@ class Contacts extends Display {
 		
 		$data = array();
 
-		$section_results = $this->APP->model->query(sprintf('SELECT * FROM section_%s WHERE id = "%s"', $section_data['section_type'], $section_data['section_id']));
+		$section_results = $model->query(sprintf('SELECT * FROM section_%s WHERE id = "%s"', $section_data['section_type'], $section_data['section_id']));
 		
 		if($section_results->RecordCount()){
 			while($section_content = $section_results->FetchRow()){
@@ -102,24 +102,24 @@ class Contacts extends Display {
 				$section_content['placement_group'] = $section_data['group_name'];
 
 				// pull the groups
-				$this->APP->model->select('contact_groups');
-				$this->APP->model->where('id', $section_content['group_id']);
-				$groups = $this->APP->model->results();
+				$model = model()->open('contact_groups');
+				$model->where('id', $section_content['group_id']);
+				$groups = $model->results();
 				
 				if($groups['RECORDS']){
 					foreach($groups['RECORDS'] as $g_id => $group){
 						
-						$this->APP->model->select('contacts');
-						$this->APP->model->leftJoin('contact_groups_link', 'contact_id', 'id', array('group_id'));
-						$this->APP->model->where('group_id', $g_id);
+						$model = model()->open('contacts');
+						$model->leftJoin('contact_groups_link', 'contact_id', 'id', array('group_id'));
+						$model->where('group_id', $g_id);
 
 						if($section_content['sort_method'] == 'sort_order'){
-							$this->APP->model->orderBy('sort_order, last_name, first_name');
+							$model->orderBy('sort_order, last_name, first_name');
 						} else {
-							$this->APP->model->orderBy('last_name, first_name');
+							$model->orderBy('last_name, first_name');
 						}
 						
-						$groups['RECORDS'][$g_id]['contacts'] = $this->APP->model->results();
+						$groups['RECORDS'][$g_id]['contacts'] = $model->results();
 						
 						if($groups['RECORDS'][$g_id]['contacts']['RECORDS']){
 							foreach($groups['RECORDS'][$g_id]['contacts']['RECORDS'] as $key => $contact){
@@ -156,27 +156,27 @@ class Contacts extends Display {
 		$content = array();
 
 		// pull images
-		$this->APP->model->select('contact_images');
-		$this->APP->model->where('contact_id', $contact_id);
-		$content['images'] = $this->APP->model->results();
+		$model = model()->open('contact_images');
+		$model->where('contact_id', $contact_id);
+		$content['images'] = $model->results();
 
 		// pull languages
-		$this->APP->model->select('contact_languages');
-		$this->APP->model->leftJoin('contact_languages_link', 'language_id', 'id', array('contact_id'));
-		$this->APP->model->where('contact_languages_link.contact_id', $contact_id);
-		$content['languages'] = $this->APP->model->results();
+		$model = model()->open('contact_languages');
+		$model->leftJoin('contact_languages_link', 'language_id', 'id', array('contact_id'));
+		$model->where('contact_languages_link.contact_id', $contact_id);
+		$content['languages'] = $model->results();
 
 		// pull groups
-		$this->APP->model->select('contact_groups');
-		$this->APP->model->leftJoin('contact_groups_link', 'group_id', 'id', array('contact_id'));
-		$this->APP->model->where('contact_groups_link.contact_id', $contact_id);
-		$content['groups'] = $this->APP->model->results();
+		$model = model()->open('contact_groups');
+		$model->leftJoin('contact_groups_link', 'group_id', 'id', array('contact_id'));
+		$model->where('contact_groups_link.contact_id', $contact_id);
+		$content['groups'] = $model->results();
 
 		// pull specialties
-		$this->APP->model->select('contact_specialties');
-		$this->APP->model->leftJoin('contact_specialties_link', 'specialty_id', 'id', array('contact_id'));
-		$this->APP->model->where('contact_specialties_link.contact_id', $contact_id);
-		$content['specialties'] = $this->APP->model->results();
+		$model = model()->open('contact_specialties');
+		$model->leftJoin('contact_specialties_link', 'specialty_id', 'id', array('contact_id'));
+		$model->where('contact_specialties_link.contact_id', $contact_id);
+		$content['specialties'] = $model->results();
 
 		return $content;
 
@@ -204,9 +204,9 @@ class Contacts extends Display {
 	 * @return <type> 
 	 */
 	public function specialtyList(){
-		$this->APP->model->select('contact_specialties');
-		$this->APP->model->orderBy('specialty');
-		return $this->APP->model->results();
+		$model = model()->open('contact_specialties');
+		$model->orderBy('specialty');
+		return $model->results();
 	}
 	
 	
@@ -227,39 +227,39 @@ class Contacts extends Display {
 			}
 		}
 
-		$this->APP->model->enablePagination();
-		$this->APP->model->select('contacts');
+		$model->enablePagination();
+		$model = model()->open('contacts');
 
 		if($group){
-			$this->APP->model->leftJoin('contact_groups_link', 'contact_id', 'id', array('group_id'));
-			$this->APP->model->where('contact_groups_link.group_id', $group);
+			$model->leftJoin('contact_groups_link', 'contact_id', 'id', array('group_id'));
+			$model->where('contact_groups_link.group_id', $group);
 		}
 
 		if($first_name){
-			$this->APP->model->where('first_name', $first_name);
+			$model->where('first_name', $first_name);
 		}
 
 		if($last_name){
-			$this->APP->model->where('last_name', $last_name);
+			$model->where('last_name', $last_name);
 		}
 
 		if($specialty){
-			$this->APP->model->leftJoin('contact_specialties_link', 'contact_id', 'id', array('specialty_id'));
-			$this->APP->model->where('contact_specialties_link.specialty_id', $specialty);
+			$model->leftJoin('contact_specialties_link', 'contact_id', 'id', array('specialty_id'));
+			$model->where('contact_specialties_link.specialty_id', $specialty);
 		} else {
-			$this->APP->model->leftJoin('contact_specialties_link', 'contact_id', 'id', array('specialty_id'));
-			$this->APP->model->leftJoin('contact_specialties', 'id', 'specialty_id', array('specialty'), 'contact_specialties_link');
-			$this->APP->model->where('contact_specialties.specialty', $keyword);
+			$model->leftJoin('contact_specialties_link', 'contact_id', 'id', array('specialty_id'));
+			$model->leftJoin('contact_specialties', 'id', 'specialty_id', array('specialty'), 'contact_specialties_link');
+			$model->where('contact_specialties.specialty', $keyword);
 		}
 
 		if($keyword && !$first_name && !$last_name){
-			$this->APP->model->match($keyword, false, 'AND', array('contact_specialties.specialty'));
+			$model->match($keyword, false, 'AND', array('contact_specialties.specialty'));
 		}
 
-		$this->APP->model->paginate($this->APP->params->get->getRaw('page'), $this->APP->config('search_results_per_page'));
-		$this->APP->model->orderBy('match_relevance DESC, last_name, first_name');
-//		print $this->APP->model->getBuildQuery();
-		$results = $this->APP->model->results();
+		$model->paginate($this->APP->params->get->getRaw('page'), $this->APP->config('search_results_per_page'));
+		$model->orderBy('match_relevance DESC, last_name, first_name');
+//		print $model->getBuildQuery();
+		$results = $model->results();
 
 		if($results['RECORDS']){
 			foreach($results['RECORDS'] as $key => $contact){

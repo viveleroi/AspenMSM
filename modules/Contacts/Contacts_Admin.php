@@ -21,8 +21,8 @@ class Contacts_Admin {
 	 */
 	public function __construct(){
 		$this->APP = get_instance();
-		$this->APP->director->registerPageSection(__CLASS__, 'Contact Display', 'contacts_display');
-		$this->APP->director->registerPageSection(__CLASS__, 'Contact Group Display', 'contactgroup_display');
+		director()->registerPageSection(__CLASS__, 'Contact Display', 'contacts_display');
+		director()->registerPageSection(__CLASS__, 'Contact Group Display', 'contactgroup_display');
 		$this->APP->setConfig('enable_uploads', true); // enable uploads
 	}
 
@@ -33,23 +33,23 @@ class Contacts_Admin {
 	 */
 	public function view(){
 		
-		$this->APP->model->select('contacts');
-		$this->APP->model->orderBy('last_name');
-		$data['directory_list'] = $this->APP->model->results();
+		$model = model()->open('contacts');
+		$model->orderBy('last_name');
+		$data['directory_list'] = $model->results();
 		
 		// pull the groups
-		$this->APP->model->select('contact_groups');
-		$this->APP->model->orderBy('name');
-		$groups = $this->APP->model->results();
+		$model = model()->open('contact_groups');
+		$model->orderBy('name');
+		$groups = $model->results();
 		
 		if($groups['RECORDS']){
 			foreach($groups['RECORDS'] as $g_id => $group){
 				
-				$this->APP->model->select('contacts');
-				$this->APP->model->leftJoin('contact_groups_link', 'contact_id', 'id', array('group_id'));
-				$this->APP->model->where('group_id', $g_id);
-				$this->APP->model->orderBy('sort_order, last_name, first_name');
-				$groups['RECORDS'][$g_id]['contacts'] = $this->APP->model->results();
+				$model = model()->open('contacts');
+				$model->leftJoin('contact_groups_link', 'contact_id', 'id', array('group_id'));
+				$model->where('group_id', $g_id);
+				$model->orderBy('sort_order, last_name, first_name');
+				$groups['RECORDS'][$g_id]['contacts'] = $model->results();
 				
 			}
 		}
@@ -83,9 +83,9 @@ class Contacts_Admin {
 		$this->APP->form->loadRecord('contacts', $id);
 
 		// grab existing language settings
-		$this->APP->model->select('contact_languages_link');
-		$this->APP->model->where('contact_id', $id);
-		$languages_records = $this->APP->model->results();
+		$model = model()->open('contact_languages_link');
+		$model->where('contact_id', $id);
+		$languages_records = $model->results();
 
 		$languages = array();
 		if($languages_records['RECORDS']){
@@ -97,9 +97,9 @@ class Contacts_Admin {
 
 
 		// grab existing groups settings
-		$this->APP->model->select('contact_groups_link');
-		$this->APP->model->where('contact_id', $id);
-		$groups_records = $this->APP->model->results();
+		$model = model()->open('contact_groups_link');
+		$model->where('contact_id', $id);
+		$groups_records = $model->results();
 
 		$groups = array();
 		if($groups_records['RECORDS']){
@@ -111,9 +111,9 @@ class Contacts_Admin {
 
 
 		// grab existing specialty settings
-		$this->APP->model->select('contact_specialties_link');
-		$this->APP->model->where('contact_id', $id);
-		$specs_records = $this->APP->model->results();
+		$model = model()->open('contact_specialties_link');
+		$model->where('contact_id', $id);
+		$specs_records = $model->results();
 
 		$specialties = array();
 		if($specs_records['RECORDS']){
@@ -142,7 +142,7 @@ class Contacts_Admin {
 			}
 
 			// set html security rules
-			$this->APP->model->setSecurityRule('bio', 'allow_html', true);
+			$model->setSecurityRule('bio', 'allow_html', true);
 
 			// if we have no errors, process sql
 			if(!$this->APP->form->error()){
@@ -151,27 +151,27 @@ class Contacts_Admin {
 					$id = $id ? $id : $res_id;
 
 					// update languages
-					$this->APP->model->delete('contact_languages_link', $id, 'contact_id');
+					$model->delete('contact_languages_link', $id, 'contact_id');
 					$languages = $this->APP->form->cv('languages');
 					foreach($languages as $language){
 						$sql = sprintf('INSERT INTO contact_languages_link (contact_id, language_id) VALUES ("%s", "%s")', $id, $language);
-						$this->APP->model->query($sql);
+						$model->query($sql);
 					}
 
 					// update groups
-					$this->APP->model->delete('contact_groups_link', $id, 'contact_id');
+					$model->delete('contact_groups_link', $id, 'contact_id');
 					$groups = $this->APP->form->cv('groups');
 					foreach($groups as $group){
 						$sql = sprintf('INSERT INTO contact_groups_link (contact_id, group_id) VALUES ("%s", "%s")', $id, $group);
-						$this->APP->model->query($sql);
+						$model->query($sql);
 					}
 
 					// update specialties
-					$this->APP->model->delete('contact_specialties_link', $id, 'contact_id');
+					$model->delete('contact_specialties_link', $id, 'contact_id');
 					$specialties = $this->APP->form->cv('specialties');
 					foreach($specialties as $specialty){
 						$sql = sprintf('INSERT INTO contact_specialties_link (contact_id, specialty_id) VALUES ("%s", "%s")', $id, $specialty);
-						$this->APP->model->query($sql);
+						$model->query($sql);
 					}
 
 					// upload file
@@ -192,16 +192,16 @@ class Contacts_Admin {
 						foreach($uploads as $file){
 
 							// delete previous images
-							$this->APP->model->select('contact_images');
-							$this->APP->model->where('contact_id', $id);
-							$images = $this->APP->model->results();
+							$model = model()->open('contact_images');
+							$model->where('contact_id', $id);
+							$images = $model->results();
 							
 							if (is_array($images['RECORDS'])){
 								foreach($images['RECORDS'] as $image){
 									$base = APPLICATION_PATH.DS.'files'.DS.'contacts'.DS.$image['contact_id'];
 									$this->APP->file->delete($base.DS.$image['filename_orig']);
 									$this->APP->file->delete($base.DS.$image['filename_thumb']);
-									$this->APP->model->delete('contact_images', $image['id']);
+									$model->delete('contact_images', $image['id']);
 								}
 							}
 
@@ -223,7 +223,7 @@ class Contacts_Admin {
 							$orig_create->save($orig_path);
 
 							// store image and thumb info to database
-							$this->APP->model->executeInsert('contact_images',
+							$model->executeInsert('contact_images',
 																	array(
 																		'contact_id'=>$id,
 																		'filename_orig'=>$orig_name,
@@ -248,9 +248,9 @@ class Contacts_Admin {
 		
 		// get images
 		if($id){
-			$this->APP->model->select('contact_images');
-			$this->APP->model->where('contact_id', $id);
-			$data['images'] = $this->APP->model->results();
+			$model = model()->open('contact_images');
+			$model->where('contact_id', $id);
+			$data['images'] = $model->results();
 		} else {
 			$data['images']['RECORDS'] = false;
 		}
@@ -269,7 +269,7 @@ class Contacts_Admin {
 	 * @access public
 	 */
 	public function delete($id){
-		$this->APP->model->delete('contacts', $id);
+		$model->delete('contacts', $id);
 		$this->APP->sml->addNewMessage('Contact has successfully been deleted.');
 		router()->redirect('view');
 	}
@@ -282,14 +282,14 @@ class Contacts_Admin {
 	 */
 	public function ajax_deleteImage($id){
 		
-		$image = $this->APP->model->quickSelectSingle('contact_images', $id);
+		$image = $model->quickSelectSingle('contact_images', $id);
 		$base = APPLICATION_PATH.DS.'files'.DS.'contacts'.DS.$image['contact_id'];
 
 		$this->APP->file->delete($base.DS.$image['filename_orig']);
 		$this->APP->file->delete($base.DS.$image['filename_thumb']);
 		$this->APP->file->delete($base);
 		
-		$this->APP->model->delete('contact_images', $id);
+		$model->delete('contact_images', $id);
 		
 		print 1;
 		
@@ -307,9 +307,9 @@ class Contacts_Admin {
 		$template = $template ? $template : $this->APP->form->cv('page_template');
 		
 		$next_id = isset($section['meta']['id']) ? $section['meta']['id'] : $next_id;
-		$this->APP->model->select('template_placement_group');
-		$this->APP->model->where('template', $template);
-		$placement_groups = $this->APP->model->results();
+		$model = model()->open('template_placement_group');
+		$model->where('template', $template);
+		$placement_groups = $model->results();
 		
 		if($type == 'contacts_display'){
 			$templates = $this->APP->display->sectionTemplates('modules/contacts/contacts');
@@ -360,7 +360,7 @@ class Contacts_Admin {
 			
 			$section['show_title'] = isset($section['show_title']) ? $section['show_title'] : false;
 			
-			$this->APP->model->query(sprintf('
+			$model->query(sprintf('
 				INSERT INTO section_contacts_display (page_id, title, show_title, template, link_to_full_page, detail_page_id, contact_id)
 				VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s")',
 					$this->APP->security->dbescape($page_id),
@@ -400,7 +400,7 @@ class Contacts_Admin {
 			
 			$section['show_title'] = isset($section['show_title']) ? $section['show_title'] : false;
 			
-			$this->APP->model->query(sprintf('
+			$model->query(sprintf('
 				INSERT INTO section_contactgroup_display (page_id, title, show_title, template, group_id, link_to_full_page, detail_page_id, sort_method)
 				VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")',
 					$this->APP->security->dbescape($page_id),
@@ -433,7 +433,7 @@ class Contacts_Admin {
 	
 		$id = false;
 		if(!empty($name)){
-			$id = $this->APP->model->executeInsert('contact_groups', array('name'=>$name));
+			$id = $model->executeInsert('contact_groups', array('name'=>$name));
 		}
 		
 		print json_encode( array('success'=>(bool)$id, 'id'=>$id, 'name'=>$name) );
@@ -450,7 +450,7 @@ class Contacts_Admin {
 		$sql = 'UPDATE contact_groups_link SET sort_order = "%d" WHERE contact_id = "%d" AND group_id = "%s"';
 		if(is_array($ul)){
 			foreach($ul as $key => $contact){
-				$this->APP->model->query( sprintf($sql, (int)$key, (int)$contact, (int)$group_id) );
+				$model->query( sprintf($sql, (int)$key, (int)$contact, (int)$group_id) );
 			}
 			$success = true;
 		}
@@ -466,10 +466,10 @@ class Contacts_Admin {
 	
 		$result = false;
 		if($id && ctype_digit($id)){
-			$result = $this->APP->model->delete('contact_groups', $id);
+			$result = $model->delete('contact_groups', $id);
 			
 			if($result){
-				$result = $this->APP->model->delete('contact_groups_link', $id, 'group_id');
+				$result = $model->delete('contact_groups_link', $id, 'group_id');
 			}
 		}
 		
@@ -492,10 +492,10 @@ class Contacts_Admin {
 		if($group && $contact){
 			
 			// first, ensure the contact is not already in the group
-			$this->APP->model->select('contact_groups_link');
-			$this->APP->model->where('contact_id', $contact);
-			$this->APP->model->where('group_id', $group);
-			$contact_exists = $this->APP->model->results();
+			$model = model()->open('contact_groups_link');
+			$model->where('contact_id', $contact);
+			$model->where('group_id', $group);
+			$contact_exists = $model->results();
 			
 			if($contact_exists['RECORDS']){
 				$exists = true;
@@ -505,10 +505,10 @@ class Contacts_Admin {
 				}
 			} else {
 				// if not, add the new contact
-				$result = $id = $this->APP->model->executeInsert('contact_groups_link', array('contact_id'=>$contact,'group_id'=>$group));
+				$result = $id = $model->executeInsert('contact_groups_link', array('contact_id'=>$contact,'group_id'=>$group));
 			}
 			
-			$contact = $this->APP->model->quickSelectSingle('contacts', $contact);
+			$contact = $model->quickSelectSingle('contacts', $contact);
 			
 		}
 
@@ -526,7 +526,7 @@ class Contacts_Admin {
 		$result = false;
 		if($id && $group_id){
 			$sql = sprintf('DELETE FROM contact_groups_link WHERE contact_id = "%s" AND group_id = "%s"', $id, $group_id);
-			$result = $this->APP->model->query($sql);
+			$result = $model->query($sql);
 		}
 		
 		print json_encode( array('success'=>(bool)$result, 'id'=>$id ));
@@ -544,7 +544,7 @@ class Contacts_Admin {
 			SELECT contact_languages.*, IF(contact_languages.id IN (SELECT language_id FROM contact_languages_link WHERE contact_id = "%s"), 1, 0 ) as selected
 			FROM contact_languages
 			ORDER BY contact_languages.language ASC', $id);
-		$languages = $this->APP->model->results(false, $sql);
+		$languages = $model->results(false, $sql);
 
 		print json_encode( array('langs'=>$languages['RECORDS']) );
 
@@ -561,7 +561,7 @@ class Contacts_Admin {
 			SELECT contact_specialties.*, IF(contact_specialties.id IN (SELECT specialty_id FROM contact_specialties_link WHERE contact_id = "%s"), 1, 0 ) as selected
 			FROM contact_specialties
 			ORDER BY contact_specialties.specialty ASC', $id);
-		$specialties = $this->APP->model->results(false, $sql);
+		$specialties = $model->results(false, $sql);
 
 		print json_encode( array('specialties'=>$specialties['RECORDS']) );
 
@@ -576,7 +576,7 @@ class Contacts_Admin {
 	
 		$id = false;
 		if(!empty($name)){
-			$id = $this->APP->model->executeInsert('contact_languages', array('language'=>$name));
+			$id = $model->executeInsert('contact_languages', array('language'=>$name));
 		}
 		
 		print json_encode( array('success'=>(bool)$id, 'id'=>$id, 'name'=>$name) );
@@ -592,7 +592,7 @@ class Contacts_Admin {
 
 		$id = false;
 		if(!empty($name)){
-			$id = $this->APP->model->executeInsert('contact_specialties', array('specialty'=>$name));
+			$id = $model->executeInsert('contact_specialties', array('specialty'=>$name));
 		}
 
 		print json_encode( array('success'=>(bool)$id, 'id'=>$id, 'name'=>$name) );
@@ -608,10 +608,10 @@ class Contacts_Admin {
 	
 		$result = false;
 		if($id && ctype_digit($id)){
-			$result = $this->APP->model->delete('contact_languages', $id);
+			$result = $model->delete('contact_languages', $id);
 			
 			if($result){
-				$result = $this->APP->model->delete('contact_languages_link', $id, 'language_id');
+				$result = $model->delete('contact_languages_link', $id, 'language_id');
 			}
 		}
 		
@@ -628,10 +628,10 @@ class Contacts_Admin {
 
 		$result = false;
 		if($id && ctype_digit($id)){
-			$result = $this->APP->model->delete('contact_specialties', $id);
+			$result = $model->delete('contact_specialties', $id);
 
 			if($result){
-				$result = $this->APP->model->delete('contact_specialties_link', $id, 'specialty_id');
+				$result = $model->delete('contact_specialties_link', $id, 'specialty_id');
 			}
 		}
 
@@ -653,7 +653,7 @@ class Contacts_Admin {
 			  `name` varchar(155) NOT NULL,
 			  PRIMARY KEY  (`id`)
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
-		$success = $this->APP->model->query($sql);
+		$success = $model->query($sql);
 
 
 		$sql = "
@@ -664,7 +664,7 @@ class Contacts_Admin {
 			  `sort_order` int(11) NOT NULL,
 			  PRIMARY KEY  (`id`)
 			) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
-		$success = $this->APP->model->query($sql);
+		$success = $model->query($sql);
 
 
 		$sql = "
@@ -679,7 +679,7 @@ class Contacts_Admin {
 			  `height_thumb` int(10) unsigned NOT NULL,
 			  PRIMARY KEY  (`id`)
 			) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
-		$success = $this->APP->model->query($sql);
+		$success = $model->query($sql);
 
 
 		$sql = "
@@ -688,7 +688,7 @@ class Contacts_Admin {
 			  `language` varchar(155) NOT NULL default '',
 			  PRIMARY KEY  (`id`)
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
-		$success = $this->APP->model->query($sql);
+		$success = $model->query($sql);
 		
 		$sql = "
 			CREATE TABLE `contact_languages_link` (
@@ -697,7 +697,7 @@ class Contacts_Admin {
 			  `language_id` int(10) unsigned NOT NULL,
 			  PRIMARY KEY  (`id`)
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
-		$success = $this->APP->model->query($sql);
+		$success = $model->query($sql);
 
 
 		$sql = "
@@ -705,7 +705,7 @@ class Contacts_Admin {
 			`id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
 			`specialty` VARCHAR( 255 ) NOT NULL
 			) ENGINE = MYISAM ;";
-		$success = $this->APP->model->query($sql);
+		$success = $model->query($sql);
 
 
 		$sql = "
@@ -714,7 +714,7 @@ class Contacts_Admin {
 			`contact_id` INT UNSIGNED NOT NULL ,
 			`specialty_id` INT UNSIGNED NOT NULL
 			) ENGINE = MYISAM ;";
-		$success = $this->APP->model->query($sql);
+		$success = $model->query($sql);
 
 
 		$sql = "
@@ -742,7 +742,7 @@ class Contacts_Admin {
 			  PRIMARY KEY  (`id`),
 			  FULLTEXT KEY `FULLTEXT` (`title`,`first_name`,`last_name`,`accreditation`,`company`,`specialty`,`address_1`,`city`,`state`,`postal`,`telephone`,`bio`)
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
-		$success = $this->APP->model->query($sql);
+		$success = $model->query($sql);
 
 
 		$sql = "
@@ -753,7 +753,7 @@ class Contacts_Admin {
 			  `photo_url` text NOT NULL,
 			  PRIMARY KEY  (`id`)
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
-		$success = $this->APP->model->query($sql);
+		$success = $model->query($sql);
 
 
 		$sql = "
@@ -767,7 +767,7 @@ class Contacts_Admin {
 			  `sort_method` enum('sort_order','alpha') NOT NULL default 'sort_order',
 			  PRIMARY KEY  (`id`)
 			) ENGINE=MyISAM  DEFAULT CHARSET=latin1;";
-		$success = $this->APP->model->query($sql);
+		$success = $model->query($sql);
 
 
 		$sql = "
@@ -780,11 +780,11 @@ class Contacts_Admin {
 			  `contact_id` int(10) unsigned NOT NULL,
 			  PRIMARY KEY  (`id`)
 			) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
-		$success = $this->APP->model->query($sql);
+		$success = $model->query($sql);
 
 
 		$sql = "INSERT INTO `permissions` (`user_id`, `group_id`, `interface`, `module`, `method`) VALUES (0, 2, 'Admin', 'Contacts', '*');";
-		$success = $this->APP->model->query($sql);
+		$success = $model->query($sql);
 
 		// Autoload this class with the Pages module
 		if($success){
@@ -804,20 +804,20 @@ class Contacts_Admin {
 	 */
 	public function uninstall($my_guid = false){
 
-		$this->APP->model->query('DROP TABLE `contacts`');
-		$this->APP->model->query('DROP TABLE `section_contacts_display`');
-		$this->APP->model->query('DROP TABLE `section_contactgroup_display`');
-		$this->APP->model->query('DROP TABLE `contacts_photos`');
-		$this->APP->model->query('DROP TABLE `contact_languages_link`');
-		$this->APP->model->query('DROP TABLE `contact_languages`');
-		$this->APP->model->query('DROP TABLE `contact_images`');
-		$this->APP->model->query('DROP TABLE `contact_groups_link`');
-		$this->APP->model->query('DROP TABLE `contact_groups`');
-		$this->APP->model->query('DROP TABLE `contact_specialties_link`');
-		$this->APP->model->query('DROP TABLE `contact_specialties`');
+		$model->query('DROP TABLE `contacts`');
+		$model->query('DROP TABLE `section_contacts_display`');
+		$model->query('DROP TABLE `section_contactgroup_display`');
+		$model->query('DROP TABLE `contacts_photos`');
+		$model->query('DROP TABLE `contact_languages_link`');
+		$model->query('DROP TABLE `contact_languages`');
+		$model->query('DROP TABLE `contact_images`');
+		$model->query('DROP TABLE `contact_groups_link`');
+		$model->query('DROP TABLE `contact_groups`');
+		$model->query('DROP TABLE `contact_specialties_link`');
+		$model->query('DROP TABLE `contact_specialties`');
 
-		$this->APP->model->query('DELETE FROM section_list WHERE type = "contact_display"');
-		$this->APP->model->query('DELETE FROM section_list WHERE type = "contactgroup_display"');
+		$model->query('DELETE FROM section_list WHERE type = "contact_display"');
+		$model->query('DELETE FROM section_list WHERE type = "contactgroup_display"');
 
 		return true;
 

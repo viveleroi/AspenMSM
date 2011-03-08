@@ -21,8 +21,8 @@ class News {
 	 */
 	public function __construct(){
 		$this->APP = get_instance();
-		$this->APP->director->registerCmsSection(__CLASS__, 'news_display');
-		$this->APP->director->registerCmsSection(__CLASS__, 'newsarch_display');
+		director()->registerCmsSection(__CLASS__, 'news_display');
+		director()->registerCmsSection(__CLASS__, 'newsarch_display');
 	}
 	
 	
@@ -53,7 +53,7 @@ class News {
 		$data = array();
 		
 		// pull the section for the database
-		$section_results = $this->APP->model->query(sprintf('SELECT * FROM section_news_display WHERE id = "%s"', $section_data['section_id']));
+		$section_results = $model->query(sprintf('SELECT * FROM section_news_display WHERE id = "%s"', $section_data['section_id']));
 		
 		if($section_results->RecordCount()){
 			while($section_content = $section_results->FetchRow()){
@@ -62,13 +62,13 @@ class News {
 				$section_content['placement_group'] = $section_data['group_name'];
 				
 				// pull news
-				$this->APP->model->select('news');
-				$this->APP->model->where('public', 1);
-				$this->APP->model->orderBy('timestamp', 'DESC');
+				$model = model()->open('news');
+				$model->where('public', 1);
+				$model->orderBy('timestamp', 'DESC');
 				if($section_content['display_num']){
-					$this->APP->model->limit(0, $section_content['display_num']);
+					$model->limit(0, $section_content['display_num']);
 				}
-				$news = $this->APP->model->results();
+				$news = $model->results();
 				
 				// if a specific id is set, ensure it exists or 404
 				if($this->APP->cms_lib->getUriBit(1)){
@@ -104,7 +104,7 @@ class News {
 		$data = array();
 		
 		// pull the section for the database
-		$section_results = $this->APP->model->query(sprintf('SELECT * FROM section_newsarch_display WHERE id = "%s"', $section_data['section_id']));
+		$section_results = $model->query(sprintf('SELECT * FROM section_newsarch_display WHERE id = "%s"', $section_data['section_id']));
 		
 		if($section_results->RecordCount()){
 			while($section_content = $section_results->FetchRow()){
@@ -112,13 +112,13 @@ class News {
 				$section_content['placement_group'] = $section_data['group_name'];
 				
 				// pull news
-				$this->APP->model->select('news');
-				$this->APP->model->where('public', 1);
-				$this->APP->model->orderBy('news_id', 'ASC');
+				$model = model()->open('news');
+				$model->where('public', 1);
+				$model->orderBy('news_id', 'ASC');
 				if($section_content['display_num']){
-					$this->APP->model->limit(0, $section_content['display_num']);
+					$model->limit(0, $section_content['display_num']);
 				}
-				$news = $this->APP->model->results();
+				$news = $model->results();
 				
 				$section_content['news'] = $news['RECORDS'];
 				$data['section'] = $section_content;
