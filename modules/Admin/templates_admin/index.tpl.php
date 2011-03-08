@@ -81,8 +81,8 @@
 							<label for="home_page">Home Page:</label>
 							<select name="home_page" id="home_page">
 							<?php
-							if($pages['RECORDS']){
-								foreach($pages['RECORDS'] as $page){
+							if($pages){
+								foreach($pages as $page){
 							?>
 								<option value="<?php print $page['page_id'] ?>"<?php print $values['home_page'] == $page['page_id'] ? ' selected="selected"' : false ?>><?php print $page['page_title'] ?></option>
 							<?php

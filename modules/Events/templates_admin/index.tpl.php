@@ -6,8 +6,8 @@
 		<div id="current-area" class="loadfirst clearfix">
 			<ul id="current-list" class="list-display">
 				<?php
-					if($cur_events['RECORDS']){
-						foreach($cur_events['RECORDS'] as $events_item){
+					if($cur_events){
+						foreach($cur_events as $events_item){
 				?>
 				<li id="item_<?php print $events_item['id'] ?>_listing">
 					<div class="legend">
@@ -43,8 +43,8 @@
 		<div id="recurring-area" class="loadfirst clearfix">
 			<ul id="recurring-list" class="list-display">
 				<?php
-					if($recurring_events['RECORDS']){
-						foreach($recurring_events['RECORDS'] as $events_item){
+					if($recurring_events){
+						foreach($recurring_events as $events_item){
 				?>
 				<li id="item_<?php print $events_item['id'] ?>_listing">
 					<div class="legend">
@@ -79,8 +79,8 @@
 		<div id="past-area" class="loadfirst clearfix">
 			<ul id="past-list" class="list-display">
 				<?php
-					if($past_events['RECORDS']){
-						foreach($past_events['RECORDS'] as $events_item){
+					if($past_events){
+						foreach($past_events as $events_item){
 				?>
 				<li id="item_<?php print $events_item['id'] ?>_listing">
 					<div class="legend">

@@ -108,9 +108,9 @@ class Search {
 			$model->paginate($this->APP->params->get->getRaw('page'), $this->APP->config('search_results_per_page'));
 			$results = $model->results();
 
-			if($results['RECORDS']){
-				foreach($results['RECORDS'] as $key => $result){
-					$results['RECORDS'][$key]['source_url'] = $this->APP->cms_lib->url($result['source_page_id']);
+			if($results){
+				foreach($results as $key => $result){
+					$results[$key]['source_url'] = $this->APP->cms_lib->url($result['source_page_id']);
 				}
 			}
 		}
@@ -120,7 +120,7 @@ class Search {
 		$this->paginator_info['per_page'] 	= $results['RESULTS_PER_PAGE'];
 		$this->paginator_info['pages'] 		= $results['TOTAL_PAGE_COUNT'];
 
-		return $results ? $results['RECORDS']  : false;
+		return $results ? $results  : false;
 
 	}
 

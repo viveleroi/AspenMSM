@@ -1,14 +1,14 @@
 <h2>Manage Courses</h2>
 <?= sml()->printMessage(); ?>
-	<?php if($course_groups['RECORDS']){
-		foreach($course_groups['RECORDS'] as $group){ ?>
+	<?php if($course_groups){
+		foreach($course_groups as $group){ ?>
 		<div class="frame">
 			<h3 class="show-hide"><a id="course-<?php print $group['id'] ?>" class="main-course toggle-frame open" href="#" title="Click to Open/Close this Product">Hide</a> <?php print $group['name'] ?></h3>
 			
 			<div id="course-<?php print $group['id'] ?>-area" class="course-info loadfirst clearfix">
 				<ul class="list-display">
-				<?php if($group['courses']['RECORDS']){
-					foreach($group['courses']['RECORDS'] as $course){ ?>
+				<?php if($group['courses']){
+					foreach($group['courses'] as $course){ ?>
 					<li id="item-<?php print $course['id']; ?>">
 						<div class="legend">
 							<strong><?php print $course['title']; ?></strong>

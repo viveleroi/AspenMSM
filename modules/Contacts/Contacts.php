@@ -56,12 +56,12 @@ class Contacts extends Display {
 				$model->where('id', $section_content['contact_id']);
 				$results = $model->results();
 				
-				$section_content['results'] = $results['RECORDS'];
+				$section_content['results'] = $results;
 
-				if($results['RECORDS']){
-					foreach($results['RECORDS'] as $key => $contact){
+				if($results){
+					foreach($results as $key => $contact){
 						$related = $this->pullRelatedContactContent($contact['id']);
-						$results['RECORDS'][$key] = array_merge($results['RECORDS'][$key], $related);
+						$results[$key] = array_merge($results[$key], $related);
 					}
 				} else {
 					$results = $model->quickSelectSingle('contacts', $this->APP->cms_lib->getUriBit(1));
@@ -106,8 +106,8 @@ class Contacts extends Display {
 				$model->where('id', $section_content['group_id']);
 				$groups = $model->results();
 				
-				if($groups['RECORDS']){
-					foreach($groups['RECORDS'] as $g_id => $group){
+				if($groups){
+					foreach($groups as $g_id => $group){
 						
 						$model = model()->open('contacts');
 						$model->leftJoin('contact_groups_link', 'contact_id', 'id', array('group_id'));
@@ -119,20 +119,20 @@ class Contacts extends Display {
 							$model->orderBy('last_name, first_name');
 						}
 						
-						$groups['RECORDS'][$g_id]['contacts'] = $model->results();
+						$groups[$g_id]['contacts'] = $model->results();
 						
-						if($groups['RECORDS'][$g_id]['contacts']['RECORDS']){
-							foreach($groups['RECORDS'][$g_id]['contacts']['RECORDS'] as $key => $contact){
+						if($groups[$g_id]['contacts']){
+							foreach($groups[$g_id]['contacts'] as $key => $contact){
 
 								$related = $this->pullRelatedContactContent($contact['id']);
-								$groups['RECORDS'][$g_id]['contacts']['RECORDS'][$key] = array_merge($groups['RECORDS'][$g_id]['contacts']['RECORDS'][$key], $related);
+								$groups[$g_id]['contacts'][$key] = array_merge($groups[$g_id]['contacts'][$key], $related);
 
 							}
 						}
 					}
 				}
 				
-				$section_content['results'] = $groups['RECORDS'];
+				$section_content['results'] = $groups;
 				$data['section'] = $section_content;
 				
 				if(!$section_data['called_in_template']){
@@ -261,11 +261,11 @@ class Contacts extends Display {
 //		print $model->getBuildQuery();
 		$results = $model->results();
 
-		if($results['RECORDS']){
-			foreach($results['RECORDS'] as $key => $contact){
+		if($results){
+			foreach($results as $key => $contact){
 
 				$related = $this->pullRelatedContactContent($contact['id']);
-				$results['RECORDS'][$key] = array_merge($results['RECORDS'][$key], $related);
+				$results[$key] = array_merge($results[$key], $related);
 
 			}
 		}

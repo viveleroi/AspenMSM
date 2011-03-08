@@ -4,8 +4,8 @@
 		<h3>Current Forms</h3>
 		<ul id="form-list" class="list-display">
 			<?php
-				if($forms['RECORDS']){
-					foreach($forms['RECORDS'] as $record){
+				if($forms){
+					foreach($forms as $record){
 			?>
 			<li>
 				<div class="legend">

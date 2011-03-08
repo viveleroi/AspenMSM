@@ -92,11 +92,11 @@ class Events {
 					}
 					$events = $model->results();
 //					print $model->getLastQuery();
-					$section_content['events'] = $events['RECORDS'];
+					$section_content['events'] = $events;
 
 					// append month names
-					if($events['RECORDS']){
-						foreach($events['RECORDS'] as $event){
+					if($events){
+						foreach($events as $event){
 							if(!empty($event['months'])){
 								$this->months[ $event['months'] ] = $event['months'];
 							}

@@ -5,8 +5,8 @@
 		<div id="news-area" class="loadfirst clearfix">
 			<ul id="news-list" class="list-display">
 				<?php
-					if($cur_news['RECORDS']){
-						foreach($cur_news['RECORDS'] as $record){
+					if($cur_news){
+						foreach($cur_news as $record){
 				?>
 				<li id="item_<?php print $record['news_id'] ?>_listing">
 					<div class="legend">
@@ -41,8 +41,8 @@
 		<div id="past-area" class="loadfirst clearfix">
 			<ul id="past-list" class="list-display">
 				<?php
-					if($past_news['RECORDS']){
-						foreach($past_news['RECORDS'] as $record){
+					if($past_news){
+						foreach($past_news as $record){
 				?>
 				<li id="item_<?php print $record['news_id'] ?>_listing">
 					<div class="legend">

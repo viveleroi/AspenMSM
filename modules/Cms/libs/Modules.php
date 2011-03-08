@@ -45,8 +45,8 @@ class Modules {
 			$model->where('autoload_with', $guid);
 			$modules = $model->results();
 			
-			if($modules['RECORDS']){
-				foreach($modules['RECORDS'] as $module){
+			if($modules){
+				foreach($modules as $module){
 					$autoload[] = $module['guid'];
 				}
 			}
@@ -95,8 +95,8 @@ class Modules {
 			$model->orderBy('sort_order');
 			$modules = $model->results();
 			
-			if($modules['RECORDS']){
-				foreach($modules['RECORDS'] as $module){
+			if($modules){
+				foreach($modules as $module){
 					$nonbase[] = $module['guid'];
 				}
 			}
@@ -122,8 +122,8 @@ class Modules {
 			$model->where('guid', (string)$module->guid);
 			$modules = $model->results();
 	
-			if($modules['RECORDS']){
-				foreach($modules['RECORDS'] as $nonbasemod){
+			if($modules){
+				foreach($modules as $nonbasemod){
 					if(!$nonbasemod['is_base_module']){
 						$nonbase[] = $module->guid;
 					}

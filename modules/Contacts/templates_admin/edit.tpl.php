@@ -114,8 +114,8 @@
 					<label for="file_path">Picture:</label>
 					
 					<?php
-				if($images['RECORDS']){
-					foreach($images['RECORDS'] as $image){
+				if($images){
+					foreach($images as $image){
 				?>
 				<div>
 					<img src="<?php print router()->getUploadsUrl() . '/contacts/' . $values['id'] . '/' . $image['filename_thumb']; ?>" width="<?php print $image['width_thumb']; ?>" height="<?php print $image['height_thumb']; ?>" alt="Contact Profile Picture" />

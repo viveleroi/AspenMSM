@@ -55,7 +55,7 @@ class Display {
 
 				$results = $model->results();
 
-				$section_content['results'] = $results['RECORDS'];
+				$section_content['results'] = $results;
 
 */
 				$section_content['results'] = false;

@@ -42,10 +42,9 @@ class Pages_Admin extends Module {
 	public function view(){
 		
 		$model = model()->open('pages');
-		$model = model()->open('pages');
 		$model->orderBy('page_sort_order', 'ASC', 'pages:list');
 		$this->pages = $model->results();
-		$this->pages = $this->pages['RECORDS'];
+		$this->pages = $this->pages;
 
 		if($this->pages){
 			$nested = array();
@@ -534,8 +533,8 @@ class Pages_Admin extends Module {
 		$model->where('parent_id' , $id);
 		$pages = $model->results();
 		
-		if($pages['RECORDS']){
-			foreach($pages['RECORDS'] as $page){
+		if($pages){
+			foreach($pages as $page){
 				
 				$xml .= '<child_page_id>'.$page['page_id'].'</child_page_id>';
 				
@@ -562,7 +561,7 @@ class Pages_Admin extends Module {
 		$model = model()->open('pages');
 		$model->orderBy('page_sort_order', 'ASC', 'pages:list');
 		$this->pages = $model->results();
-		$this->pages = $this->pages['RECORDS'];
+		$this->pages = $this->pages;
 
 		if($this->pages){
 			$nested = array();
@@ -712,8 +711,8 @@ class Pages_Admin extends Module {
 		$placement_groups = $model->results();
 		
 		$groups = '';
-		if($placement_groups['RECORDS']){
-			foreach($placement_groups['RECORDS'] as $pg){
+		if($placement_groups){
+			foreach($placement_groups as $pg){
 				$groups .= sprintf('<group>%s</group>', $this->APP->xml->encode_for_xml($pg['group_name']));
 			}
 		}

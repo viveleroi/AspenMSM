@@ -10,8 +10,8 @@
 				<ul id="directory-list">
 					<?php
 					
-					if($directory_list['RECORDS']){
-						foreach($directory_list['RECORDS'] as $directory){
+					if($directory_list){
+						foreach($directory_list as $directory){
 					?>
 					
 					<li id="contact-<?php print $directory['id']; ?>">
@@ -55,8 +55,8 @@
 			</form>
 		</div>
 		<?php
-		if($group_list['RECORDS']){
-			foreach($group_list['RECORDS'] as $group){
+		if($group_list){
+			foreach($group_list as $group){
 		?>
 		<div id="groupholder-<?php print $group['id']; ?>" class="group">
 			<div class="legend">
@@ -66,8 +66,8 @@
 			<div id="group_<?php print $group['id']; ?>_details" class="group-info clearfix">
 				<ul class="group-list" id="group_<?php print $group['id']; ?>_list">
 					<?php
-					if($group['contacts']['RECORDS']){
-						foreach($group['contacts']['RECORDS'] as $contact){
+					if($group['contacts']){
+						foreach($group['contacts'] as $contact){
 					?>
 					<li class="contact-<?php print $contact['id']; ?> clearfix"><span class="drag">Drag</span><span class="listed"><?php print $contact['last_name']; ?>, <?php print $contact['first_name']; ?></span> <a href="#" class="remove" title="Are you sure you wish to remove this listing?">Remove</a></li>
 					<?php

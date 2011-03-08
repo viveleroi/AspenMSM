@@ -42,14 +42,14 @@ class Contacts_Admin {
 		$model->orderBy('name');
 		$groups = $model->results();
 		
-		if($groups['RECORDS']){
-			foreach($groups['RECORDS'] as $g_id => $group){
+		if($groups){
+			foreach($groups as $g_id => $group){
 				
 				$model = model()->open('contacts');
 				$model->leftJoin('contact_groups_link', 'contact_id', 'id', array('group_id'));
 				$model->where('group_id', $g_id);
 				$model->orderBy('sort_order, last_name, first_name');
-				$groups['RECORDS'][$g_id]['contacts'] = $model->results();
+				$groups[$g_id]['contacts'] = $model->results();
 				
 			}
 		}
@@ -88,8 +88,8 @@ class Contacts_Admin {
 		$languages_records = $model->results();
 
 		$languages = array();
-		if($languages_records['RECORDS']){
-			foreach($languages_records['RECORDS'] as $languages_record){
+		if($languages_records){
+			foreach($languages_records as $languages_record){
 				$languages[] = $languages_record['language_id'];
 			}
 		}
@@ -102,8 +102,8 @@ class Contacts_Admin {
 		$groups_records = $model->results();
 
 		$groups = array();
-		if($groups_records['RECORDS']){
-			foreach($groups_records['RECORDS'] as $groups_record){
+		if($groups_records){
+			foreach($groups_records as $groups_record){
 				$groups[] = $groups_record['group_id'];
 			}
 		}
@@ -116,8 +116,8 @@ class Contacts_Admin {
 		$specs_records = $model->results();
 
 		$specialties = array();
-		if($specs_records['RECORDS']){
-			foreach($specs_records['RECORDS'] as $specs_record){
+		if($specs_records){
+			foreach($specs_records as $specs_record){
 				$specialties[] = $specs_record['specialty_id'];
 			}
 		}
@@ -196,8 +196,8 @@ class Contacts_Admin {
 							$model->where('contact_id', $id);
 							$images = $model->results();
 							
-							if (is_array($images['RECORDS'])){
-								foreach($images['RECORDS'] as $image){
+							if (is_array($images)){
+								foreach($images as $image){
 									$base = APPLICATION_PATH.DS.'files'.DS.'contacts'.DS.$image['contact_id'];
 									$this->APP->file->delete($base.DS.$image['filename_orig']);
 									$this->APP->file->delete($base.DS.$image['filename_thumb']);
@@ -252,7 +252,7 @@ class Contacts_Admin {
 			$model->where('contact_id', $id);
 			$data['images'] = $model->results();
 		} else {
-			$data['images']['RECORDS'] = false;
+			$data['images'] = false;
 		}
 
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
@@ -497,10 +497,10 @@ class Contacts_Admin {
 			$model->where('group_id', $group);
 			$contact_exists = $model->results();
 			
-			if($contact_exists['RECORDS']){
+			if($contact_exists){
 				$exists = true;
 				$result = false;
-				foreach($contact_exists['RECORDS'] as $exist){
+				foreach($contact_exists as $exist){
 					$id = $exist['id'];
 				}
 			} else {
@@ -546,7 +546,7 @@ class Contacts_Admin {
 			ORDER BY contact_languages.language ASC', $id);
 		$languages = $model->results(false, $sql);
 
-		print json_encode( array('langs'=>$languages['RECORDS']) );
+		print json_encode( array('langs'=>$languages) );
 
 	}
 
@@ -563,7 +563,7 @@ class Contacts_Admin {
 			ORDER BY contact_specialties.specialty ASC', $id);
 		$specialties = $model->results(false, $sql);
 
-		print json_encode( array('specialties'=>$specialties['RECORDS']) );
+		print json_encode( array('specialties'=>$specialties) );
 
 	}
 

@@ -73,13 +73,13 @@ class News {
 				// if a specific id is set, ensure it exists or 404
 				if($this->APP->cms_lib->getUriBit(1)){
 					if(is_array($news)){
-						if(!isset($news['RECORDS'][ $this->APP->cms_lib->getUriBit(1) ])){
+						if(!isset($news[ $this->APP->cms_lib->getUriBit(1) ])){
 							$this->APP->cms_lib->error_404();
 						}
 					}
 				}
 				
-				$section_content['news'] = $news['RECORDS'];
+				$section_content['news'] = $news;
 				$data['section'] = $section_content;
 				
 				if(!$section_data['called_in_template']){
@@ -120,7 +120,7 @@ class News {
 				}
 				$news = $model->results();
 				
-				$section_content['news'] = $news['RECORDS'];
+				$section_content['news'] = $news;
 				$data['section'] = $section_content;
 				
 				if(!$section_data['called_in_template']){

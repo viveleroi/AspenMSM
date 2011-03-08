@@ -10,7 +10,7 @@
 		<?php foreach($content['results'] as $results){ ?>
 			<?php
 				$i = 1;
-				foreach($results['contacts']['RECORDS'] as $contact){
+				foreach($results['contacts'] as $contact){
 			?>
 			<li<?php print ($i % 2 ? ' class="row"' : '') ?>>
 				<h5>

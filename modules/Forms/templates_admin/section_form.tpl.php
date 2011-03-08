@@ -24,8 +24,8 @@
 				<option value="0">--</option>
 				<?php
 				$placement_group = isset($section['meta']['placement_group']) ? $section['meta']['placement_group'] : 0;
-				if($placement_groups['RECORDS']){
-						foreach($placement_groups['RECORDS'] as $option){
+				if($placement_groups){
+						foreach($placement_groups as $option){
 						  print '<option value="'.$option['id'].'"'.($placement_group == $option['id'] ? ' selected="selected"' : '').'>' . $option['group_name'] . '</option>';
 						}
 				}

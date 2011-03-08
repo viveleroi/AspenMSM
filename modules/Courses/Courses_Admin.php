@@ -41,14 +41,14 @@ class Courses_Admin {
 		$model = model()->open('course_groups');
 		$groups = $model->results();
 		
-		if($groups['RECORDS']){
-			foreach($groups['RECORDS'] as $g_id => $group){
+		if($groups){
+			foreach($groups as $g_id => $group){
 				
 				$model = model()->open('courses');
 				$model->leftJoin('course_groups_link', 'course_id', 'id', array('group_id'));
 				$model->where('group_id', $g_id);
 				$model->orderBy('name');
-				$groups['RECORDS'][$g_id]['courses'] = $model->results();
+				$groups[$g_id]['courses'] = $model->results();
 				
 			}
 		}
@@ -87,8 +87,8 @@ class Courses_Admin {
 			$group_records = $model->results();
 			
 			$groups = array();
-			if($group_records['RECORDS']){
-				foreach($group_records['RECORDS'] as $course_record){
+			if($group_records){
+				foreach($group_records as $course_record){
 					$groups[] = $course_record['group_id'];
 				}
 			}

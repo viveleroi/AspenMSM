@@ -38,17 +38,17 @@ class Events_Admin {
 		$data['cur_events'] = $model->results();
 
 		// attach groups
-		if($data['cur_events']['RECORDS']){
-			foreach($data['cur_events']['RECORDS'] as $key => $event){
+		if($data['cur_events']){
+			foreach($data['cur_events'] as $key => $event){
 				$model = model()->open('event_groups');
 				$model->leftJoin('event_groups_link','group_id', 'id', array('event_id'));
 				$model->where('event_groups_link.event_id', $event['id']);
 				$model->orderBy('event_groups.name');
 				$groups = $model->results();
 	
-				if($groups['RECORDS']){
-					foreach($groups['RECORDS'] as $group){
-						$data['cur_events']['RECORDS'][$key]['groups'][] = $group['name'];
+				if($groups){
+					foreach($groups as $group){
+						$data['cur_events'][$key]['groups'][] = $group['name'];
 					}
 				}
 			}
@@ -61,17 +61,17 @@ class Events_Admin {
 		$data['past_events'] = $model->results();
 
 		// attach groups
-		if($data['past_events']['RECORDS']){
-			foreach($data['past_events']['RECORDS'] as $key => $event){
+		if($data['past_events']){
+			foreach($data['past_events'] as $key => $event){
 				$model = model()->open('event_groups');
 				$model->leftJoin('event_groups_link','group_id', 'id', array('event_id'));
 				$model->where('event_id', $event['id']);
 				$model->orderBy('name');
 				$groups = $model->results();
 	
-				if($groups['RECORDS']){
-					foreach($groups['RECORDS'] as $group){
-						$data['past_events']['RECORDS'][$key]['groups'][] = $group['name'];
+				if($groups){
+					foreach($groups as $group){
+						$data['past_events'][$key]['groups'][] = $group['name'];
 					}
 				}
 			}
@@ -83,17 +83,17 @@ class Events_Admin {
 		$data['recurring_events'] = $model->results();
 
 		// attach groups
-		if($data['recurring_events']['RECORDS']){
-			foreach($data['recurring_events']['RECORDS'] as $key => $event){
+		if($data['recurring_events']){
+			foreach($data['recurring_events'] as $key => $event){
 				$model = model()->open('event_groups');
 				$model->leftJoin('event_groups_link','group_id', 'id', array('event_id'));
 				$model->where('event_id', $event['id']);
 				$model->orderBy('name');
 				$groups = $model->results();
 	
-				if($groups['RECORDS']){
-					foreach($groups['RECORDS'] as $group){
-						$data['recurring_events']['RECORDS'][$key]['groups'][] = $group['name'];
+				if($groups){
+					foreach($groups as $group){
+						$data['recurring_events'][$key]['groups'][] = $group['name'];
 					}
 				}
 			}
@@ -437,7 +437,7 @@ class Events_Admin {
 			ORDER BY event_groups.name ASC', $id);
 		$groups = $model->results(false, $sql);
 		
-		print json_encode( array('groups'=>$groups['RECORDS']) );
+		print json_encode( array('groups'=>$groups) );
 		
 	}
 	

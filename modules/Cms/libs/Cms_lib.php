@@ -155,7 +155,7 @@ class Cms_lib {
 		$model->where('page_is_live', 1);
 		$model->orderBy('page_sort_order');
 		$pages = $model->results();
-		$this->pages = $pages['RECORDS'];
+		$this->pages = $pages;
 	}
 	
 	
@@ -178,7 +178,7 @@ class Cms_lib {
 		$model->where('page_is_live', 0);
 		$model->orderBy('page_sort_order');
 		$pages = $model->results();
-		$this->pages_private = $pages['RECORDS'];
+		$this->pages_private = $pages;
 	}
 	
 	
@@ -206,11 +206,11 @@ class Cms_lib {
 			$model->where('is_parent_default', 1);
 			$pages = $model->results();
 			
-			if($pages['RECORDS']){
+			if($pages){
 				
 				$this->original_page = $final_page['page'];
 				
-				foreach($pages['RECORDS'] as $page){
+				foreach($pages as $page){
 					$final_page['page'] = $page;
 				}
 			}
@@ -915,7 +915,7 @@ class Cms_lib {
 				$model->where('group_name', $placement_group);
 				$exists = $model->results();
 				
-				if(!$exists['RECORDS']){
+				if(!$exists){
 					$model->query(sprintf('INSERT INTO template_placement_group (template, group_name) VALUES ("%s", "%s")',
 						strtolower($this->page['page_template']), $placement_group));
 				}

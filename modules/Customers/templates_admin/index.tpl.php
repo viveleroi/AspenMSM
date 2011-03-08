@@ -4,8 +4,8 @@
 		<h3>Current Customers</h3>
 			<ul id="user-list" class="list-display">
 				 <?php
-					if($users['RECORDS']){
-						foreach($users['RECORDS'] as $user){
+					if($users){
+						foreach($users as $user){
 					?>
 				<li id="item_<?php print $user['id'] ?>_listing">
 					<div class="legend">
