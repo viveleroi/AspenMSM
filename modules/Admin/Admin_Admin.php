@@ -42,15 +42,15 @@ class Admin_Admin extends App {
 			while($record = $records->FetchRow()){
 
 				$value = $record['current_value'] == '' ? $record['default_value'] : $record['current_value'];
-				app()->form->addField($record['config_key'], $value, $value);
+				$form->addField($record['config_key'], $value, $value);
 				
 			}
 		}
 		
 		// process the form if submitted
-		if(app()->form->isSubmitted()){
+		if($form->isSubmitted()){
 
-			if(!app()->form->error()){
+			if(!$form->error()){
 
 				foreach(app()->params->getRawSource('post') as $field => $value){
 
@@ -64,7 +64,7 @@ class Admin_Admin extends App {
 			}
 		}
 		
-		$data['values'] = app()->form->getCurrentValues();
+		$data['values'] = $form->getCurrentValues();
 		
 		$model = model()->open('pages');
 		$model->where('page_is_live', 1);

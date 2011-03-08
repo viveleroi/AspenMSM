@@ -43,7 +43,7 @@
 	<?php if(user()->isLoggedIn()){ // if logged in ?>
 	<div id="status">
 		<ul>
-			<li class="user">User: <a href="<?php print $this->xhtmlUrl('users/my_account') ?>" accesskey="u"><?php print session()->getRaw('nice_name'); ?></a></li>
+			<li class="user">User: <a href="<?php print $this->xhtmlUrl('users/my_account') ?>" accesskey="u"><?php print session()->combine('%s %s', array('first_name','last_name'), 'getName'); ?></a></li>
 			<li class="logout"><?php print $this->link('Logout', 'users/logout'); ?></li>
 		</ul>
 	</div>

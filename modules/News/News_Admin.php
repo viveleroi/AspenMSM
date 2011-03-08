@@ -63,37 +63,37 @@ class News_Admin {
 	 */
 	public function add(){
  
-		app()->form->loadTable('news');
-		app()->form->setCurrentValue('timestamp', date("Y-m-d H:i:s"));
+		$form = new Form('news');
+		$form->setCurrentValue('timestamp', date("Y-m-d H:i:s"));
  
 		// if form has been submitted
-		if(app()->form->isSubmitted()){
+		if($form->isSubmitted()){
 			
-			if(!app()->form->isFilled('title')){
-				app()->form->addError('body', 'You must enter a title.');
+			if(!$form->isFilled('title')){
+				$form->addError('body', 'You must enter a title.');
 			}
 			
-			if(!app()->form->isFilled('body')){
-				app()->form->addError('body', 'You must enter some content.');
+			if(!$form->isFilled('body')){
+				$form->addError('body', 'You must enter some content.');
 			}
 			
 			// if we have no errors, save the record
-			if(!app()->form->error()){
+			if(!$form->error()){
 			
 				$file = app()->file->upload('pdf_filename');
 				
-				app()->form->setCurrentValue('user_id', session()->getInt('user_id'));
-				app()->form->setCurrentValue('public', 1);
+				$form->setCurrentValue('user_id', session()->getInt('user_id'));
+				$form->setCurrentValue('public', 1);
 				
 				if(isset($file[0]) && is_array($file[0])){
-					app()->form->setCurrentValue('pdf_filename', $file[0]['file_name']);
+					$form->setCurrentValue('pdf_filename', $file[0]['file_name']);
 				}
 				
 				// set html security rules
 				$model->setSecurityRule('body', 'allow_html', true);
 	
 				// insert a new record with available data
-				if(app()->form->save()){
+				if($form->save()){
 					// if successful insert, redirect to the list
 					app()->sml->addNewMessage('News entry has successfully been added.');
 					router()->redirect('view');
@@ -102,7 +102,7 @@ class News_Admin {
 		}
  
 		// make sure the template has access to all current values
-		$data['values'] = app()->form->getCurrentValues();
+		$data['values'] = $form->getCurrentValues();
  
 		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
 		template()->addView(template()->getModuleTemplateDir().DS . 'add.tpl.php');
@@ -124,32 +124,32 @@ class News_Admin {
 			app()->sml->addNewMessage("The file upload directory does not appear to be writable. Please create the folder and set proper permissions.");
 		}
 
-		app()->form->loadRecord('news', $id);
+		$form = new Form('news', $id);
  
 		// if form has been submitted
-		if(app()->form->isSubmitted()){
+		if($form->isSubmitted()){
 			
-			if(!app()->form->isFilled('title')){
-				app()->form->addError('body', 'You must enter a title.');
+			if(!$form->isFilled('title')){
+				$form->addError('body', 'You must enter a title.');
 			}
 			
-			if(!app()->form->isFilled('body')){
-				app()->form->addError('body', 'You must enter some content.');
+			if(!$form->isFilled('body')){
+				$form->addError('body', 'You must enter some content.');
 			}
 			
 			// if we have no errors, save the record
-			if(!app()->form->error()){
+			if(!$form->error()){
 			
 				$file = app()->file->upload('pdf_filename');
 				if(is_array($file) && !empty($file[0])){
-					app()->form->setCurrentValue('pdf_filename', $file[0]['file_name']);
+					$form->setCurrentValue('pdf_filename', $file[0]['file_name']);
 				}
 				
 				// set html security rules
 				$model->setSecurityRule('body', 'allow_html', true);
 
 				// insert a new record with available data
-				if(app()->form->save($id)){
+				if($form->save($id)){
 					// if successful insert, redirect to the list
 					app()->sml->addNewMessage('News entry has successfully been updated.');
 					router()->redirect('view');
@@ -158,7 +158,7 @@ class News_Admin {
 		}
  
 		// make sure the template has access to all current values
-		$data['values'] = app()->form->getCurrentValues();
+		$data['values'] = $form->getCurrentValues();
  
 		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
 		template()->addView(template()->getModuleTemplateDir().DS . 'edit.tpl.php');
@@ -217,7 +217,7 @@ class News_Admin {
 	 */
 	public function sectionEditor($type = false, $next_id = 1, $section = false, $page_id = false, $template = false){
 		
-		$template = $template ? $template : app()->form->cv('page_template');
+		$template = $template ? $template : $form->cv('page_template');
 		
 		$next_id = isset($section['meta']['id']) ? $section['meta']['id'] : $next_id;
 		$model = model()->open('template_placement_group');

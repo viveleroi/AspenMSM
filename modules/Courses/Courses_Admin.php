@@ -79,7 +79,7 @@ class Courses_Admin {
 	 */
 	public function edit($id = false){
 
-			app()->form->loadRecord('courses', $id);
+			$form = new Form('courses', $id);
 			
 			// grab existing groups settings
 			$model = model()->open('course_groups_link');
@@ -93,25 +93,25 @@ class Courses_Admin {
 				}
 			}
 			
-			app()->form->addField('groups', $groups, $groups);
+			$form->addField('groups', $groups, $groups);
 
 			// proces the form if submitted
-			if(app()->form->isSubmitted()){
+			if($form->isSubmitted()){
 				
 				// validation
-				if(!app()->form->isFilled('title')){
-					app()->form->addError('title', 'You must enter a course title.');
+				if(!$form->isFilled('title')){
+					$form->addError('title', 'You must enter a course title.');
 				}
 	
 				// if we have no errors, process sql
-				if(!app()->form->error()){
-					if($res_id = app()->form->save($id)){
+				if(!$form->error()){
+					if($res_id = $form->save($id)){
 					
 						$id = $id ? $id : $res_id;
 						
 						// update course groups
 						$model->delete('course_groups_link', $id, 'course_id');
-						$groups = app()->form->cv('groups');
+						$groups = $form->cv('groups');
 						foreach($groups as $group){
 							$sql = sprintf('INSERT INTO course_groups_link (course_id, group_id) VALUES ("%s", "%s")', $id, $group);
 							$model->query($sql);
@@ -125,7 +125,7 @@ class Courses_Admin {
 				}
 			}
 		
-		$data['values'] = app()->form->getCurrentValues();
+		$data['values'] = $form->getCurrentValues();
 
 		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
 		template()->addView(template()->getModuleTemplateDir().DS . 'edit.tpl.php');
@@ -184,7 +184,7 @@ class Courses_Admin {
 	 */
 	public function sectionEditor($type = false, $next_id = 1, $section = false, $page_id = false, $template = false){
 		
-		$template = $template ? $template : app()->form->cv('page_template');
+		$template = $template ? $template : $form->cv('page_template');
 		
 		$next_id = isset($section['meta']['id']) ? $section['meta']['id'] : $next_id;
 		$model = model()->open('template_placement_group');

@@ -1,6 +1,6 @@
 <h2><?php print $values['id'] ? 'Edit' : 'Add'; ?> Course</h2>
 
-	<?php app()->form->printErrors(); ?>
+	<?php $form->printErrors(); ?>
 	<form action="<?php print $this->action(); ?>" method="post">
 		<div class="frame">
 			<h3>Course Details</h3>

@@ -60,24 +60,24 @@ class Forms_Admin {
 	 */
 	public function edit($id = false){
 
-		app()->form->loadRecord('forms', $id);
+		$form = new Form('forms', $id);
  
 		// if form has been submitted
-		if(app()->form->isSubmitted()){
+		if($form->isSubmitted()){
 			
-			if(!app()->form->isFilled('title')){
-				app()->form->addError('body', 'You must enter a title.');
+			if(!$form->isFilled('title')){
+				$form->addError('body', 'You must enter a title.');
 			}
 			
-			if(!app()->form->isFilled('body')){
-				app()->form->addError('body', 'You must enter some content.');
+			if(!$form->isFilled('body')){
+				$form->addError('body', 'You must enter some content.');
 			}
 			
 			// if we have no errors, save the record
-			if(!app()->form->error()){
+			if(!$form->error()){
 
 				// insert a new record with available data
-				if(app()->form->save($id)){
+				if($form->save($id)){
 					app()->sml->addNewMessage('Form has been updated successfully.');
 					router()->redirect('view');
 				}
@@ -85,7 +85,7 @@ class Forms_Admin {
 		}
  
 		// make sure the template has access to all current values
-		$data['values'] = app()->form->getCurrentValues();
+		$data['values'] = $form->getCurrentValues();
  
 		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
 		template()->addView(template()->getModuleTemplateDir().DS . 'edit.tpl.php');
@@ -219,7 +219,7 @@ class Forms_Admin {
 	 */
 	public function sectionEditor($type = false, $next_id = 1, $section = false, $page_id = false, $template = false){
 		
-		$template = $template ? $template : app()->form->cv('page_template');
+		$template = $template ? $template : $form->cv('page_template');
 		
 		$next_id = isset($section['meta']['id']) ? $section['meta']['id'] : $next_id;
 		$model = model()->open('template_placement_group');

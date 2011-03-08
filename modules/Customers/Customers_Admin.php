@@ -82,7 +82,7 @@ class Customers_Admin {
 		}
 		
 		$data['groups'] = user()->groupList();
-		$data['values'] = app()->form->getCurrentValues();
+		$data['values'] = $form->getCurrentValues();
 
 		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
 		template()->addView(template()->getModuleTemplateDir().DS . 'add.tpl.php');
@@ -105,7 +105,7 @@ class Customers_Admin {
 		}
 		
 		$data['groups'] = user()->groupList();
-		$data['values'] = app()->form->getCurrentValues();
+		$data['values'] = $form->getCurrentValues();
 
 		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
 		template()->addView(template()->getModuleTemplateDir().DS . 'edit.tpl.php');

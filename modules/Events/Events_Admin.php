@@ -114,13 +114,13 @@ class Events_Admin {
 	 */
 	private function timeString($field){
 		
-		$hour = app()->form->cv($field . '_hour');
-		$minute = app()->form->cv($field . '_minute');
-		$ampm = app()->form->cv($field . '_ampm');
+		$hour = $form->cv($field . '_hour');
+		$minute = $form->cv($field . '_minute');
+		$ampm = $form->cv($field . '_ampm');
 
 		if(!empty($hour) && !empty($minute) && !empty($ampm)){
 			$time = date("H:i:s", strtotime($hour.':'.$minute.' '.$ampm));
-			app()->form->setDefaultValue($field . '_time', $time);
+			$form->setDefaultValue($field . '_time', $time);
 		}
 	}
 	
@@ -131,21 +131,21 @@ class Events_Admin {
 	 */
 	private function validate(){
 		
-		if(!app()->form->isFilled('title')){
-			app()->form->addError('title', 'You must enter a title.');
+		if(!$form->isFilled('title')){
+			$form->addError('title', 'You must enter a title.');
 		}
 		
-		if(!app()->form->isFilled('recurring') && !app()->form->isDate('start_date')){
-			app()->form->addError('start_date', 'Please enter a valid start date.');
+		if(!$form->isFilled('recurring') && !$form->isDate('start_date')){
+			$form->addError('start_date', 'Please enter a valid start date.');
 		}
 		
-		if(app()->form->isFilled('end_date')){
-			if(app()->form->isDate('end_date')){
-				if(strtotime(app()->form->cv('start_date')) > strtotime(app()->form->cv('end_date'))){
-					app()->form->addError('content', 'Please choose a starting date that occurs before the end date.');
+		if($form->isFilled('end_date')){
+			if($form->isDate('end_date')){
+				if(strtotime($form->cv('start_date')) > strtotime($form->cv('end_date'))){
+					$form->addError('content', 'Please choose a starting date that occurs before the end date.');
 				}
 			} else {
-				app()->form->addError('end_date', 'Please enter a valid end date.');
+				$form->addError('end_date', 'Please enter a valid end date.');
 			}
 		}
 	}
@@ -157,28 +157,28 @@ class Events_Admin {
 	 */
 	public function add_event(){
 
-		app()->form->loadTable('events');
-		app()->form->setDefaultValue('start_date', date("Y-m-d"));
-		app()->form->setDefaultValue('end_date', '');
-		app()->form->addField('groups', array(), array());
-		app()->form->addField('start_hour');
-		app()->form->addField('start_minute');
-		app()->form->addField('start_ampm');
-		app()->form->addField('end_hour');
-		app()->form->addField('end_minute');
-		app()->form->addField('end_ampm');
+		$form = new Form('events');
+		$form->setDefaultValue('start_date', date("Y-m-d"));
+		$form->setDefaultValue('end_date', '');
+		$form->addField('groups', array(), array());
+		$form->addField('start_hour');
+		$form->addField('start_minute');
+		$form->addField('start_ampm');
+		$form->addField('end_hour');
+		$form->addField('end_minute');
+		$form->addField('end_ampm');
 
 		// proces the form if submitted
-		if(app()->form->isSubmitted()){
+		if($form->isSubmitted()){
 			
 			$this->timeString('start');
 			$this->timeString('end');
 
 			if(!app()->params->post->keyExists('recurring')){
-				app()->form->setCurrentValue('recurring', false);
+				$form->setCurrentValue('recurring', false);
 			} else {
-				app()->form->setCurrentValue('start_date', '');
-				app()->form->setCurrentValue('end_date', '');
+				$form->setCurrentValue('start_date', '');
+				$form->setCurrentValue('end_date', '');
 			}
 
 			// validation
@@ -186,14 +186,14 @@ class Events_Admin {
 
 			// set security rules
 			$model->setSecurityRule('content', 'allow_html', true);
-			app()->form->setCurrentValue('public', 1);
+			$form->setCurrentValue('public', 1);
 
 			// if we have no errors, process sql
-			if(!app()->form->error()){
-				if($id = app()->form->save()){
+			if(!$form->error()){
+				if($id = $form->save()){
 					
 					// update groups
-					$groups = app()->form->cv('groups');
+					$groups = $form->cv('groups');
 					foreach($groups as $group){
 						$sql = sprintf('INSERT INTO event_groups_link (event_id, group_id) VALUES ("%s", "%s")', $id, $group);
 						$model->query($sql);
@@ -211,7 +211,7 @@ class Events_Admin {
 			}
 		}
 		
-		$data['values'] = app()->form->getCurrentValues();
+		$data['values'] = $form->getCurrentValues();
 		
 		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
 		template()->addView(template()->getModuleTemplateDir().DS . 'add_event.tpl.php');
@@ -230,48 +230,48 @@ class Events_Admin {
 
 		if($id){
 			
-			app()->form->loadRecord('events', $id);
-			app()->form->addField('groups', array(), array());
+			$form = new Form('events', $id);
+			$form->addField('groups', array(), array());
 
-			if(app()->form->cv('end_date') == '0000-00-00'){
-				app()->form->setDefaultValue('end_date', '');
+			if($form->cv('end_date') == '0000-00-00'){
+				$form->setDefaultValue('end_date', '');
 			}
 			
-			$start_time = strtotime(app()->form->cv('start_time'));
-			if(app()->form->cv('start_time') != '00:00:00'){
-				app()->form->addField('start_hour', date("h", $start_time), date("h", $start_time));
-				app()->form->addField('start_minute', date("i", $start_time), date("i", $start_time));
-				app()->form->addField('start_ampm', date("a", $start_time), date("a", $start_time));
+			$start_time = strtotime($form->cv('start_time'));
+			if($form->cv('start_time') != '00:00:00'){
+				$form->addField('start_hour', date("h", $start_time), date("h", $start_time));
+				$form->addField('start_minute', date("i", $start_time), date("i", $start_time));
+				$form->addField('start_ampm', date("a", $start_time), date("a", $start_time));
 			} else {
-				app()->form->addField('start_hour');
-				app()->form->addField('start_minute');
-				app()->form->addField('start_ampm');
+				$form->addField('start_hour');
+				$form->addField('start_minute');
+				$form->addField('start_ampm');
 			}
 			
-			$end_time = strtotime(app()->form->cv('end_time'));
-			if(app()->form->cv('end_time') != '00:00:00'){
-				app()->form->addField('end_hour', date("h", $end_time), date("h", $end_time));
-				app()->form->addField('end_minute', date("i", $end_time), date("i", $end_time));
-				app()->form->addField('end_ampm', date("a", $end_time), date("a", $end_time));
+			$end_time = strtotime($form->cv('end_time'));
+			if($form->cv('end_time') != '00:00:00'){
+				$form->addField('end_hour', date("h", $end_time), date("h", $end_time));
+				$form->addField('end_minute', date("i", $end_time), date("i", $end_time));
+				$form->addField('end_ampm', date("a", $end_time), date("a", $end_time));
 			} else {
-				app()->form->addField('end_hour');
-				app()->form->addField('end_minute');
-				app()->form->addField('end_ampm');
+				$form->addField('end_hour');
+				$form->addField('end_minute');
+				$form->addField('end_ampm');
 			}
 			
-			$data['values'] = app()->form->getCurrentValues();
+			$data['values'] = $form->getCurrentValues();
 
 			// proces the form if submitted
-			if(app()->form->isSubmitted()){
+			if($form->isSubmitted()){
 				
 				$this->timeString('start');
 				$this->timeString('end');
 
 				if(!app()->params->post->keyExists('recurring')){
-					app()->form->setCurrentValue('recurring', false);
+					$form->setCurrentValue('recurring', false);
 				} else {
-					app()->form->setCurrentValue('start_date', '');
-					app()->form->setCurrentValue('end_date', '');
+					$form->setCurrentValue('start_date', '');
+					$form->setCurrentValue('end_date', '');
 				}
 				
 				// validation
@@ -281,12 +281,12 @@ class Events_Admin {
 				$model->setSecurityRule('content', 'allow_html', true);
 	
 				// if we have no errors, process sql
-				if(!app()->form->error()){
-					if(app()->form->save($id)){
+				if(!$form->error()){
+					if($form->save($id)){
 						
 						// update groups
 						$model->delete('event_groups_link', $id, 'event_id');
-						$groups = app()->form->cv('groups');
+						$groups = $form->cv('groups');
 						foreach($groups as $group){
 							$sql = sprintf('INSERT INTO event_groups_link (event_id, group_id) VALUES ("%s", "%s")', $id, $group);
 							$model->query($sql);
@@ -362,7 +362,7 @@ class Events_Admin {
 	 */
 	public function sectionEditor($type = false, $next_id = 1, $section = false, $page_id = false, $template = false){
 		
-		$template = $template ? $template : app()->form->cv('page_template');
+		$template = $template ? $template : $form->cv('page_template');
 		
 		$next_id = isset($section['meta']['id']) ? $section['meta']['id'] : $next_id;
 		$model = model()->open('template_placement_group');

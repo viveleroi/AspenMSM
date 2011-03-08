@@ -110,34 +110,34 @@ class Install {
 	public function setup($retry = false){
 		
 		// define the form
-		app()->form->addFields(array('db_username', 'db_password', 'db_database', 'db_hostname'));
+		$form->addFields(array('db_username', 'db_password', 'db_database', 'db_hostname'));
 
 		// process the form if submitted
-		if(app()->form->isSubmitted('post', 'submit')){
+		if($form->isSubmitted('post', 'submit')){
 
 			// validation
-			if(!app()->form->isFilled('db_username')){
-				app()->form->addError('db_username', 'You must enter a username');
+			if(!$form->isFilled('db_username')){
+				$form->addError('db_username', 'You must enter a username');
 			}
 			
-			if(!app()->form->isFilled('db_database')){
-				app()->form->addError('db_database', 'You must enter a database name.');
+			if(!$form->isFilled('db_database')){
+				$form->addError('db_database', 'You must enter a database name.');
 			}
 			
-			if(!app()->form->isFilled('db_hostname')){
-				app()->form->addError('db_hostname', 'You must enter a hostname or ip address.');
+			if(!$form->isFilled('db_hostname')){
+				$form->addError('db_hostname', 'You must enter a hostname or ip address.');
 			}
 			
 
 			// if no error, proceed with setting up config file
-			if(!app()->form->error()){
+			if(!$form->error()){
 				
 				// save the config to a file
 				$fill = "<?php\n";
-				$fill .= '$config[\'db_hostname\'] = \''.	app()->form->cv('db_hostname')	."';\n";
-				$fill .= '$config[\'db_database\'] = \''.	app()->form->cv('db_database')	."';\n";
-				$fill .= '$config[\'db_username\'] = \''.	app()->form->cv('db_username')	."';\n";
-				$fill .= '$config[\'db_password\'] = \''.	app()->form->cv('db_password')	."';\n";
+				$fill .= '$config[\'db_hostname\'] = \''.	$form->cv('db_hostname')	."';\n";
+				$fill .= '$config[\'db_database\'] = \''.	$form->cv('db_database')	."';\n";
+				$fill .= '$config[\'db_username\'] = \''.	$form->cv('db_username')	."';\n";
+				$fill .= '$config[\'db_password\'] = \''.	$form->cv('db_password')	."';\n";
 				$fill .= '?>';
 
 				// check if we can write the config file ourselves
@@ -206,7 +206,7 @@ class Install {
 		}
 
 		// if the config exists and we're not creating an account, attempt to install the base tables
-		if(!app()->form->isSubmitted('post', 'submit')){
+		if(!$form->isSubmitted('post', 'submit')){
 			if(app()->db){
 				
 				// if no tables exist yet
@@ -227,32 +227,32 @@ class Install {
 		}
 		
 		
-		app()->form->addFields(array('email', 'nice_name', 'password_1', 'password_2'));
+		$form->addFields(array('email', 'nice_name', 'password_1', 'password_2'));
 
 		// process the form if submitted
-		if(app()->form->isSubmitted('post', 'submit')){
+		if($form->isSubmitted('post', 'submit')){
 
 			// validation
-			if(!app()->form->isEmail('email')){
-				app()->form->addError('email', 'You must enter a valid email address.');
+			if(!$form->isEmail('email')){
+				$form->addError('email', 'You must enter a valid email address.');
 			}
 			
-			if(!app()->form->isFilled('password_1')){
-				app()->form->addError('password_1', 'You must enter a password.');
+			if(!$form->isFilled('password_1')){
+				$form->addError('password_1', 'You must enter a password.');
 			}
 			
-			if(!app()->form->fieldsMatch('password_1', 'password_2')){
-				app()->form->addError('password_1', 'Your passwords must match.');
+			if(!$form->fieldsMatch('password_1', 'password_2')){
+				$form->addError('password_1', 'Your passwords must match.');
 			}
 
-			if(!app()->form->error()){
+			if(!$form->error()){
 
 				// create account
 				$account_sql_tmpl = 'INSERT INTO authentication (username, nice_name, password) VALUES ("%s", "%s", "%s")';
 				$account_sql = sprintf($account_sql_tmpl,
-											app()->form->cv('email'),
-											app()->form->cv('nice_name'),
-											sha1(app()->form->cv('password_1')));
+											$form->cv('email'),
+											$form->cv('nice_name'),
+											sha1($form->cv('password_1')));
 			
 				if($model->query($account_sql)){
 				

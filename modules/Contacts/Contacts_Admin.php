@@ -80,7 +80,7 @@ class Contacts_Admin {
 	 */
 	public function edit($id = false){
 
-		app()->form->loadRecord('contacts', $id);
+		$form = new Form('contacts', $id);
 
 		// grab existing language settings
 		$model = model()->open('contact_languages_link');
@@ -93,7 +93,7 @@ class Contacts_Admin {
 				$languages[] = $languages_record['language_id'];
 			}
 		}
-		app()->form->addField('languages', $languages, $languages);
+		$form->addField('languages', $languages, $languages);
 
 
 		// grab existing groups settings
@@ -107,7 +107,7 @@ class Contacts_Admin {
 				$groups[] = $groups_record['group_id'];
 			}
 		}
-		app()->form->addField('groups', $groups, $groups);
+		$form->addField('groups', $groups, $groups);
 
 
 		// grab existing specialty settings
@@ -121,38 +121,38 @@ class Contacts_Admin {
 				$specialties[] = $specs_record['specialty_id'];
 			}
 		}
-		app()->form->addField('specialties', $specialties, $specialties);
+		$form->addField('specialties', $specialties, $specialties);
 
 
 		// proces the form if submitted
-		if(app()->form->isSubmitted()){
+		if($form->isSubmitted()){
 
 			// validation
-			if(!app()->form->isFilled('first_name')){
-				app()->form->addError('first_name', 'You must enter a first name.');
+			if(!$form->isFilled('first_name')){
+				$form->addError('first_name', 'You must enter a first name.');
 			}
 
-			if(!app()->form->isFilled('last_name')){
-				app()->form->addError('last_name', 'You must enter a last name.');
+			if(!$form->isFilled('last_name')){
+				$form->addError('last_name', 'You must enter a last name.');
 			}
 
 			// remove http:// if left empty
-			if(app()->form->cv('website') == 'http://'){
-				app()->form->setCurrentValue('website', '');
+			if($form->cv('website') == 'http://'){
+				$form->setCurrentValue('website', '');
 			}
 
 			// set html security rules
 			$model->setSecurityRule('bio', 'allow_html', true);
 
 			// if we have no errors, process sql
-			if(!app()->form->error()){
-				if($res_id = app()->form->save($id)){
+			if(!$form->error()){
+				if($res_id = $form->save($id)){
 
 					$id = $id ? $id : $res_id;
 
 					// update languages
 					$model->delete('contact_languages_link', $id, 'contact_id');
-					$languages = app()->form->cv('languages');
+					$languages = $form->cv('languages');
 					foreach($languages as $language){
 						$sql = sprintf('INSERT INTO contact_languages_link (contact_id, language_id) VALUES ("%s", "%s")', $id, $language);
 						$model->query($sql);
@@ -160,7 +160,7 @@ class Contacts_Admin {
 
 					// update groups
 					$model->delete('contact_groups_link', $id, 'contact_id');
-					$groups = app()->form->cv('groups');
+					$groups = $form->cv('groups');
 					foreach($groups as $group){
 						$sql = sprintf('INSERT INTO contact_groups_link (contact_id, group_id) VALUES ("%s", "%s")', $id, $group);
 						$model->query($sql);
@@ -168,7 +168,7 @@ class Contacts_Admin {
 
 					// update specialties
 					$model->delete('contact_specialties_link', $id, 'contact_id');
-					$specialties = app()->form->cv('specialties');
+					$specialties = $form->cv('specialties');
 					foreach($specialties as $specialty){
 						$sql = sprintf('INSERT INTO contact_specialties_link (contact_id, specialty_id) VALUES ("%s", "%s")', $id, $specialty);
 						$model->query($sql);
@@ -244,7 +244,7 @@ class Contacts_Admin {
 			}
 		}
 		
-		$data['values'] = app()->form->getCurrentValues();
+		$data['values'] = $form->getCurrentValues();
 		
 		// get images
 		if($id){
@@ -304,7 +304,7 @@ class Contacts_Admin {
 	 */
 	public function sectionEditor($type = false, $next_id = 1, $section = false, $page_id = false, $template = false){
 		
-		$template = $template ? $template : app()->form->cv('page_template');
+		$template = $template ? $template : $form->cv('page_template');
 		
 		$next_id = isset($section['meta']['id']) ? $section['meta']['id'] : $next_id;
 		$model = model()->open('template_placement_group');

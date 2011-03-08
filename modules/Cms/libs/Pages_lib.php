@@ -22,27 +22,27 @@ class Pages_lib {
 	 */
 	public function add(){
 
-		app()->form->loadTable('pages');
+		$form = new Form('pages');
 
 		// process the form if submitted
-		if(app()->form->isSubmitted()){
+		if($form->isSubmitted()){
 			
-			app()->form->setCurrentValue('page_sort_order', ($model->quickValue('SELECT MAX(page_sort_order) FROM pages', 'MAX(page_sort_order)') + 1));
+			$form->setCurrentValue('page_sort_order', ($model->quickValue('SELECT MAX(page_sort_order) FROM pages', 'MAX(page_sort_order)') + 1));
 
 			// form field validation
-			if(!app()->form->isFilled('page_title')){
-				app()->form->addError('page_title', 'You must enter a page title.');
+			if(!$form->isFilled('page_title')){
+				$form->addError('page_title', 'You must enter a page title.');
 			}
 
 			// if we have no errors, save the record
-			if(!app()->form->error()){
+			if(!$form->error()){
 				
 				// set the link text field to the page title if blank
-				if(!app()->form->isFilled('page_link_text')){
-					app()->form->setCurrentValue('page_link_text', app()->form->cv('page_title'));
+				if(!$form->isFilled('page_link_text')){
+					$form->setCurrentValue('page_link_text', $form->cv('page_title'));
 				}
 				
-				return app()->form->save();
+				return $form->save();
 				
 			}
 		}

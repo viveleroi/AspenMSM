@@ -41,6 +41,10 @@ class Pages_Admin extends Module {
 	 */
 	public function view(){
 		
+		template()->addCss('style.css');
+		template()->addJs('admin/jtree.js');
+		template()->addJs('view.js');
+		
 		$model = model()->open('pages');
 		$model->orderBy('page_sort_order', 'ASC', 'pages:list');
 		$this->pages = $model->results();
@@ -73,28 +77,28 @@ class Pages_Admin extends Module {
 	 */
 	public function add(){
 
-		app()->form->loadTable('pages');
+		$form = new Form('pages');
 
 		// process the form if submitted
-		if(app()->form->isSubmitted()){
+		if($form->isSubmitted()){
 			
-			app()->form->setCurrentValue('page_sort_order', ($model->quickValue('SELECT MAX(page_sort_order) FROM pages', 'MAX(page_sort_order)') + 1));
+			$form->setCurrentValue('page_sort_order', ($model->quickValue('SELECT MAX(page_sort_order) FROM pages', 'MAX(page_sort_order)') + 1));
 
 			// form field validation
-			if(!app()->form->isFilled('page_title')){
-				app()->form->addError('page_title', 'You must enter a page title.');
+			if(!$form->isFilled('page_title')){
+				$form->addError('page_title', 'You must enter a page title.');
 			}
 
 
 			// if we have no errors, save the record
-			if(!app()->form->error()){
+			if(!$form->error()){
 				
 				// set the link text field to the page title if blank
-				if(!app()->form->isFilled('page_link_text')){
-					app()->form->setCurrentValue('page_link_text', app()->form->cv('page_title'));
+				if(!$form->isFilled('page_link_text')){
+					$form->setCurrentValue('page_link_text', $form->cv('page_title'));
 				}
 				
-				if($page_id = app()->form->save()){
+				if($page_id = $form->save()){
 
 					app()->sml->addNewMessage('Your page has been created successfully.');
 					router()->redirect('edit', array('id' => $page_id));
@@ -107,7 +111,7 @@ class Pages_Admin extends Module {
 			}
 		}
 		
-		$data['values'] 	= app()->form->getCurrentValues();
+		$data['values'] 	= $form->getCurrentValues();
 		$data['templates'] 	= $this->scanTemplateList();
 
 		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
@@ -124,10 +128,16 @@ class Pages_Admin extends Module {
 	 */
 	public function edit($id){
 		
+		template()->addCss('style.css');
+		template()->addJs('admin/datepicker.js');
+		template()->addJs('edit.js');
+		template()->addJsVar('last_id', app()->Pages_Admin->section_count);
+		
 		$data['templates'] 			= $this->scanTemplateList();
 		$data['available_sections'] = director()->getPageSections();
 
-		app()->form->loadRecord('pages', $id);
+		$form = new Form('pages', $id);
+		$form = new Form('pages', $id);
 		
 		// load sections
 		$data['sections'] = array();
@@ -152,36 +162,36 @@ class Pages_Admin extends Module {
 		
 		// add in section field names so our form handler can see them
 		foreach(director()->getPageSections() as $section_field){
-			app()->form->addField($section_field['option_value']);
+			$form->addField($section_field['option_value']);
 		}
 
 		// process the form if submitted
-		if(app()->form->isSubmitted()){
+		if($form->isSubmitted()){
 
 			// form field validation
-			if(!app()->form->isFilled('page_title')){
-				app()->form->addError('page_title', 'You must enter a page title.');
+			if(!$form->isFilled('page_title')){
+				$form->addError('page_title', 'You must enter a page title.');
 			}
 
 			// if we have no errors, process sql
-			if(!app()->form->error()){
+			if(!$form->error()){
 				
 				// set checkboxes to false if they're not sent from browser
 				if(!app()->params->post->keyExists('show_in_menu')){
-					app()->form->setCurrentValue('show_in_menu', false);
+					$form->setCurrentValue('show_in_menu', false);
 				}
 				if(!app()->params->post->keyExists('page_is_live')){
-					app()->form->setCurrentValue('page_is_live', false);
+					$form->setCurrentValue('page_is_live', false);
 				}
 				if(!app()->params->post->keyExists('is_parent_default')){
-					app()->form->setCurrentValue('is_parent_default', false);
+					$form->setCurrentValue('is_parent_default', false);
 				}
 				if(!app()->params->post->keyExists('login_required')){
-					app()->form->setCurrentValue('login_required', false);
+					$form->setCurrentValue('login_required', false);
 				}
 
 				// update page information
-				if(app()->form->save($id)){
+				if($form->save($id)){
 					
 					// remove all current sections references
 					$model->query(sprintf('DELETE FROM section_list WHERE page_id = "%s"', $id));
@@ -215,7 +225,7 @@ class Pages_Admin extends Module {
 			}
 		}
 
-		$data['values'] = app()->form->getCurrentValues();
+		$data['values'] = $form->getCurrentValues();
 
 		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
 		template()->addView(template()->getModuleTemplateDir().DS . 'edit.tpl.php');
@@ -663,7 +673,7 @@ class Pages_Admin extends Module {
 	 */
 	public function sectionEditor($type = false, $next_id = 1, $section = false, $page_id = false, $template = false){
 		
-		$template = $template ? $template : app()->form->cv('page_template');
+		$template = $template ? $template : $form->cv('page_template');
 
 		$next_id = isset($section['meta']['id']) ? $section['meta']['id'] : $next_id;
 		$model = model()->open('template_placement_group');
