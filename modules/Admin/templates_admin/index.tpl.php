@@ -39,9 +39,9 @@
 						$theme_path .= DS . $theme . DS . 'screen.jpg';
 		
 						if(file_exists($theme_path)){
-							$image_path = str_replace('admin', 'themes/' . $theme . '/', router()->getInterfaceUrl()) . 'screen.jpg';
+							$image_path = str_replace('admin', 'themes/' . $theme . '/', router()->interfaceUrl()) . 'screen.jpg';
 						} else {
-							$image_path = router()->getInterfaceUrl() . '/img/noImageAvailable.jpg';
+							$image_path = router()->interfaceUrl() . '/img/noImageAvailable.jpg';
 						}
 			?>
 			<div class="theme_box" id="<?php print $theme ?>">

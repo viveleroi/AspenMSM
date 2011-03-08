@@ -1,5 +1,5 @@
 <link rel="stylesheet" type="text/css" href="<?php print router()->getModuleUrl() ?>/css/style.css" />
-<script type="text/javascript" src="<?php print router()->getInterfaceUrl() ?>/js/jquery.qtip.js"></script>
+<script type="text/javascript" src="<?php print router()->interfaceUrl() ?>/js/jquery.qtip.js"></script>
 <script type="text/javascript" src="<?php print router()->getModuleUrl() ?>/js/view.js"></script>
 
 <script type="text/javascript">

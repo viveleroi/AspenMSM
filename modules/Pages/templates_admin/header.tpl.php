@@ -1,12 +1,12 @@
 <link rel="stylesheet" type="text/css" href="<?php print router()->getModuleUrl() ?>/css/style.css" />
 
 <?php if(router()->getSelectedMethod() == "edit"){ ?>
-<script type="text/javascript" src="<?php print router()->getInterfaceUrl() ?>/js/datepicker.js"></script>
+<script type="text/javascript" src="<?php print router()->interfaceUrl() ?>/js/datepicker.js"></script>
 <script type="text/javascript" src="<?php print router()->getModuleUrl() ?>/js/edit.js"></script>
 <?php } ?>
 
 <?php if(router()->getSelectedMethod() == "view"){ ?>
-<script type="text/javascript" src="<?php print router()->getInterfaceUrl() ?>/js/jtree.js"></script>
+<script type="text/javascript" src="<?php print router()->interfaceUrl() ?>/js/jtree.js"></script>
 <script type="text/javascript" src="<?php print router()->getModuleUrl() ?>/js/view.js"></script>
 <?php } ?>
 

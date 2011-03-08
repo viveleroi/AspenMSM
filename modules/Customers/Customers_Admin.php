@@ -31,7 +31,7 @@ class Customers_Admin {
 		if(user()->authenticate()){
 		
 			$redirect = session()->getRaw('post-login_redirect');
-			$redirect = empty($redirect) ? router()->getInterfaceUrl() : $redirect;
+			$redirect = empty($redirect) ? router()->interfaceUrl() : $redirect;
 		
 			header("Location: " . $redirect);
 			exit;
@@ -47,7 +47,7 @@ class Customers_Admin {
 	 */
 	public function logout(){
 		user()->logout();
-		header("Location: " . router()->getInterfaceUrl());
+		header("Location: " . router()->interfaceUrl());
 		exit;
 	}
 	

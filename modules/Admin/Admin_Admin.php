@@ -71,7 +71,7 @@ class Admin_Admin extends App {
 		$data['pages'] = $this->APP->model->results();
 		$data['mods'] = $this->APP->moduleControls();
 		$data['themes'] = $this->listThemes();
-		$data['live'] = $this->APP->settings->getConfig('active_theme');
+		$data['live'] = settings()->getConfig('active_theme');
 
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
 		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'index.tpl.php');
@@ -114,7 +114,7 @@ class Admin_Admin extends App {
 	
 	
 	public function ajax_enableTheme($theme = false){
-		return $this->APP->settings->setConfig('active_theme', $theme);
+		return settings()->setConfig('active_theme', $theme);
 	}
 }
 

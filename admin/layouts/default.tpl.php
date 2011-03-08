@@ -2,29 +2,29 @@
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-	<title><?php print $this->APP->settings->getConfig('cms_title'); ?></title>
+	<title><?php print settings()->getConfig('cms_title'); ?></title>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 	<meta name="description" content="" />
 	<meta name="keywords" content="" />
 	<meta name="robots" content="all,follow" />
 
-	<style type="text/css" media="screen">@import "<?php print router()->getInterfaceUrl() ?>/css/screen.css";</style>
-	<!--[if lt IE 8]><link rel="stylesheet" type="text/css" href="<?php print router()->getInterfaceUrl() ?>/css/ie.css" media="screen"><![endif]-->
+	<style type="text/css" media="screen">@import "<?php print router()->interfaceUrl() ?>/css/screen.css";</style>
+	<!--[if lt IE 8]><link rel="stylesheet" type="text/css" href="<?php print router()->interfaceUrl() ?>/css/ie.css" media="screen"><![endif]-->
 
 	<script type="text/javascript">
-		var INTERFACE_URL = '<?php print router()->getInterfaceUrl() ?>';
-		var APPLICATION_URL = '<?php print router()->getApplicationUrl() ?>/';
+		var INTERFACE_URL = '<?php print router()->interfaceUrl() ?>';
+		var APPLICATION_URL = '<?php print router()->appUrl() ?>/';
 		var MODULE_URL = '<?php print router()->getModuleUrl() ?>';
-		var THEME_URL = '<?php print router()->getApplicationUrl() . '/themes/' . $this->APP->settings->getConfig('active_theme') ?>';
+		var THEME_URL = '<?php print router()->appUrl() . '/themes/' . settings()->getConfig('active_theme') ?>';
 		var IS_ADMIN = '<?php print IS_ADMIN ?>';
 	</script>
 
-	<script type="text/javascript" src="<?php print router()->getInterfaceUrl() ?>/js/jquery.js"></script>
-	<script type="text/javascript" src="<?php print router()->getInterfaceUrl() ?>/js/jquery.ui.js"></script>
-	<script type="text/javascript" src="<?php print router()->getInterfaceUrl() ?>/js/jquery.plugins.js"></script>
-	<script type="text/javascript" src="<?php print router()->getInterfaceUrl() ?>/js/cms.js"></script>
+	<script type="text/javascript" src="<?php print router()->interfaceUrl() ?>/js/jquery.js"></script>
+	<script type="text/javascript" src="<?php print router()->interfaceUrl() ?>/js/jquery.ui.js"></script>
+	<script type="text/javascript" src="<?php print router()->interfaceUrl() ?>/js/jquery.plugins.js"></script>
+	<script type="text/javascript" src="<?php print router()->interfaceUrl() ?>/js/cms.js"></script>
 	
-	<script type="text/javascript" src="<?php print router()->getInterfaceUrl() ?>/js/tinymce/tiny_mce_gzip.js"></script>
+	<script type="text/javascript" src="<?php print router()->interfaceUrl() ?>/js/tinymce/tiny_mce_gzip.js"></script>
 	<script type="text/javascript">
 		tinyMCE_GZ.init({
 			plugins : 'safari,inlinepopups,imagemanager,paste,table',
@@ -49,7 +49,7 @@
 	</div>
 	<?php } ?>
 	<div id="header">
-		<h1><?php print $this->APP->settings->getConfig('cms_title'); ?></h1>
+		<h1><?php print settings()->getConfig('cms_title'); ?></h1>
 	</div>
 	<?php if(user()->isLoggedIn()){ // if logged in ?>
 	<div id="nav">
@@ -69,3 +69,15 @@
 	<?php } //end is loggedin?>
 	<div id="content">
 		<div class="container">
+<?php $this->page(); ?>
+		</div>
+	</div>
+	<?php if(user()->isLoggedIn()){ // if logged in ?>
+	<div id="footer">
+		<p><strong>Questions?</strong> Contact Trellis Development <a href="mailto:botsko@gmail.com?subject=Bug Report: <?php print $this->APP->config('application_name') ?> v<?php print VERSION ?> @ <?php print $this->APP->params->server->getRaw('SERVER_NAME') ?>" title="Click to contact Trellis Development">support@trellisdev.com</a></p>
+	</div>
+	<?php } ?>
+	<?php $this->loadModuleFooter(); ?>
+</body>
+<?= $this->htmlHide(VERSION_COMPLETE); ?>
+</html>

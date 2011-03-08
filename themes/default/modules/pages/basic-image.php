@@ -9,14 +9,14 @@
 $image_loc = router()->getUploadsUrl().DS.$content['image_filename'];
 $server_loc = $this->APP->config('upload_server_path').DS.$content['image_filename'];
 if(empty($content['image_filename']) || !file_exists($server_loc)){
-	$image_loc = router()->getInterfaceUrl('admin') . '/img/noImageAvailable.jpg';
+	$image_loc = router()->interfaceUrl('admin') . '/img/noImageAvailable.jpg';
 }
 
 // check for valid thumbnail
 $image_thm = router()->getUploadsUrl().DS.$content['image_thumbname'];
 $server_loc = $this->APP->config('upload_server_path').DS.$content['image_thumbname'];
 if(empty($content['image_filename']) || !file_exists($server_loc)){
-	$image_thm = router()->getInterfaceUrl('admin') . '/img/noImageAvailable.jpg';
+	$image_thm = router()->interfaceUrl('admin') . '/img/noImageAvailable.jpg';
 }
 
 $image_alt = empty($content['image_alt']) ? $content['title'] : $content['image_alt'];

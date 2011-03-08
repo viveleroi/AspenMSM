@@ -742,7 +742,7 @@ class Pages_Admin {
 	 */
 	public function scanTemplateList(){
 	
-		$path = APPLICATION_PATH . '/themes/' . $this->APP->settings->getConfig('active_theme');
+		$path = APPLICATION_PATH . '/themes/' . settings()->getConfig('active_theme');
 		
 		$files = $this->APP->file->dirList($path);
 		$page_templates = array ();
