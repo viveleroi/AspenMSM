@@ -7,12 +7,12 @@
 			<li>
 				<label for="news_<?php print $next_id ?>_title">Sub-Title:</label>
 				<input id="news_<?php print $next_id ?>_title" name="page_sections[<?php print $next_id ?>][title]" type="text" value="<?php print isset($section['content']['title']) ? $section['content']['title'] : '' ?>" />
-				<a class="help" href="<?php print $this->APP->router->getModuleUrl('News_Admin') ?>/help/section-news-subtitle.htm" title="Sub-Title">Help</a>
+				<a class="help" href="<?php print router()->getModuleUrl('News_Admin') ?>/help/section-news-subtitle.htm" title="Sub-Title">Help</a>
 			</li>
 			<li>
 				<label for="news_<?php print $next_id ?>_show_title">Show Sub-Title:</label>
 				<input id="news_<?php print $next_id ?>_show_title" name="page_sections[<?php print $next_id ?>][show_title]" type="checkbox" value="1" <?php print isset($section['content']['show_title']) && $section['content']['show_title'] ? ' checked="checked"' : '' ?> />
-				<a class="help" href="<?php print $this->APP->router->getModuleUrl('News_Admin') ?>/help/section-news-show_subtitle.htm" title="Show Sub-Title">Help</a>
+				<a class="help" href="<?php print router()->getModuleUrl('News_Admin') ?>/help/section-news-show_subtitle.htm" title="Show Sub-Title">Help</a>
 			</li>
 			<li class="auto">
 				<label for="news_<?php print $next_id ?>_placement_group">Placement Group:</label>
@@ -27,22 +27,22 @@
 				}
 				?>
 				</select>
-				<a class="help" href="<?php print $this->APP->router->getModuleUrl('News_Admin') ?>/help/section-news-placement_group.htm" title="Placement Group">Help</a>
+				<a class="help" href="<?php print router()->getModuleUrl('News_Admin') ?>/help/section-news-placement_group.htm" title="Placement Group">Help</a>
 			</li>
 			<li class="auto">
 				<label for="news_<?php print $next_id ?>_display_num">Show Recent News:</label>
 				<input id="news_<?php print $next_id ?>_display_num" name="page_sections[<?php print $next_id ?>][display_num]" type="text" size="3" value="<?php print isset($section['content']['display_num']) ? $section['content']['display_num'] : 5 ?>" />
-				<a class="help" href="<?php print $this->APP->router->getModuleUrl('News_Admin') ?>/help/section-news-show_recent_news.htm" title="Show Recent News">Help</a>
+				<a class="help" href="<?php print router()->getModuleUrl('News_Admin') ?>/help/section-news-show_recent_news.htm" title="Show Recent News">Help</a>
 			</li>
 			<li>
 				<label for="news_<?php print $next_id ?>_link_to_full_page">Link to Full Page:</label>
 				<input id="news_<?php print $next_id ?>_link_to_full_page" name="page_sections[<?php print $next_id ?>][link_to_full_page]" type="checkbox" value="1" <?php print isset($section['content']['link_to_full_page']) && $section['content']['link_to_full_page'] ? ' checked="checked"' : '' ?> />
-				<a class="help" href="<?php print $this->APP->router->getModuleUrl('News_Admin') ?>/help/section-news-link_to_full_page.htm" title="Link to Full Page">Help</a>
+				<a class="help" href="<?php print router()->getModuleUrl('News_Admin') ?>/help/section-news-link_to_full_page.htm" title="Link to Full Page">Help</a>
 			</li>
 			<li>
 				<label for="news_<?php print $next_id ?>_show_description">Show Description:</label>
 				<input id="news_<?php print $next_id ?>_show_description" name="page_sections[<?php print $next_id ?>][show_description]" type="checkbox" value="1" <?php print isset($section['content']['show_description']) && $section['content']['show_description'] ? ' checked="checked"' : '' ?> />
-				<a class="help" href="<?php print $this->APP->router->getModuleUrl('News_Admin') ?>/help/section-news-show_description.htm" title="Show Description">Help</a>
+				<a class="help" href="<?php print router()->getModuleUrl('News_Admin') ?>/help/section-news-show_description.htm" title="Show Description">Help</a>
 			</li>
 			<li class="auto">
 				<label for="news_<?php print $next_id ?>_template">Template:</label>
@@ -57,7 +57,7 @@
 				}
 				?>
 				</select>
-				<a class="help" href="<?php print $this->APP->router->getModuleUrl('News_Admin') ?>/help/section-news-placement_group.htm" title="Placement Group">Help</a>
+				<a class="help" href="<?php print router()->getModuleUrl('News_Admin') ?>/help/section-news-placement_group.htm" title="Placement Group">Help</a>
 			</li>
 			<li class="auto">
 				<label for="news_<?php print $next_id ?>_detail_page_id">Detail Page:</label>

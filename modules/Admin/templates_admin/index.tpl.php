@@ -39,9 +39,9 @@
 						$theme_path .= DS . $theme . DS . 'screen.jpg';
 		
 						if(file_exists($theme_path)){
-							$image_path = str_replace('admin', 'themes/' . $theme . '/', $this->APP->router->getInterfaceUrl()) . 'screen.jpg';
+							$image_path = str_replace('admin', 'themes/' . $theme . '/', router()->getInterfaceUrl()) . 'screen.jpg';
 						} else {
-							$image_path = $this->APP->router->getInterfaceUrl() . '/img/noImageAvailable.jpg';
+							$image_path = router()->getInterfaceUrl() . '/img/noImageAvailable.jpg';
 						}
 			?>
 			<div class="theme_box" id="<?php print $theme ?>">
@@ -70,12 +70,12 @@
 						<li>
 							<label for="website_title">Website Title:</label>
 							<input type="text" name="website_title" id="website_title" value="<?php print $values['website_title'] ?>" />
-							<a class="help" href="<?php print $this->APP->router->getModuleUrl() ?>/help/admin-website_title.htm" title="Website Title">Help</a>
+							<a class="help" href="<?php print router()->getModuleUrl() ?>/help/admin-website_title.htm" title="Website Title">Help</a>
 						</li>
 						<li>
 							<label for="cms_title">CMS Title:</label>
 							<input type="text" name="cms_title" id="cms_title" value="<?php print $values['cms_title'] ?>" />
-							<a class="help" href="<?php print $this->APP->router->getModuleUrl() ?>/help/admin-cms_title.htm" title="CMS Title">Help</a>
+							<a class="help" href="<?php print router()->getModuleUrl() ?>/help/admin-cms_title.htm" title="CMS Title">Help</a>
 						</li>
 						<li class="auto">
 							<label for="home_page">Home Page:</label>
@@ -90,19 +90,19 @@
 							}
 							?>
 							</select>
-							<a class="help" href="<?php print $this->APP->router->getModuleUrl() ?>/help/admin-home_page.htm" title="Home Page">Help</a>
+							<a class="help" href="<?php print router()->getModuleUrl() ?>/help/admin-home_page.htm" title="Home Page">Help</a>
 						</li>
 					</ol>
 					<ol>
 						<li>
 							<label for="meta_keywords">Meta Keywords:</label>
 							<textarea name="meta_keywords" id="meta_keywords"  rows="5" cols="50"><?php print $values['meta_keywords'] ?></textarea>
-							<a class="help" href="<?php print $this->APP->router->getModuleUrl() ?>/help/admin-meta_keywords.htm" title="Meta Keywords">Help</a>
+							<a class="help" href="<?php print router()->getModuleUrl() ?>/help/admin-meta_keywords.htm" title="Meta Keywords">Help</a>
 						</li>
 						<li>
 							<label for="meta_description">Meta Description:</label>
 							<textarea name="meta_description" id="meta_description"  rows="5" cols="50"><?php print $values['meta_description'] ?></textarea>
-							<a class="help" href="<?php print $this->APP->router->getModuleUrl() ?>/help/admin-meta_description.htm" title="Meta Description">Help</a>
+							<a class="help" href="<?php print router()->getModuleUrl() ?>/help/admin-meta_description.htm" title="Meta Description">Help</a>
 						</li>
 					</ol>
 				</fieldset>

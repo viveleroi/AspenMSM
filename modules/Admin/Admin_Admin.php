@@ -60,7 +60,7 @@ class Admin_Admin extends App {
 				}
 				
 				$this->APP->sml->addNewMessage('Website settings have been updated successfully.');
-				$this->APP->router->redirect('view');
+				router()->redirect('view');
 			}
 		}
 		

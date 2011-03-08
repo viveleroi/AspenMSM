@@ -10,12 +10,12 @@
 			<li>
 				<label for="imagetext_<?php print $next_id ?>_title">Sub-Title:</label>
 				<input id="imagetext_<?php print $next_id ?>_title" name="page_sections[<?php print $next_id ?>][title]" type="text" value="<?php print isset($section['content']['title']) ? htmlentities($section['content']['title'], ENT_QUOTES, 'UTF-8') : '' ?>" />
-				<a class="help" href="<?php print $this->APP->router->getModuleUrl() ?>/help/section-subtitle.htm" title="Sub-Title">Help</a>
+				<a class="help" href="<?php print router()->getModuleUrl() ?>/help/section-subtitle.htm" title="Sub-Title">Help</a>
 			</li>
 			<li>
 				<label for="imagetext_<?php print $next_id ?>_show_title">Show Sub-Title:</label>
 				<input id="imagetext_<?php print $next_id ?>_show_title" name="page_sections[<?php print $next_id ?>][show_title]" type="checkbox" value="1" <?php print isset($section['content']['show_title']) && $section['content']['show_title'] ? ' checked="checked"' : '' ?> />
-				<a class="help" href="<?php print $this->APP->router->getModuleUrl() ?>/help/section-show_subtitle.htm" title="Show Sub-Title">Help</a>
+				<a class="help" href="<?php print router()->getModuleUrl() ?>/help/section-show_subtitle.htm" title="Show Sub-Title">Help</a>
 			</li>
 			<li class="auto">
 				<label for="imagetext_<?php print $next_id ?>_placement_group">Placement Group:</label>
@@ -30,7 +30,7 @@
 					}
 					?>
 				</select>
-				<a class="help" href="<?php print $this->APP->router->getModuleUrl() ?>/help/section-placement_group.htm" title="Placement Group">Help</a>
+				<a class="help" href="<?php print router()->getModuleUrl() ?>/help/section-placement_group.htm" title="Placement Group">Help</a>
 			</li>
 			<li class="auto">
 				<label for="basic_<?php print $next_id ?>_template">Template:</label>
@@ -45,7 +45,7 @@
 				}
 				?>
 				</select>
-				<a class="help" href="<?php print $this->APP->router->getModuleUrl('Pages_Admin') ?>/help/section-basic-placement_group.htm" title="Placement Group">Help</a>
+				<a class="help" href="<?php print router()->getModuleUrl('Pages_Admin') ?>/help/section-basic-placement_group.htm" title="Placement Group">Help</a>
 			</li>
 			<li class="tmce">
 				<label for="imagetext_<?php print $next_id ?>_content">Content:</label>
@@ -54,17 +54,17 @@
 			<li>
 				<label for="imagetext_<?php print $next_id ?>_image">Image:</label>
 				<input id="imagetext_<?php print $next_id ?>_image" name="image_<?php print $next_id ?>" type="file" />
-				<a class="help" href="<?php print $this->APP->router->getModuleUrl() ?>/help/section-image.htm" title="Image">Help</a>
+				<a class="help" href="<?php print router()->getModuleUrl() ?>/help/section-image.htm" title="Image">Help</a>
 			</li>
 			<li>
 				<label for="imagetext_<?php print $next_id ?>_image_alt">Image Alt:</label>
 				<input id="imagetext_<?php print $next_id ?>_image_alt" name="page_sections[<?php print $next_id ?>][image_alt]" type="text" value="<?php print isset($section['content']['image_alt']) ? $section['content']['image_alt'] : '' ?>" />
-				<a class="help" href="<?php print $this->APP->router->getModuleUrl() ?>/help/section-image_alt.htm" title="Image Alt">Help</a>
+				<a class="help" href="<?php print router()->getModuleUrl() ?>/help/section-image_alt.htm" title="Image Alt">Help</a>
 			</li>
 			<li class="thumbs">
 				<span class="false-label">Current Image:</span>
-				<img src="<?php print $this->APP->router->getUploadsUrl() .DS. $section['content']['image_thumbname'];?>" />
-				<a class="help" href="<?php print $this->APP->router->getModuleUrl() ?>/help/section-current_image.htm" title="Current Image">Help</a>
+				<img src="<?php print router()->getUploadsUrl() .DS. $section['content']['image_thumbname'];?>" />
+				<a class="help" href="<?php print router()->getModuleUrl() ?>/help/section-current_image.htm" title="Current Image">Help</a>
 			</li>
 		</ol>
 		<a class="dark-button delete-confirm" href="#"  title="Are you sure you want to delete &#8220;<?php print isset($section['content']['title']) ? (empty($section['content']['title']) ? 'Untitled Text' : $section['content']['title']) : 'New Page Section' ?>&#8221; and all it&#8217;s content?"><span>Delete Section</span></a>

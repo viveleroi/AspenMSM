@@ -1,198 +1,155 @@
 <?php
 
 /**
- * @abstract Handles forms for user accounts
- * @package Aspen_Framework
- * @author Michael Botsko
- * @copyright 2008 Trellis Development, LLC
- * @uses User
+ * @package 	Aspen_Framework
+ * @subpackage 	Modules.Base
+ * @author 		Michael Botsko
+ * @copyright 	2009 Trellis Development, LLC
+ * @since 		1.0
  */
-class Users_Admin {
+
+/**
+ * Handles forms for user accounts
+ * @package Aspen_Framework
+ * @uses Module
+ */
+class Users_Admin extends Module {
+
 
 	/**
-	 * @var object $APP Holds our original application
-	 * @access private
-	 */
-	private $APP;
-
-
-	/**
-	 * @abstract Constructor, initializes the module
-	 * @access public
-	 */
-	public function __construct(){ $this->APP = get_instance(); }
-	
-	
-	/**
-	 * @abstract Runs the authentication process on the login form data
-	 * @access public
-	 */
-	public function authenticate(){
-		if($this->APP->user->authenticate()){
-		
-			$redirect = $this->APP->params->session->getRaw('post-login_redirect');
-			$redirect = empty($redirect) ? $this->APP->router->getInterfaceUrl() : $redirect;
-		
-			header("Location: " . $redirect);
-			exit;
-		} else {
-			$this->APP->user->login_failed();
-		}
-	}
-
-	
-	/**
-	 * @abstract Processes a logout
-	 * @access public
-	 */
-	public function logout(){
-		$this->APP->user->logout();
-		header("Location: " . $this->APP->router->getInterfaceUrl());
-		exit;
-	}
-	
-
-	/**
-	 * @abstract Displays the list of users
+	 * Displays the list of users
 	 * @access public
 	 */
 	public function view(){
-
-		$this->APP->model->select('authentication');
-		$this->APP->model->orderBy('username', 'ASC');
-		$data['users'] = $this->APP->model->results();
-
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'index.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display($data);
-
-	}
-
-	
-	/**
-	 * @abstract Displays and processes the add a new user form
-	 * @access public
-	 */
-	public function add(){
-
-		if($this->APP->user->add()){
-			$this->APP->sml->addNewMessage('User account has been created successfully.');
-			$this->APP->router->redirect('view');
-		}
-		
-		$data['groups'] = $this->APP->user->groupList();
-		$data['values'] = $this->APP->form->getCurrentValues();
-
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'add.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display($data);
-
-	}
-
-
-	/**
-	 * @abstract Displays and processes the edit user form
-	 * @access public
-	 * @param $id The id of the user record
-	 */
-	public function edit($id){
-
-		if($this->APP->user->edit($id)){
-			$this->APP->sml->addNewMessage('User account changes have been saved successfully.');
-			$this->APP->router->redirect('view');
-		}
-		
-		$data['groups'] = $this->APP->user->groupList();
-		$data['values'] = $this->APP->form->getCurrentValues();
-
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'edit.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display($data);
-
+		$model = model()->open('users');
+		$model->contains('groups');
+		$model->orderBy('username', 'ASC');
+		$data['users'] = $model->results();
+		template()->display($data);
 	}
 	
 	
-	/**
-	 * @abstract Displays and processes the my account form
-	 * @access public
-	 */
-	public function my_account(){
-
-		if($this->APP->user->my_account()){
-			$this->APP->sml->addNewMessage('Your account has been updated successfully.');
-			$this->APP->router->redirect('view', false, 'Index');
-		}
-
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'my_account.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display();
-
-	}
-
-
-	/**
-	 * @abstract Deletes a user record
-	 * @param integer $id The record id of the user
-	 * @access public
-	 */
-	public function delete($id = false){
-		if($this->APP->user->delete($id)){
-			$this->APP->router->redirect('view');
-		}
-	}
-
-
 	/**
 	 * @abstract Displays a permission denied error message
 	 * @access public
 	 */
-	public function denied(){
-		$this->APP->template->addView($this->APP->template->getTemplateDir() . '/header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'denied.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir() . '/footer.tpl.php');
-		$this->APP->template->display();
+	public function signup(){
+		if($user_id = user()->signup()){
+			$_SESSION['user_id'] = $user_id;
+			sml()->say(text('signup:account_success'), true);
+			router()->redirect('login');
+		}
+		template()->display();
 	}
-	
+
 
 	/**
-	 * @abstract Displays the user login page
+	 * Displays and processes the add a new user form
+	 * @access public
+	 */
+	public function add(){
+		$this->edit();
+	}
+
+
+	/**
+	 * Displays and processes the edit user form
+	 * @access public
+	 * @param $id The id of the user record
+	 */
+	public function edit($id = false){
+		if(user()->edit($id)){
+			sml()->say(text('users:edit:say:success'), true);
+			router()->redirect('view');
+		}
+		$data['groups'] = user()->groupList();
+		template()->display($data);
+	}
+
+
+	/**
+	 * Displays and processes the my account form
+	 * @access public
+	 */
+	public function my_account(){
+		if(user()->my_account()){
+			sml()->say(text('users:myaccount:say:success'), true);
+			app()->router->redirect('index/view');
+		}
+		template()->display();
+	}
+
+
+	/**
+	 * Deletes a user record
+	 * @param integer $id The record id of the user
+	 * @access public
+	 */
+	public function delete($id = false){
+		if(user()->delete($id)){
+			sml()->say(text('users:delete:say:success'), true);
+			router()->redirect('view');
+		}
+	}
+
+
+	/**
+	 * Displays the user login page
 	 * @access public
 	 */
 	public function login(){
-		
-		$this->APP->user->login();
-		
-		$this->APP->template->addView($this->APP->template->getTemplateDir() . '/header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'login.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir() . '/footer.tpl.php');
-		$this->APP->template->display();
+		user()->login();
+		template()->display();
 	}
 
-	
+
 	/**
-	 * @abstract Displays and processes the forgotten password reset form
+	 * Displays and processes the forgotten password reset form
 	 * @access public
 	 */
 	public function forgot(){
-
-		if($this->APP->user->forgot() == 1){
-			$this->APP->sml->addNewMessage('Your password has been reset. Please check your email.');
-			$this->APP->router->redirect('login');
+		if(user()->forgot() == 1){
+			sml()->say(text('users:forgot:say:success'), true);
+			router()->redirect('login');
 		}
-		elseif($this->APP->user->forgot() == -1){
-			$this->APP->sml->addNewMessage('We were unable to find any accounts matching that username.');
-			$this->APP->router->redirect('forgot');
+		elseif(user()->forgot() == -1){
+			sml()->say(text('users:forgot:say:error'), false);
+			router()->redirect('forgot');
 		}
+		template()->display();
+	}
 
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
-		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'forgot.tpl.php');
-		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'footer.tpl.php');
-		$this->APP->template->display();
 
+	/**
+	 * Runs the authentication process on the login form data
+	 * @access public
+	 */
+	public function authenticate(){
+		if(user()->authenticate()){
+			router()->redirectToUrl(user()->postLoginRedirect());
+		} else {
+			user()->login_failed();
+		}
+	}
+
+
+	/**
+	 * Processes a logout
+	 * @access public
+	 */
+	public function logout(){
+		user()->logout();
+		router()->redirectToUrl(router()->interfaceUrl());
+	}
+
+
+	/**
+	 * Displays a permission denied error message
+	 * @access public
+	 */
+	public function denied(){
+		$this->setPageTitle(text('users:denied:head-title'));
+		template()->display();
 	}
 }
 ?>

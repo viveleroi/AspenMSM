@@ -21,7 +21,7 @@ class News_Admin {
 		$this->APP = get_instance();
 		$this->APP->director->registerPageSection(__CLASS__, 'News Display', 'news_display');
 		$this->APP->setConfig('enable_uploads', true); // enable uploads
-		if($this->APP->router->getSelectedModule() == __CLASS__){
+		if(router()->getSelectedModule() == __CLASS__){
 			$this->APP->setConfig('upload_server_path', APPLICATION_PATH.DS.'files'.DS.'news');
 		}
 	}
@@ -82,7 +82,7 @@ class News_Admin {
 			
 				$file = $this->APP->file->upload('pdf_filename');
 				
-				$this->APP->form->setCurrentValue('user_id', $this->APP->params->session->getInt('user_id'));
+				$this->APP->form->setCurrentValue('user_id', session()->getInt('user_id'));
 				$this->APP->form->setCurrentValue('public', 1);
 				
 				if(isset($file[0]) && is_array($file[0])){
@@ -96,7 +96,7 @@ class News_Admin {
 				if($this->APP->form->save()){
 					// if successful insert, redirect to the list
 					$this->APP->sml->addNewMessage('News entry has successfully been added.');
-					$this->APP->router->redirect('view');
+					router()->redirect('view');
 				}
 			}
 		}
@@ -152,7 +152,7 @@ class News_Admin {
 				if($this->APP->form->save($id)){
 					// if successful insert, redirect to the list
 					$this->APP->sml->addNewMessage('News entry has successfully been updated.');
-					$this->APP->router->redirect('view');
+					router()->redirect('view');
 				}
 			}
 		}
@@ -176,7 +176,7 @@ class News_Admin {
 	public function delete($id = false){
 		if($this->APP->model->delete('news', $id)){
 			$this->APP->sml->addNewMessage('News entry has successfully been deleted.');
-			$this->APP->router->redirect('view');
+			router()->redirect('view');
 		}
 	}
 	

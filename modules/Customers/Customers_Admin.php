@@ -28,15 +28,15 @@ class Customers_Admin {
 	 * @access public
 	 */
 	public function authenticate(){
-		if($this->APP->user->authenticate()){
+		if(user()->authenticate()){
 		
-			$redirect = $this->APP->params->session->getRaw('post-login_redirect');
-			$redirect = empty($redirect) ? $this->APP->router->getInterfaceUrl() : $redirect;
+			$redirect = session()->getRaw('post-login_redirect');
+			$redirect = empty($redirect) ? router()->getInterfaceUrl() : $redirect;
 		
 			header("Location: " . $redirect);
 			exit;
 		} else {
-			$this->APP->user->login_failed();
+			user()->login_failed();
 		}
 	}
 
@@ -46,8 +46,8 @@ class Customers_Admin {
 	 * @access public
 	 */
 	public function logout(){
-		$this->APP->user->logout();
-		header("Location: " . $this->APP->router->getInterfaceUrl());
+		user()->logout();
+		header("Location: " . router()->getInterfaceUrl());
 		exit;
 	}
 	
@@ -76,12 +76,12 @@ class Customers_Admin {
 	 */
 	public function add(){
 
-		if($this->APP->user->add()){
+		if(user()->add()){
 			$this->APP->sml->addNewMessage('User account has been created successfully.');
-			$this->APP->router->redirect('view');
+			router()->redirect('view');
 		}
 		
-		$data['groups'] = $this->APP->user->groupList();
+		$data['groups'] = user()->groupList();
 		$data['values'] = $this->APP->form->getCurrentValues();
 
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
@@ -99,12 +99,12 @@ class Customers_Admin {
 	 */
 	public function edit($id){
 
-		if($this->APP->user->edit($id)){
+		if(user()->edit($id)){
 			$this->APP->sml->addNewMessage('User account changes have been saved successfully.');
-			$this->APP->router->redirect('view');
+			router()->redirect('view');
 		}
 		
-		$data['groups'] = $this->APP->user->groupList();
+		$data['groups'] = user()->groupList();
 		$data['values'] = $this->APP->form->getCurrentValues();
 
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
@@ -121,9 +121,9 @@ class Customers_Admin {
 	 */
 	public function my_account(){
 
-		if($this->APP->user->my_account()){
+		if(user()->my_account()){
 			$this->APP->sml->addNewMessage('Your account has been updated successfully.');
-			$this->APP->router->redirect('view', false, 'Index');
+			router()->redirect('view', false, 'Index');
 		}
 
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');
@@ -140,8 +140,8 @@ class Customers_Admin {
 	 * @access public
 	 */
 	public function delete($id = false){
-		if($this->APP->user->delete($id)){
-			$this->APP->router->redirect('view');
+		if(user()->delete($id)){
+			router()->redirect('view');
 		}
 	}
 
@@ -164,7 +164,7 @@ class Customers_Admin {
 	 */
 	public function login(){
 		
-		$this->APP->user->login();
+		user()->login();
 		
 		$this->APP->template->addView($this->APP->template->getTemplateDir() . '/header.tpl.php');
 		$this->APP->template->addView($this->APP->template->getModuleTemplateDir().DS . 'login.tpl.php');
@@ -179,13 +179,13 @@ class Customers_Admin {
 	 */
 	public function forgot(){
 
-		if($this->APP->user->forgot() == 1){
+		if(user()->forgot() == 1){
 			$this->APP->sml->addNewMessage('Your password has been reset. Please check your email.');
-			$this->APP->router->redirect('login');
+			router()->redirect('login');
 		}
-		elseif($this->APP->user->forgot() == -1){
+		elseif(user()->forgot() == -1){
 			$this->APP->sml->addNewMessage('We were unable to find any accounts matching that username.');
-			$this->APP->router->redirect('forgot');
+			router()->redirect('forgot');
 		}
 
 		$this->APP->template->addView($this->APP->template->getTemplateDir().DS . 'header.tpl.php');

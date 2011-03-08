@@ -7,12 +7,12 @@
 			<li>
 				<label for="basic_<?php print $next_id ?>_title">Sub-Title:</label>
 				<input type="text" name="page_sections[<?php print $next_id ?>][title]" id="basic_<?php print $next_id ?>_title" value="<?php print isset($section['content']['title']) ? htmlentities($section['content']['title'], ENT_QUOTES, 'UTF-8') : '' ?>" />
-				<a class="help" href="<?php print $this->APP->router->getModuleUrl() ?>/help/section-subtitle.htm" title="Sub-Title">Help</a>
+				<a class="help" href="<?php print router()->getModuleUrl() ?>/help/section-subtitle.htm" title="Sub-Title">Help</a>
 			</li>
 			<li>
 				<label for="basic_<?php print $next_id ?>_show_title">Show Sub-Title:</label>
 				<input type="checkbox" name="page_sections[<?php print $next_id ?>][show_title]" id="basic_<?php print $next_id ?>_show_title" value="1" <?php print isset($section['content']['show_title']) && $section['content']['show_title'] ? ' checked="checked"' : '' ?> />
-				<a class="help" href="<?php print $this->APP->router->getModuleUrl() ?>/help/section-show_subtitle.htm" title="Show Sub-Title">Help</a>
+				<a class="help" href="<?php print router()->getModuleUrl() ?>/help/section-show_subtitle.htm" title="Show Sub-Title">Help</a>
 			</li>
 			<li class="auto">
 				<label for="basic_<?php print $next_id ?>_placement_group">Placement Group:</label>
@@ -27,7 +27,7 @@
 				}
 				?>
 				</select>
-				<a class="help" href="<?php print $this->APP->router->getModuleUrl() ?>/help/section-placement_group.htm" title="Placement Group">Help</a>
+				<a class="help" href="<?php print router()->getModuleUrl() ?>/help/section-placement_group.htm" title="Placement Group">Help</a>
 			</li>
 			<li class="auto">
 				<label for="basic_<?php print $next_id ?>_template">Template:</label>
@@ -42,7 +42,7 @@
 				}
 				?>
 				</select>
-				<a class="help" href="<?php print $this->APP->router->getModuleUrl('Pages_Admin') ?>/help/section-basic-placement_group.htm" title="Placement Group">Help</a>
+				<a class="help" href="<?php print router()->getModuleUrl('Pages_Admin') ?>/help/section-basic-placement_group.htm" title="Placement Group">Help</a>
 			</li>
 			<li class="tmce">
 				<label for="basic_<?php print $next_id ?>_content">Content:</label>

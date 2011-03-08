@@ -10,7 +10,7 @@
 					<li class="full">
 						<label for="title">Event Title:</label>
 						<input id="title" name="title" type="text" value="<?php print $values['title'] ?>" />
-						<a class="help" href="<?php print $this->APP->router->getModuleUrl() ?>/help/events-event_title.htm" title="Event Title">Help</a>
+						<a class="help" href="<?php print router()->getModuleUrl() ?>/help/events-event_title.htm" title="Event Title">Help</a>
 					</li>
 					<li class="full">
 						<label for="description">Brief Description:</label>
@@ -31,12 +31,12 @@
 					<li class="auto">
 						<label for="start_date">Start Date:</label>
 						<input id="start_date" name="start_date" type="text" value="<?php print $values['start_date'] ?>" size="10" maxlength="10" class="dateformat-Y-ds-m-ds-d" />
-						<a class="help" href="<?php print $this->APP->router->getModuleUrl() ?>/help/events-start_date.htm" title="Start Date">Help</a>
+						<a class="help" href="<?php print router()->getModuleUrl() ?>/help/events-start_date.htm" title="Start Date">Help</a>
 					</li>
 					<li class="third auto clear">
 						<label for="end_date">Expiration Date:</label>
 						<input id="end_date" name="end_date" type="text" value="<?php print $values['end_date'] ?>" size="10" maxlength="10" class="dateformat-Y-ds-m-ds-d" />
-						<a class="help" href="<?php print $this->APP->router->getModuleUrl() ?>/help/events-expiration_date.htm" title="Expiration Date">Help</a>
+						<a class="help" href="<?php print router()->getModuleUrl() ?>/help/events-expiration_date.htm" title="Expiration Date">Help</a>
 					</li>
 				</ol>
 				<ol>
@@ -65,7 +65,7 @@
 							<option<?php print ($values['start_ampm'] == 'am' ? ' selected' : '') ?>>am</option>
 							<option<?php print ($values['start_ampm'] == 'pm' ? ' selected' : '') ?>>pm</option>
 						</select>
-						<a class="help" href="<?php print $this->APP->router->getModuleUrl() ?>/help/events-start_time.htm" title="Start Time">Help</a>
+						<a class="help" href="<?php print router()->getModuleUrl() ?>/help/events-start_time.htm" title="Start Time">Help</a>
 					</li>
 					<li class="half auto">
 						<label for="end_hour">Expiration Time:</label>
@@ -92,7 +92,7 @@
 							<option<?php print ($values['end_ampm'] == 'am' ? ' selected' : '') ?>>am</option>
 							<option<?php print ($values['end_ampm'] == 'pm' ? ' selected' : '') ?>>pm</option>
 						</select>
-						<a class="help" href="<?php print $this->APP->router->getModuleUrl() ?>/help/events-expiration_time.htm" title="Expiration Time">Help</a>
+						<a class="help" href="<?php print router()->getModuleUrl() ?>/help/events-expiration_time.htm" title="Expiration Time">Help</a>
 					</li>
 				</ol>
 				<ol>
@@ -100,7 +100,7 @@
 						<label for="title">Event Group:</label>
 						<select name="groups[]" id="groups" multiple="multiple" size="4">
 						</select> <a href="#" id="manage-groups">Manage Groups</a>
-						<a class="help" href="<?php print $this->APP->router->getModuleUrl() ?>/help/events-event_title.htm" title="Event Title">Help</a>
+						<a class="help" href="<?php print router()->getModuleUrl() ?>/help/events-event_title.htm" title="Event Title">Help</a>
 					</li>
 				</ol>
 				<ol>

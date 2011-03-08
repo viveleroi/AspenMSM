@@ -48,7 +48,7 @@ class Forms_Admin {
 	 */
 	public function add(){
 		$form_id = $this->APP->model->executeInsert('forms', array('title' => ''));
-		$this->APP->router->redirect('edit', array('id'=>$form_id));
+		router()->redirect('edit', array('id'=>$form_id));
 	}
 
 	
@@ -79,7 +79,7 @@ class Forms_Admin {
 				// insert a new record with available data
 				if($this->APP->form->save($id)){
 					$this->APP->sml->addNewMessage('Form has been updated successfully.');
-					$this->APP->router->redirect('view');
+					router()->redirect('view');
 				}
 			}
 		}
@@ -206,7 +206,7 @@ class Forms_Admin {
 	public function delete($id = false){
 		if($this->APP->model->delete('forms', $id)){
 			$this->APP->sml->addNewMessage('Your form has successfully been deleted.');
-			$this->APP->router->redirect('view');
+			router()->redirect('view');
 		}
 	}
 	

@@ -108,7 +108,7 @@ class Pages_Admin {
 				if($page_id = $this->APP->form->save()){
 
 					$this->APP->sml->addNewMessage('Your page has been created successfully.');
-					$this->APP->router->redirect('edit', array('id' => $page_id));
+					router()->redirect('edit', array('id' => $page_id));
 
 				} else {
 
@@ -216,7 +216,7 @@ class Pages_Admin {
 
 					$this->APP->sml->addNewMessage('Page changes have been saved successfully. ' .
 											$this->APP->template->createLink('Edit Again', 'edit', array('id'=>$id)));
-					$this->APP->router->redirect('view');
+					router()->redirect('view');
 					
 				} else {
 
@@ -487,7 +487,7 @@ class Pages_Admin {
 			$this->APP->db->Execute(sprintf("DELETE FROM pages WHERE page_id = %s", $this->APP->security->dbescape((int)$id)));
 			$this->APP->db->Execute(sprintf("UPDATE pages SET parent_id = 0 WHERE parent_id = %s", $this->APP->security->dbescape((int)$id)));
 			$this->APP->sml->addNewMessage('Page has been deleted successfully.');
-			$this->APP->router->redirect('view');
+			router()->redirect('view');
 		}
 	}
 	

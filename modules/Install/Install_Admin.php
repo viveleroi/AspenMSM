@@ -110,7 +110,7 @@ class Install_Admin {
 	 */
 	public function uninstall_module($guid = false){
 		$this->APP->install->uninstall_module($guid);
-		$this->APP->router->redirect('view', false, 'settings');
+		router()->redirect('view', false, 'settings');
 	}
 }
 ?>

@@ -118,7 +118,7 @@
 					foreach($images['RECORDS'] as $image){
 				?>
 				<div>
-					<img src="<?php print $this->APP->router->getUploadsUrl() . '/contacts/' . $values['id'] . '/' . $image['filename_thumb']; ?>" width="<?php print $image['width_thumb']; ?>" height="<?php print $image['height_thumb']; ?>" alt="Contact Profile Picture" />
+					<img src="<?php print router()->getUploadsUrl() . '/contacts/' . $values['id'] . '/' . $image['filename_thumb']; ?>" width="<?php print $image['width_thumb']; ?>" height="<?php print $image['height_thumb']; ?>" alt="Contact Profile Picture" />
 					<a href="#" class="delete del-img" id="del-<?php print $image['id']; ?>">Delete</a>
 				</div>
 				<?php

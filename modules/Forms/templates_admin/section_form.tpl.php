@@ -11,12 +11,12 @@
 			<li>
 				<label for="form_<?php print $next_id ?>_title">Sub-Title:</label>
 				<input id="form_<?php print $next_id ?>_title" name="page_sections[<?php print $next_id ?>][title]" type="text" value="<?php print isset($section['content']['title']) ? $section['content']['title'] : '' ?>" />
-				<a class="help" href="<?php print $this->APP->router->getModuleUrl('Forms_Admin') ?>/help/section-form-subtitle.htm" title="Sub-Title">Help</a>
+				<a class="help" href="<?php print router()->getModuleUrl('Forms_Admin') ?>/help/section-form-subtitle.htm" title="Sub-Title">Help</a>
 			</li>
 			<li class="auto">
 				<label for="form_<?php print $next_id ?>_show_title">Show Sub-Title:</label>
 				<input id="form_<?php print $next_id ?>_show_title" name="page_sections[<?php print $next_id ?>][show_title]" type="checkbox" value="1" <?php print isset($section['content']['show_title']) && $section['content']['show_title'] ? ' checked="checked"' : '' ?> />
-				<a class="help" href="<?php print $this->APP->router->getModuleUrl('Forms_Admin') ?>/help/section-form-show_subtitle.htm" title="Show Sub-Title">Help</a>
+				<a class="help" href="<?php print router()->getModuleUrl('Forms_Admin') ?>/help/section-form-show_subtitle.htm" title="Show Sub-Title">Help</a>
 			</li>
 			<li class="auto">
 				<label for="form_<?php print $next_id ?>_placement_group">Placement Group:</label>
@@ -31,14 +31,14 @@
 				}
 				?>
 				</select>
-				<a class="help" href="<?php print $this->APP->router->getModuleUrl('Forms_Admin') ?>/help/section-form-placement_group.htm" title="Placement Group">Help</a>
+				<a class="help" href="<?php print router()->getModuleUrl('Forms_Admin') ?>/help/section-form-placement_group.htm" title="Placement Group">Help</a>
 			</li>
 			<li class="auto">
 				<label for="form_<?php print $next_id ?>_form_id">Select Form:</label>
 				<select id="form_<?php print $next_id ?>_form_id" name="page_sections[<?php print $next_id ?>][form_id]">
 				<?php print $this->APP->template->getSelectOptions( $this->APP->template->grabSelectArray('forms', 'title', 'DISTINCT', 'title'), $section['content']['form_id']); ?>
 				</select>
-				<a class="help" href="<?php print $this->APP->router->getModuleUrl('Forms_Admin') ?>/help/section-form-select.htm" title="Select Form">Help</a>
+				<a class="help" href="<?php print router()->getModuleUrl('Forms_Admin') ?>/help/section-form-select.htm" title="Select Form">Help</a>
 			</li>
 		</ol>
 		<a class="dark-button delete-confirm" href="#" title="Are you sure you want to delete &#8220;<?php print isset($section['content']['title']) ? (empty($section['content']['title']) ? 'Untitled Form Display' : $section['content']['title']) : 'New Form Display' ?>&#8221; and all it&#8217;s content?"><span>Delete Section</span></a>

@@ -238,7 +238,7 @@ class Contacts_Admin {
 					}
 
 				  $this->APP->sml->addNewMessage('Contact changes have been saved successfully.');
-					$this->APP->router->redirect('view');
+					router()->redirect('view');
 
 				}
 			}
@@ -271,7 +271,7 @@ class Contacts_Admin {
 	public function delete($id){
 		$this->APP->model->delete('contacts', $id);
 		$this->APP->sml->addNewMessage('Contact has successfully been deleted.');
-		$this->APP->router->redirect('view');
+		router()->redirect('view');
 	}
 	
 	

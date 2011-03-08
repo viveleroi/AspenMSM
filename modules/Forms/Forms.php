@@ -261,7 +261,7 @@ class Forms {
 				
 				print '<form class="frm-bldr" method="post" action="'.$this->APP->cms_lib->url().'">' . "\n";
 				printf('<input type="hidden" name="form_id" id="form_%s" value="%1$s" />'."\n", $section['form']['id']);
-				printf('<ol id="%s">'."\n", $this->APP->router->encodeForRewriteUrl(strtolower($section['form']['title'])));
+				printf('<ol id="%s">'."\n", router()->encodeForRewriteUrl(strtolower($section['form']['title'])));
 				
 				$form = unserialize($section['form']['structure']);
 				if(is_array($form)){

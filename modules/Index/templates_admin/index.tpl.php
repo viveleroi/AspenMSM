@@ -1,6 +1,6 @@
 <?php print $this->APP->sml->printMessage(); ?>
 
-	<h2>Welcome <?php print $this->APP->params->session->getRaw('nice_name') ?>, what would you like to do?</h2>
+	<h2>Welcome <?php print session()->getRaw('nice_name') ?>, what would you like to do?</h2>
 	<h3>Your Account</h3>
 	<ul>
 		<li><a href="<?php print $this->createXhtmlValidUrl('my_account', false, 'Users') ?>" title="Click Here to Manage Your Settings">User Settings</a></li>

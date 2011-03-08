@@ -11,12 +11,12 @@
 			<li
 				<label for="contactgroup_<?php print $next_id ?>_title">Sub-Title:</label>
 				<input id="contactgroup_<?php print $next_id ?>_title" name="page_sections[<?php print $next_id ?>][title]" type="text" value="<?php print isset($section['content']['title']) ? $section['content']['title'] : '' ?>" />
-				<a class="help" href="<?php print $this->APP->router->getModuleUrl('Contacts_Admin') ?>/help/section-contactgroup-subtitle.htm" title="Sub-Title">Help</a>
+				<a class="help" href="<?php print router()->getModuleUrl('Contacts_Admin') ?>/help/section-contactgroup-subtitle.htm" title="Sub-Title">Help</a>
 			</li>
 			<li>
 				<label for="contactgroup_<?php print $next_id ?>_show_title">Show Sub-Title:</label>
 				<input id="contactgroup_<?php print $next_id ?>_show_title" name="page_sections[<?php print $next_id ?>][show_title]" type="checkbox" value="1" <?php print isset($section['content']['show_title']) && $section['content']['show_title'] ? ' checked="checked"' : '' ?> />
-				<a class="help" href="<?php print $this->APP->router->getModuleUrl('Contacts_Admin') ?>/help/section-contactgroup-show_subtitle.htm" title="Show Sub-Title">Help</a>
+				<a class="help" href="<?php print router()->getModuleUrl('Contacts_Admin') ?>/help/section-contactgroup-show_subtitle.htm" title="Show Sub-Title">Help</a>
 			</li>
 			<li class="auto">
 				<label for="contactgroup_<?php print $next_id ?>_placement_group">Placement Group:</label>
@@ -31,7 +31,7 @@
 				}
 				?>
 				</select>
-				<a class="help" href="<?php print $this->APP->router->getModuleUrl('Contacts_Admin') ?>/help/section-contactgroup-placement_group.htm" title="Placement Group">Help</a>
+				<a class="help" href="<?php print router()->getModuleUrl('Contacts_Admin') ?>/help/section-contactgroup-placement_group.htm" title="Placement Group">Help</a>
 			</li>
 			<li class="auto">
 				<label for="contactgroup_<?php print $next_id ?>_template">Template:</label>
@@ -46,14 +46,14 @@
 				}
 				?>
 				</select>
-				<a class="help" href="<?php print $this->APP->router->getModuleUrl('Contacts_Admin') ?>/help/section-contactgroup-placement_group.htm" title="Placement Group">Help</a>
+				<a class="help" href="<?php print router()->getModuleUrl('Contacts_Admin') ?>/help/section-contactgroup-placement_group.htm" title="Placement Group">Help</a>
 			</li>
 			<li class="auto">
 				<label for="contactgroup_<?php print $next_id ?>_contact_id">Select Contact:</label>
 				<select id="contactgroup_<?php print $next_id ?>_contact_id" name="page_sections[<?php print $next_id ?>][contact_id]">
 				<?php print $this->APP->template->getSelectOptions( $this->APP->template->grabSelectArray('contacts', 'last_name', 'DISTINCT', 'last_name'), $section['content']['contact_id'], true); ?>
 				</select>
-				<a class="help" href="<?php print $this->APP->router->getModuleUrl('Contacts_Admin') ?>/help/section-group-select.htm" title="Select Form">Help</a>
+				<a class="help" href="<?php print router()->getModuleUrl('Contacts_Admin') ?>/help/section-group-select.htm" title="Select Form">Help</a>
 			</li>
 			
 			

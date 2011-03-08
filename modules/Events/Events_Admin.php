@@ -321,7 +321,7 @@ class Events_Admin {
 	public function delete($id = false){
 		if($this->APP->model->delete('events', $id)){
 			$this->APP->sml->addNewMessage('Event entry has successfully been deleted.');
-			$this->APP->router->redirect('view');
+			router()->redirect('view');
 		}
 	}
 	
