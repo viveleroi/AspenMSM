@@ -60,7 +60,7 @@ class Pages_Admin extends Module {
 		} else {
 			$data['pages'] = $this->pages;
 		}
-
+		
 		template()->display($data);
 		
 	}
