@@ -1,7 +1,7 @@
 
 	<h2><span>Currently Editing Page:</span> <?php print $values['page_title'] ?></h2>
 	<a href="<?php print $this->APP->cms_lib->url($values['page_id']); ?>">View Page</a>
-	<?php print $this->APP->form->printErrors(); ?>
+	<?= $form->printErrors(); ?>
 	<?php print $this->APP->sml->printMessage(); ?>
 	<form id="page-edit"  class="cms-frm" method="post" action="<?php print $this->createFormAction(); ?>" enctype="multipart/form-data">
 		<input type="hidden" value="<?php print $values['page_id'] ?>" name="page_id" id="page_id" />

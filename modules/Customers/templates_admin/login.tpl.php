@@ -1,5 +1,5 @@
 	<h2>Secure Login</h2>
-	<?php print $this->APP->form->printErrors(); ?>
+	<?= $form->printErrors(); ?>
 	<?php print $this->APP->sml->printMessage(); ?>
 	<form id="login-frm" action="<?php print $this->createFormAction('authenticate'); ?>" method="post">
 		<fieldset>

@@ -1,5 +1,5 @@
 	<h2>Add A New Page</h2>
-	<?php print $this->APP->form->printErrors(); ?>
+	<?= $form->printErrors(); ?>
 	<?php print $this->APP->sml->printMessage(); ?>
 	<form method="post" action="<?php print $this->createFormAction('add'); ?>">
 		<div class="frame">

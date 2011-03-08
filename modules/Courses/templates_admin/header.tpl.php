@@ -1,6 +1,6 @@
 <link rel="stylesheet" type="text/css" href="<?php print router()->getModuleUrl() ?>/css/style.css" />
 
-<?php if(router()->getSelectedMethod() != "view"){ ?>
+<?php if(router()->method() != "view"){ ?>
 <script type="text/javascript" src="<?php print router()->getModuleUrl() ?>/js/edit.js"></script>
 <?php } else {?>
 <script type="text/javascript" src="<?php print router()->interfaceUrl() ?>/js/jScrollPane.js"></script>

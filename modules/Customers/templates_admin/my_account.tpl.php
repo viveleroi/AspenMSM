@@ -1,5 +1,5 @@
 	<h2>My Account</h2>
-	<?php print $this->APP->form->printErrors(); ?>
+	<?= $form->printErrors(); ?>
 	<?php print $this->APP->sml->printMessage(); ?>
 	<form action="<?php print $this->createUrl() ?>" method="post">
 		<div class="frame">

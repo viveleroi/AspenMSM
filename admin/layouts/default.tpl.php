@@ -14,7 +14,7 @@
 	<script type="text/javascript">
 		var INTERFACE_URL = '<?php print router()->interfaceUrl() ?>';
 		var APPLICATION_URL = '<?php print router()->appUrl() ?>/';
-		var MODULE_URL = '<?php print router()->getModuleUrl() ?>';
+		var MODULE_URL = '<?php print router()->moduleUrl() ?>';
 		var THEME_URL = '<?php print router()->appUrl() . '/themes/' . settings()->getConfig('active_theme') ?>';
 		var IS_ADMIN = '<?php print IS_ADMIN ?>';
 	</script>
@@ -39,7 +39,7 @@
 
 
 </head>
-<body id="<?php print strtolower(router()->getSelectedModule()) ?>_<?php print strtolower(router()->getSelectedMethod()) ?>">
+<body id="<?php print strtolower(router()->module()) ?>_<?php print strtolower(router()->method()) ?>">
 	<?php if(user()->isLoggedIn()){ // if logged in ?>
 	<div id="status">
 		<ul>

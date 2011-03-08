@@ -1,5 +1,5 @@
 	<h2><span>Currently Editing:</span> <?php print $values['title'] ?></h2>
-	<?php print $this->APP->form->printErrors(); ?>
+	<?= $form->printErrors(); ?>
 	<?php print $this->APP->sml->printMessage(); ?>
 	<form action="<?php print $this->createFormAction() ?>" method="post">
 		<div class="frame">

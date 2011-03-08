@@ -1,5 +1,5 @@
 	<h2>Add a New Event</h2>
-	<?php print $this->APP->form->printErrors(); ?>
+	<?= $form->printErrors(); ?>
 	<?php print $this->APP->sml->printMessage(); ?>
 	<form action="<?php print $this->createFormAction() ?>" method="post">
 		<div class="frame">

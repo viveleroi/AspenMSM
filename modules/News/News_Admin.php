@@ -21,7 +21,7 @@ class News_Admin {
 		$this->APP = get_instance();
 		$this->APP->director->registerPageSection(__CLASS__, 'News Display', 'news_display');
 		$this->APP->setConfig('enable_uploads', true); // enable uploads
-		if(router()->getSelectedModule() == __CLASS__){
+		if(router()->module() == __CLASS__){
 			$this->APP->setConfig('upload_server_path', APPLICATION_PATH.DS.'files'.DS.'news');
 		}
 	}
