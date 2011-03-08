@@ -1,7 +1,7 @@
 <h2><?php print $values['id'] ? 'Edit' : 'Add'; ?> Course</h2>
 
 	<?php $this->APP->form->printErrors(); ?>
-	<form action="<?php print $this->createFormAction(); ?>" method="post">
+	<form action="<?php print $this->action(); ?>" method="post">
 		<div class="frame">
 			<h3>Course Details</h3>
 			<input type="hidden" name="id" id="course_id" value="<?php print $values['id'] ?>" />
@@ -65,7 +65,7 @@
 							</div>
 						</div>
 						
-						<a class="add" href="<?php print $this->createXhtmlValidUrl('add'); ?>" title="Add New Listing">Add</a>
+						<a class="add" href="<?php print $this->xhtmlUrl('add'); ?>" title="Add New Listing">Add</a>
 					</li>
 				</ol>
 				<ol>
@@ -88,6 +88,6 @@
 		</div>
 		<fieldset class="action">
 			<button class="right" type="submit" name="submit"><span><em>Save</em></span></button>
-			<a class="button left" href="<?php print $this->createXhtmlValidUrl('view', false, 'Corses_Admin'); ?>" title="Click to Cancel"><span>Cancel</span></a>
+			<a class="button left" href="<?php print $this->xhtmlUrl('view', false, 'Corses_Admin'); ?>" title="Click to Cancel"><span>Cancel</span></a>
 		</fieldset>
 	</form>

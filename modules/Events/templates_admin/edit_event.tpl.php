@@ -1,7 +1,7 @@
 	<h2><span>Currently Editing:</span> <?php print $values['title'] ?></h2>
 	<?= $form->printErrors(); ?>
-	<?php print $this->APP->sml->printMessage(); ?>
-	<form action="<?php print $this->createFormAction() ?>" method="post">
+	<?= sml()->printMessage(); ?>
+	<form action="<?php print $this->action() ?>" method="post">
 		<div class="frame">
 			<h3>Event Details</h3>
 			<fieldset>
@@ -113,7 +113,7 @@
 		</div>
 		<fieldset class="action">
 			<button class="right" type="submit" name="submit"><span><em>Save</em></span></button>
-			<a class="button left" href="<?php print $this->createXhtmlValidUrl('view', false, 'Events'); ?>" title="Click to Cancel Editing This Event"><span>Cancel</span></a>
+			<a class="button left" href="<?php print $this->xhtmlUrl('view', false, 'Events'); ?>" title="Click to Cancel Editing This Event"><span>Cancel</span></a>
 		</fieldset>
 	</form>
 	

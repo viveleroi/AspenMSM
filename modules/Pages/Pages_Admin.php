@@ -402,10 +402,10 @@ class Pages_Admin {
 						$html .= '<span class="page-title">' . $page['page']['page_title'] . '</span>';
 						$html .= '<span class="btns-right">';
 						$html .= sprintf('<a class="edit" href="%s" title="Click to Edit this page">Edit</a>',
-									$this->APP->template->createXhtmlValidUrl('edit', array('id' => $page['page']['page_id'])));
+									$this->APP->template->xhtmlUrl('edit', array('id' => $page['page']['page_id'])));
 						
 						$html .= sprintf('<a class="delete confirm" href="%s" title="Are you sure you want to delete this page and all it\'s content?">Delete</a>',
-										$this->APP->template->createXhtmlValidUrl('delete', array('id' => $page['page']['page_id'])));
+										$this->APP->template->xhtmlUrl('delete', array('id' => $page['page']['page_id'])));
 	
 
 						$html .= sprintf('<a class="vis_toggle %s" href="#" title="Click to %s this page" id="vis_toggle_%s">%s</a>',

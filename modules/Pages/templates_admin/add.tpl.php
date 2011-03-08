@@ -1,7 +1,7 @@
 	<h2>Add A New Page</h2>
 	<?= $form->printErrors(); ?>
-	<?php print $this->APP->sml->printMessage(); ?>
-	<form method="post" action="<?php print $this->createFormAction('add'); ?>">
+	<?= sml()->printMessage(); ?>
+	<form method="post" action="<?php print $this->action('add'); ?>">
 		<div class="frame">
 			<h3>General Page Settings</h3>
 			<fieldset>
@@ -62,6 +62,6 @@
 		</div>
 		<fieldset class="action">
 			<button class="right" type="submit" name="submit"><span><em>Continue</em></span></button>
-			<a class="button" href="<?php print $this->createXhtmlValidUrl('view', false, 'Pages'); ?>" title="Click to Cancel Adding A New Page"><span>Cancel</span></a>
+			<a class="button" href="<?php print $this->xhtmlUrl('view', false, 'Pages'); ?>" title="Click to Cancel Adding A New Page"><span>Cancel</span></a>
 		</fieldset>
 	</form>

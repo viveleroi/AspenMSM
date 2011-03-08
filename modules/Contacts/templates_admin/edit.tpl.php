@@ -1,6 +1,6 @@
 <h2><?php print $values['id'] ? 'Edit' : 'Add'; ?> Contact</h2>
 <?php $this->APP->form->printErrors(); ?>
-<form action="<?php print $this->createFormAction() ?>" method="post" enctype="multipart/form-data">
+<form action="<?php print $this->action() ?>" method="post" enctype="multipart/form-data">
 	<input type="hidden" name="id" id="contact_id" value="<?php print $values['id'] ?>" />
 	<div class="frame">
 		<h3>Contact Details</h3>
@@ -130,10 +130,10 @@
 				</li>
 			</ol>
 		</fieldset>
-		<a class="dark-button confirm" href="<?php print $this->createXhtmlValidUrl('delete', array('id' => $values['id'])); ?>" title="Are you sure you want to delete this contact?"><span>Delete</span></a>
+		<a class="dark-button confirm" href="<?php print $this->xhtmlUrl('delete', array('id' => $values['id'])); ?>" title="Are you sure you want to delete this contact?"><span>Delete</span></a>
 	</div>
 	<fieldset class="action">
 		<button class="right" type="submit" name="submit"><span><em>Save</em></span></button>
-		<a class="button left" href="<?php print $this->createXhtmlValidUrl('view', false, 'Contacts_Admin'); ?>" title="Click to Cancel"><span>Cancel</span></a>
+		<a class="button left" href="<?php print $this->xhtmlUrl('view', false, 'Contacts_Admin'); ?>" title="Click to Cancel"><span>Cancel</span></a>
 	</fieldset>
 </form>

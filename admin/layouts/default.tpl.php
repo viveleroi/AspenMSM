@@ -43,7 +43,7 @@
 	<?php if(user()->isLoggedIn()){ // if logged in ?>
 	<div id="status">
 		<ul>
-			<li class="user">User: <a href="<?php print $this->createXhtmlValidUrl('my_account', false, 'Users') ?>" accesskey="u"><?php print session()->getRaw('nice_name'); ?></a></li>
+			<li class="user">User: <a href="<?php print $this->xhtmlUrl('my_account', false, 'Users') ?>" accesskey="u"><?php print session()->getRaw('nice_name'); ?></a></li>
 			<li class="logout"><?php print $this->createLink('Logout', 'logout', false, 'Users'); ?></li>
 		</ul>
 	</div>
@@ -54,15 +54,15 @@
 	<?php if(user()->isLoggedIn()){ // if logged in ?>
 	<div id="nav">
 		<ul class="clearfix">
-			<!-- <li<?php print router()->here('Index_Admin') ? ' class="at"' : '' ?>><a href="<?php print $this->createXhtmlValidUrl('view', false, 'Index') ?>" accesskey="i">Dashboard</a></li> -->
+			<!-- <li<?php print router()->here('Index_Admin') ? ' class="at"' : '' ?>><a href="<?php print $this->xhtmlUrl('view', false, 'Index') ?>" accesskey="i">Dashboard</a></li> -->
 			<?php if(user()->userHasAccess('Pages')){ ?>
-			<li<?php print router()->here('Pages_Admin') ? ' class="at"' : '' ?>><a href="<?php print $this->createXhtmlValidUrl('view', false, 'Pages') ?>" accesskey="p">Site Pages</a></li>
+			<li<?php print router()->here('Pages_Admin') ? ' class="at"' : '' ?>><a href="<?php print $this->xhtmlUrl('view', false, 'Pages') ?>" accesskey="p">Site Pages</a></li>
 			<?php } ?>
 			<?php print $this->APP->generateNonBaseModuleLinks(); ?>
 			
 			<?php if(IS_ADMIN){ ?>
-			<li<?php print router()->here('Users_Admin') ? ' class="at"' : '' ?>><a href="<?php print $this->createXhtmlValidUrl('view', false, 'Users') ?>" accesskey="u">Manage Users</a></li>
-			<li class="admin<?php print router()->here('Admin_Admin') ? ' at' : '' ?>"><a href="<?php print $this->createXhtmlValidUrl('view', false, 'Admin') ?>" accesskey="s">Admin Settings</a></li>
+			<li<?php print router()->here('Users_Admin') ? ' class="at"' : '' ?>><a href="<?php print $this->xhtmlUrl('view', false, 'Users') ?>" accesskey="u">Manage Users</a></li>
+			<li class="admin<?php print router()->here('Admin_Admin') ? ' at' : '' ?>"><a href="<?php print $this->xhtmlUrl('view', false, 'Admin') ?>" accesskey="s">Admin Settings</a></li>
 			<?php } ?>
 		</ul>
 	</div>

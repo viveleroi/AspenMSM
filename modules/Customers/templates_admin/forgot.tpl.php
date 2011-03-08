@@ -1,7 +1,7 @@
 	<h2>Reset Your Password</h2>
 	<?= $form->printErrors(); ?>
-	<?php print $this->APP->sml->printMessage(); ?>
-	<form id="login-frm" action="<?php print $this->createFormAction(); ?>" method="post">
+	<?= sml()->printMessage(); ?>
+	<form id="login-frm" action="<?php print $this->action(); ?>" method="post">
 		<fieldset>
 			<ol>
 				<li>
@@ -12,7 +12,7 @@
 		</fieldset>
 		<fieldset class="action">
 			<button class="right" type="submit" name="submit"><span><em>Reset</em></span></button>
-			<a class="button left" href="<?php print $this->createXhtmlValidUrl('login'); ?>" title="Cancel Reset"><span>Cancel</span></a>
+			<a class="button left" href="<?php print $this->xhtmlUrl('login'); ?>" title="Cancel Reset"><span>Cancel</span></a>
 		</fieldset>
 	</form>
 	

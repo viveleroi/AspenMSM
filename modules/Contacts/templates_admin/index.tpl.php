@@ -1,5 +1,5 @@
 <h2>Contact Directory</h2>
-<?php print $this->APP->sml->printMessage(); ?>
+<?= sml()->printMessage(); ?>
 <div id="directory-list-nav" class="clearfix"></div>
 <div class="pointer"></div>
 <div class="frame">
@@ -16,7 +16,7 @@
 					
 					<li id="contact-<?php print $directory['id']; ?>">
 						
-					 	<a href="<?php print $this->createXhtmlValidUrl('edit', array('id' => $directory['id'])) ?>" title="Edit this Contact"><?php print $directory['last_name']; ?>, <?php print $directory['first_name']; ?></a>
+					 	<a href="<?php print $this->xhtmlUrl('edit', array('id' => $directory['id'])) ?>" title="Edit this Contact"><?php print $directory['last_name']; ?>, <?php print $directory['first_name']; ?></a>
 					 	<?php print empty($directory['company']) ? '' : ' - '.$directory['company']; ?>
 					 	<a href="" class="drag">Drag</a>
 					</li>
@@ -29,7 +29,7 @@
 					<?php } ?>
 				</ul>
 			</div>
-			<a class="add" href="<?php print $this->createXhtmlValidUrl('add'); ?>" title="Add New Listing">Add</a>
+			<a class="add" href="<?php print $this->xhtmlUrl('add'); ?>" title="Add New Listing">Add</a>
 		</div>
 	</div>
 	<div id="directory-groups">

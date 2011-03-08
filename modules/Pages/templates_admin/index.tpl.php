@@ -1,5 +1,5 @@
 	<h2>Add, Edit and Organize Your Website Pages</h2>
-	<?php print $this->APP->sml->printMessage(); ?>
+	<?= sml()->printMessage(); ?>
 	<div class="col-head">
 		<span class="title">Page Title</span>
 		<div class="head-right">
@@ -10,6 +10,6 @@
 	</div>
 	<?php print $this->APP->Pages_Admin->displayPage($pages); ?>
 	<div class="action">
-		<a class="button right" href="<?php print $this->createXhtmlValidUrl('add', false, false); ?>" title="Click to Add A Page"><span>Add A Page</span></a>
+		<a class="button right" href="<?php print $this->xhtmlUrl('add', false, false); ?>" title="Click to Add A Page"><span>Add A Page</span></a>
 	</div>
 	

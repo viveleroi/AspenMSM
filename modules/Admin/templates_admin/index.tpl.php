@@ -1,5 +1,5 @@
 	<h2>Admin Settings</h2>
-	<?php print $this->APP->sml->printMessage(); ?>
+	<?= sml()->printMessage(); ?>
 	<div class="frame">
 		<h3 class="show-hide"><a id="adminModules" class="toggle-frame" href="#" title="Click to Open/Close this Section">Hide</a> Site Modules</h3>
 		<div id="adminModules-area" class="loadfirst clearfix">
@@ -61,7 +61,7 @@
 			</div>
 		</div>
 	</div>
-	<form class="whack-form" action="<?php print $this->createFormAction(); ?>" method="post">
+	<form class="whack-form" action="<?php print $this->action(); ?>" method="post">
 		<div class="frame">
 			<h3 class="show-hide"><a id="adminConfig" class="toggle-frame" href="#" title="Click to Open/Close this Section">Hide</a> Site Configuration</h3>
 			<div id="adminConfig-area"  class="loadfirst clearfix">

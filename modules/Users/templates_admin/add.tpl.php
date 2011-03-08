@@ -1,7 +1,7 @@
 	<h2>Add A New User</h2>
 	<?= $form->printErrors(); ?>
-	<?php print $this->APP->sml->printMessage(); ?>
-	<form id="adminform" method="post" action="<?php print $this->createFormAction(); ?>">
+	<?= sml()->printMessage(); ?>
+	<form id="adminform" method="post" action="<?php print $this->action(); ?>">
 		<div class="frame">
 			<h3>New User Account Information</h3>
 			<fieldset>
@@ -47,6 +47,6 @@
 		</fieldset>
 		<fieldset class="action">
 			<button class="right" type="submit" name="submit"><span><em>Add</em></span></button>
-			<a class="button" href="<?php print $this->createXhtmlValidUrl('view'); ?>" title="Cancel Adding A New User"><span>Cancel</span></a>
+			<a class="button" href="<?php print $this->xhtmlUrl('view'); ?>" title="Cancel Adding A New User"><span>Cancel</span></a>
 		</fieldset>
 	</form>

@@ -1,7 +1,7 @@
 	<h2>Add News Item</h2>
 	<?= $form->printErrors(); ?>
-	<?php print $this->APP->sml->printMessage(); ?>
-	<form action="<?php print $this->createFormAction(); ?>" method="post" enctype="multipart/form-data">
+	<?= sml()->printMessage(); ?>
+	<form action="<?php print $this->action(); ?>" method="post" enctype="multipart/form-data">
 		<div class="frame">
 			<h3>News Details</h3>
 			<fieldset>
@@ -39,6 +39,6 @@
 		</div>
 		<fieldset class="action">
 			<button class="right" type="submit" name="submit"><span><em>Save</em></span></button>
-			<a class="button left" href="<?php print $this->createXhtmlValidUrl('view'); ?>" title="Click to Cancel"><span>Cancel</span></a>
+			<a class="button left" href="<?php print $this->xhtmlUrl('view'); ?>" title="Click to Cancel"><span>Cancel</span></a>
 		</fieldset>
 	</form>

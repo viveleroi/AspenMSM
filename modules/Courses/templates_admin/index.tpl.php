@@ -1,5 +1,5 @@
 <h2>Manage Courses</h2>
-<?php print $this->APP->sml->printMessage(); ?>
+<?= sml()->printMessage(); ?>
 	<?php if($course_groups['RECORDS']){
 		foreach($course_groups['RECORDS'] as $group){ ?>
 		<div class="frame">
@@ -13,7 +13,7 @@
 						<div class="legend">
 							<strong><?php print $course['title']; ?></strong>
 							<span class="icons">
-								<a class="edit" href="<?php print $this->createXhtmlValidUrl('edit', array('id' => $course['id'])) ?>" title="Edit this Case Study">Edit</a>
+								<a class="edit" href="<?php print $this->xhtmlUrl('edit', array('id' => $course['id'])) ?>" title="Edit this Case Study">Edit</a>
 								<a class="delete confirm" href="" title="Are you sure you want to delete this case study">Delete</a>
 								<a href="#" id="vis_toggle_<?php print $course['id'] ?>" class="vis_toggle case <?php print $course['public'] ? 'live' : 'private' ?>">Hide</a>
 							</span>
@@ -33,5 +33,5 @@
 		</div>
 	<?php } ?>
 	<div class="action">
-		<a class="button right" href="<?php print $this->createXhtmlValidUrl('add'); ?>" title="Click to add a new course"><span>Add A Course</span></a>
+		<a class="button right" href="<?php print $this->xhtmlUrl('add'); ?>" title="Click to add a new course"><span>Add A Course</span></a>
 	</div>

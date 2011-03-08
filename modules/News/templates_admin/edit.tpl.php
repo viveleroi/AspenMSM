@@ -1,7 +1,7 @@
 	<h2><span>Currently Editing:</span> <?php print $values['title']; ?></h2>
 	<?= $form->printErrors(); ?>
-	<?php print $this->APP->sml->printMessage(); ?>
-	<form action="<?php print $this->createFormAction(); ?>" method="post" enctype="multipart/form-data">
+	<?= sml()->printMessage(); ?>
+	<form action="<?php print $this->action(); ?>" method="post" enctype="multipart/form-data">
 		<div class="frame">
 			<h3>News Details</h3>
 			<fieldset>
@@ -40,10 +40,10 @@
 					</li>
 				</ol>
 			</fieldset>
-			<a class="dark-button confirm" href="<?php print $this->createXhtmlValidUrl('delete', array('id' => $values['news_id'])); ?>" title="Delete "><span>Delete</span></a>
+			<a class="dark-button confirm" href="<?php print $this->xhtmlUrl('delete', array('id' => $values['news_id'])); ?>" title="Delete "><span>Delete</span></a>
 		</div>
 		<fieldset class="action">
 			<button class="right" type="submit" name="submit"><span><em>Save</em></span></button>
-			<a class="button left" href="<?php print $this->createXhtmlValidUrl('view', false, 'News'); ?>" title="Click to Cancel"><span>Cancel</span></a>
+			<a class="button left" href="<?php print $this->xhtmlUrl('view', false, 'News'); ?>" title="Click to Cancel"><span>Cancel</span></a>
 		</fieldset>
 	</form>

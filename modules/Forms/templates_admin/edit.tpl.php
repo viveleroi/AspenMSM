@@ -1,7 +1,7 @@
 	<h2><span>Currently Editing:</span> <?php print $values['title']; ?></h2>
 	<?= $form->printErrors(); ?>
-	<?php print $this->APP->sml->printMessage(); ?>
-	<form action="<?php print $this->createFormAction(); ?>" method="post">
+	<?= sml()->printMessage(); ?>
+	<form action="<?php print $this->action(); ?>" method="post">
 		<div class="frame">
 			<h3>Form Information</h3>
 			<input type="hidden" name="id" id="id" value="<?php print $values['id']; ?>" />
@@ -64,6 +64,6 @@
 		</div>
 		<fieldset class="action">
 			<button class="right" id="save-form" type="submit" name="submit"><span><em>Save</em></span></button>
-			<a class="button left" href="<?php print $this->createXhtmlValidUrl('view'); ?>" title="Click to Cancel"><span>Cancel</span></a>
+			<a class="button left" href="<?php print $this->xhtmlUrl('view'); ?>" title="Click to Cancel"><span>Cancel</span></a>
 		</fieldset>
 	</form>

@@ -2,8 +2,8 @@
 	<h2><span>Currently Editing Page:</span> <?php print $values['page_title'] ?></h2>
 	<a href="<?php print $this->APP->cms_lib->url($values['page_id']); ?>">View Page</a>
 	<?= $form->printErrors(); ?>
-	<?php print $this->APP->sml->printMessage(); ?>
-	<form id="page-edit"  class="cms-frm" method="post" action="<?php print $this->createFormAction(); ?>" enctype="multipart/form-data">
+	<?= sml()->printMessage(); ?>
+	<form id="page-edit"  class="cms-frm" method="post" action="<?php print $this->action(); ?>" enctype="multipart/form-data">
 		<input type="hidden" value="<?php print $values['page_id'] ?>" name="page_id" id="page_id" />
 		<div class="frame">
 			<h3 class="show-hide"><a id="general" class="toggle-frame" href="#" title="Click to Open/Close this Section">Hide</a> Page Settings</h3>
@@ -145,6 +145,6 @@
 		</div>
 		<fieldset class="action">
 			<button class="right" type="submit" name="submit"><span><em>Save</em></span></button>
-			<a class="button left" href="<?php print $this->createXhtmlValidUrl('view', false, 'Pages'); ?>" title="Click to Cancel Editing This Page"><span>Cancel</span></a>
+			<a class="button left" href="<?php print $this->xhtmlUrl('view', false, 'Pages'); ?>" title="Click to Cancel Editing This Page"><span>Cancel</span></a>
 		</fieldset>
 	</form>
