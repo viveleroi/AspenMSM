@@ -217,9 +217,9 @@ class Contacts extends Display {
 	public function search($keyword = false, $add_params = false){
 
 		$group		= false;
-		$first_name	= app()->params->get->getRaw('first_name');
-		$last_name	= app()->params->get->getRaw('last_name');
-		$specialty	= app()->params->get->getRaw('specialty');
+		$first_name	= get()->getRaw('first_name');
+		$last_name	= get()->getRaw('last_name');
+		$specialty	= get()->getRaw('specialty');
 
 		if(is_array($add_params)){
 			foreach($add_params as $var => $value){
@@ -256,7 +256,7 @@ class Contacts extends Display {
 			$model->match($keyword, false, 'AND', array('contact_specialties.specialty'));
 		}
 
-		$model->paginate(app()->params->get->getRaw('page'), app()->config('search_results_per_page'));
+		$model->paginate(get()->getRaw('page'), app()->config('search_results_per_page'));
 		$model->orderBy('match_relevance DESC, last_name, first_name');
 //		print $model->getBuildQuery();
 		$results = $model->results();

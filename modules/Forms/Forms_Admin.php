@@ -78,7 +78,7 @@ class Forms_Admin {
 
 				// insert a new record with available data
 				if($form->save($id)){
-					sml()->addNewMessage('Form has been updated successfully.');
+					sml()->say('Form has been updated successfully.');
 					router()->redirect('view');
 				}
 			}
@@ -104,21 +104,21 @@ class Forms_Admin {
 	 */
 	public function ajax_saveForm(){
 		
-		$form = app()->security->dbescape( app()->params->post->getRaw('ul') );
+		$form = app()->security->dbescape( post()->getRaw('ul') );
 		$form = serialize($form);
 		$hash = sha1($form);
 
 		$data = array(
-		'title'=>app()->params->post->getRaw('title'),
-		'email'=>app()->params->post->getRaw('email'),
-		'email_to_user'=>(app()->params->post->getAlpha('email_to_user') == 'true' ? 1 : 0),
-		'email_to_user_text'=>app()->params->post->getRaw('email_to_user_text'),
-		'email_form_to_user'=>(app()->params->post->getAlpha('email_form_to_user') == 'true' ? 1 : 0),
-		'return_page'=>app()->params->post->getInt('return_page'),
+		'title'=>post()->getRaw('title'),
+		'email'=>post()->getRaw('email'),
+		'email_to_user'=>(post()->getAlpha('email_to_user') == 'true' ? 1 : 0),
+		'email_to_user_text'=>post()->getRaw('email_to_user_text'),
+		'email_form_to_user'=>(post()->getAlpha('email_form_to_user') == 'true' ? 1 : 0),
+		'return_page'=>post()->getInt('return_page'),
 		'structure'=>$form,
 		'hash'=>$hash);
 		
-		$model->executeUpdate('forms', $data, app()->params->post->getInt('id'));
+		$model->executeUpdate('forms', $data, post()->getInt('id'));
 
 	}
 	
@@ -205,7 +205,7 @@ class Forms_Admin {
 	 */
 	public function delete($id = false){
 		if($model->delete('forms', $id)){
-			sml()->addNewMessage('Your form has successfully been deleted.');
+			sml()->say('Your form has successfully been deleted.');
 			router()->redirect('view');
 		}
 	}

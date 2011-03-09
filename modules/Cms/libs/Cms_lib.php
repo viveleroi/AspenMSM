@@ -177,7 +177,7 @@ class Cms_lib {
 	private function identifyPage(){
 		
 		// if rewrites enabled, pull them from the url
-		$uri = explode('/', stripslashes(app()->params->get->getRaw('redirected')));
+		$uri = explode('/', stripslashes(get()->getRaw('redirected')));
 		
 		if(isset($uri[0]) && !empty($uri[0])){
 			$final_page = $this->findPageFromHeirarchy($uri);
@@ -447,7 +447,7 @@ class Cms_lib {
 		$file = empty($file) ? 'index.php' : $file;
 		
 		// if query string asks us to look for a replacement template inside a module
-		$inmodule = app()->params->get->getAlnum('inmodule');
+		$inmodule = get()->getAlnum('inmodule');
 		
 		if($inmodule){
 			$replacement = $path . DS . 'modules' . DS . $inmodule . DS . $file;

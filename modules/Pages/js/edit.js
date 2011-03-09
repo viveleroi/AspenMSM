@@ -104,21 +104,21 @@ function checkPageIsLive(){
 function addsection(){
 
 	var selection = $('#add-section').val();
-	last_id = last_id + 1;
+	LAST_ID = LAST_ID + 1;
 
 	status();
 	$.ajax({
 		type: "GET",
 		url: INTERFACE_URL+"/index.php",
-		data: 'module=Pages&method=ajax_loadBlankSection&section='+selection+'&next_id=' + last_id + '&page_id=' + $('#page_id').val() + '&template=' + $('#page_template').val(),
+		data: 'module=Pages&method=ajax_loadBlankSection&section='+selection+'&next_id=' + LAST_ID + '&page_id=' + $('#page_id').val() + '&template=' + $('#page_template').val(),
 		success: function(html){
 			var new_li = document.createElement('li');
 			$(new_li).hide();
 			new_li.innerHTML = html;
-			new_li.id = 'editor_' + last_id + '_sort';
+			new_li.id = 'editor_' + LAST_ID + '_sort';
 			new_li.className = 'new';	
 			var new_id = selection.replace(/editor/, '');
-			new_id += last_id + '_content';
+			new_id += LAST_ID + '_content';
 			$('#page-sections').append(new_li);
 			tinyMCE.execCommand('mceAddControl', false, new_id);
 			textEditor(new_id);

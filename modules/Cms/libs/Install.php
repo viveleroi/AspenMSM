@@ -143,8 +143,8 @@ class Install {
 				// check if we can write the config file ourselves
 				if(touch(APPLICATION_PATH . DS . 'config.php')){
 				
-					app()->file->useFile(APPLICATION_PATH . DS . 'config.php');
-					if(!app()->file->write($fill, 'w')){
+					files()->useFile(APPLICATION_PATH . DS . 'config.php');
+					if(!files()->write($fill, 'w')){
 					
 						$this->paste_config($fill);
 						exit;
@@ -201,7 +201,7 @@ class Install {
 		
 		// If no config file present we cannot proceed - sends user back to setup config
 		if(!app()->checkUserConfigExists()){
-			sml()->addNewMessage('We were unable to find a configuration file. Please try again.');
+			sml()->say('We were unable to find a configuration file. Please try again.');
 			app()->router->redirect('setup', array('retry' => 'retry') );
 		}
 
@@ -214,13 +214,13 @@ class Install {
 					// attempt to install our base tables
 					if(!$this->installBaseTables()){
 						unlink('../config.php');
-						sml()->addNewMessage('There was an error installing database tables. Please try again.');
+						sml()->say('There was an error installing database tables. Please try again.');
 						app()->router->redirect('setup', array('retry' => 'retry') );
 					}
 				}
 			} else {
 			
-				sml()->addNewMessage('We were unable to connect to the database using your current configuration. Please try again.');
+				sml()->say('We were unable to connect to the database using your current configuration. Please try again.');
 				app()->router->redirect('setup', array('retry' => 'retry') );
 			
 			}
@@ -260,7 +260,7 @@ class Install {
 				
 				} else {
 
-					sml()->addNewMessage('We were unable to create your account. Please try again.');
+					sml()->say('We were unable to create your account. Please try again.');
 				
 				}
 			}
@@ -377,13 +377,13 @@ class Install {
 				
 				$this->recordCurrentBuild();
 				
-				sml()->addNewMessage('Your database has been upgraded.');
+				sml()->say('Your database has been upgraded.');
 				app()->router->redirect('view', false, app()->config('default_module'));
 				
 			}
 		}
 		
-		sml()->addNewMessage('No upgrade actions were performed.');
+		sml()->say('No upgrade actions were performed.');
 		app()->router->redirect('view', false, app()->config('default_module'));
 		
 	}
@@ -417,7 +417,7 @@ class Install {
 							app()->{$classname}->install($guid);
 						}
 						
-						sml()->addNewMessage('The ' . $tmp_reg->classname . ' module has been installed successfully.');
+						sml()->say('The ' . $tmp_reg->classname . ' module has been installed successfully.');
 						
 					}
 				}
@@ -453,7 +453,7 @@ class Install {
 			$model->query('UPDATE modules SET autoload_with = "" WHERE autoload_with = "'.$guid.'"');
 			$model->query('DELETE FROM permissions WHERE module = "'.$tmp_reg->classname.'"');
 			
-			sml()->addNewMessage('The ' . $tmp_reg->classname . ' module has been uninstalled successfully.');
+			sml()->say('The ' . $tmp_reg->classname . ' module has been uninstalled successfully.');
 				
 		}
 		

@@ -76,8 +76,8 @@ class Search {
 	 */
 	public function search($add_params = false){
 
-		$type 		= app()->params->get->getAlnum('inmodule');
-		$keyword 	= app()->params->get->getRaw('keyword');
+		$type 		= get()->getAlnum('inmodule');
+		$keyword 	= get()->getRaw('keyword');
 		$results 	= false;
 
 		// check if page needs to be rerouted for a special module search
@@ -105,7 +105,7 @@ class Search {
 			$model->enablePagination();
 			$model = model()->open('search_content_index');
 			$model->match($keyword);
-			$model->paginate(app()->params->get->getRaw('page'), app()->config('search_results_per_page'));
+			$model->paginate(get()->getRaw('page'), app()->config('search_results_per_page'));
 			$results = $model->results();
 
 			if($results){
@@ -133,8 +133,8 @@ class Search {
 	public function pagination(){
 
 		$url = app()->cms_lib->url();
-		$url .= '?keyword=' . app()->params->get->getRaw('keyword') . '&amp;';
-		$url .= 'inmodule=' . app()->params->get->getRaw('inmodule') . '&amp;';
+		$url .= '?keyword=' . get()->getRaw('keyword') . '&amp;';
+		$url .= 'inmodule=' . get()->getRaw('inmodule') . '&amp;';
 
 		// build the html list item
 		$html = '';

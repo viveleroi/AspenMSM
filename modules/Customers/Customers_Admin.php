@@ -77,7 +77,7 @@ class Customers_Admin {
 	public function add(){
 
 		if(user()->add()){
-			sml()->addNewMessage('User account has been created successfully.');
+			sml()->say('User account has been created successfully.');
 			router()->redirect('view');
 		}
 		
@@ -100,7 +100,7 @@ class Customers_Admin {
 	public function edit($id){
 
 		if(user()->edit($id)){
-			sml()->addNewMessage('User account changes have been saved successfully.');
+			sml()->say('User account changes have been saved successfully.');
 			router()->redirect('view');
 		}
 		
@@ -122,7 +122,7 @@ class Customers_Admin {
 	public function my_account(){
 
 		if(user()->my_account()){
-			sml()->addNewMessage('Your account has been updated successfully.');
+			sml()->say('Your account has been updated successfully.');
 			router()->redirect('view', false, 'Index');
 		}
 
@@ -180,11 +180,11 @@ class Customers_Admin {
 	public function forgot(){
 
 		if(user()->forgot() == 1){
-			sml()->addNewMessage('Your password has been reset. Please check your email.');
+			sml()->say('Your password has been reset. Please check your email.');
 			router()->redirect('login');
 		}
 		elseif(user()->forgot() == -1){
-			sml()->addNewMessage('We were unable to find any accounts matching that username.');
+			sml()->say('We were unable to find any accounts matching that username.');
 			router()->redirect('forgot');
 		}
 

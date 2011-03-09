@@ -85,30 +85,30 @@ class Pages_Admin extends Module {
 			$form->setCurrentValue('page_sort_order', ($model->quickValue('SELECT MAX(page_sort_order) FROM pages', 'MAX(page_sort_order)') + 1));
 
 			// form field validation
-			if(!$form->isFilled('page_title')){
-				$form->addError('page_title', 'You must enter a page title.');
-			}
+			// @a13
+//			if(!$form->isFilled('page_title')){
+//				$form->addError('page_title', 'You must enter a page title.');
+//			}
 
 
-			// if we have no errors, save the record
-			if(!$form->error()){
 				
 				// set the link text field to the page title if blank
-				if(!$form->isFilled('page_link_text')){
-					$form->setCurrentValue('page_link_text', $form->cv('page_title'));
-				}
-				
-				if($page_id = $form->save()){
+				// @a13
+//				if(!$form->isFilled('page_link_text')){
+//					$form->setCurrentValue('page_link_text', $form->cv('page_title'));
+//				}
 
-					sml()->addNewMessage('Your page has been created successfully.');
-					router()->redirect('edit', array('id' => $page_id));
+			if($page_id = $form->save()){
 
-				} else {
+				sml()->say('Your page has been created successfully.');
+				router()->redirect('edit', array('id' => $page_id));
 
-					sml()->addNewMessage('An error occurred. Please try again.');
+			} else {
 
-				}
+				sml()->say('An error occurred. Please try again.');
+
 			}
+
 		}
 		
 		$data['values'] 	= $form->getCurrentValues();
@@ -178,16 +178,16 @@ class Pages_Admin extends Module {
 
 				
 			// set checkboxes to false if they're not sent from browser
-			if(!app()->params->post->keyExists('show_in_menu')){
+			if(!post()->keyExists('show_in_menu')){
 				$form->setCurrentValue('show_in_menu', false);
 			}
-			if(!app()->params->post->keyExists('page_is_live')){
+			if(!post()->keyExists('page_is_live')){
 				$form->setCurrentValue('page_is_live', false);
 			}
-			if(!app()->params->post->keyExists('is_parent_default')){
+			if(!post()->keyExists('is_parent_default')){
 				$form->setCurrentValue('is_parent_default', false);
 			}
-			if(!app()->params->post->keyExists('login_required')){
+			if(!post()->keyExists('login_required')){
 				$form->setCurrentValue('login_required', false);
 			}
 
@@ -203,26 +203,23 @@ class Pages_Admin extends Module {
 
 				// store references to the specifc sections
 				foreach($sections as $key => $section){
-					$sql = sprintf('
-						INSERT INTO section_list (page_id, section_type, section_id, sort_order, called_in_template, placement_group)
-						VALUES ("%s", "%s", "%s", "%s", "%s", "%s")',
-							app()->security->dbescape($id),
-							app()->security->dbescape($section['type']),
-							app()->security->dbescape($section['id']),
-							$key,
-							app()->security->dbescape($section['called_in_template']),
-							app()->security->dbescape($section['placement_group']));
-
-					$model->query($sql);
+					$model->insert(array(
+						'page_id'=>$id,
+						'section_type'=>$section['type'],
+						'section_id'=>$section['id'],
+						'sort_order'=>$key,
+						'called_in_template'=>$section['called_in_template'],
+						'placement_group'=>$section['placement_group']
+					));
 				}
 
-				sml()->addNewMessage('Page changes have been saved successfully. ' .
+				sml()->say('Page changes have been saved successfully. ' .
 										template()->link('Edit Again', 'edit', array('id'=>$id)));
 				router()->redirect('view');
 
 			} else {
 
-				sml()->addNewMessage('An error occurred. Please try again.');
+				sml()->say('An error occurred. Please try again.');
 
 			}
 		}
@@ -271,7 +268,7 @@ class Pages_Admin extends Module {
 		$filename = '';
 		$thm_name = '';
 		
-		$uploads = app()->file->upload('image_'.$section['next_id']);
+		$uploads = files()->upload('image_'.$section['next_id']);
 
 		if(is_array($uploads) && isset($uploads[0]) && !empty($uploads[0])){
 			foreach($uploads as $upload){
@@ -307,7 +304,7 @@ class Pages_Admin extends Module {
 		
 		
 		// save the data back
-		$model->query(sprintf('
+		model()->open('section_imagetext_editor')->query(sprintf('
 			INSERT INTO section_imagetext_editor (page_id, title, date_created, content, show_title, image_filename, image_thumbname, image_alt, template)
 			VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")',
 				app()->security->dbescape($page_id),
@@ -369,10 +366,10 @@ class Pages_Admin extends Module {
 	 * @param integer $id
 	 */
 	public function ajax_removeSection($id){
-		$section = $model->quickSelectSingle('section_list', $id);
+		$section = model()->open('section_list')->quickSelectSingle($id);
 		if(is_array($section)){
-			$section = $model->delete('section_'.$section['section_type'], $section['section_id']);
-			$section = $model->delete('section_list', $id);
+			$section = model()->open('section_list')->delete('section_'.$section['section_type'], $section['section_id']);
+			$section = model()->open('section_list')->delete('section_list', $id);
 		}
 	}
 	
@@ -484,7 +481,7 @@ class Pages_Admin extends Module {
 		if($id){
 			app()->db->Execute(sprintf("DELETE FROM pages WHERE page_id = %s", app()->security->dbescape((int)$id)));
 			app()->db->Execute(sprintf("UPDATE pages SET parent_id = 0 WHERE parent_id = %s", app()->security->dbescape((int)$id)));
-			sml()->addNewMessage('Page has been deleted successfully.');
+			sml()->say('Page has been deleted successfully.');
 			router()->redirect('view');
 		}
 	}
@@ -499,7 +496,7 @@ class Pages_Admin extends Module {
 		
 		
 		// obtain original state
-		$page = $model->quickSelectSingle('pages', $id, 'page_id');
+		$page = model()->open('pages')->quickSelectSingle($id, 'page_id');
 		
 		if($page){
 		
@@ -548,7 +545,7 @@ class Pages_Admin extends Module {
 					
 					// continue update for next generation of children
 					$xml .= $this->toggleDisplayOfChildren($page['page_id'], $new_page);
-				
+
 			}
 		}
 		
@@ -566,7 +563,6 @@ class Pages_Admin extends Module {
 		$model = model()->open('pages');
 		$model->orderBy('page_sort_order', 'ASC', 'pages:list');
 		$this->pages = $model->results();
-		$this->pages = $this->pages;
 
 		if($this->pages){
 			$nested = array();
@@ -621,7 +617,7 @@ class Pages_Admin extends Module {
 	 */
 	public function ajax_nestPages(){
 		
-		$pages = app()->params->get->getRaw('list');
+		$pages = get()->getRaw('list');
 		$order = 1;
 
 		foreach($pages as $page){
@@ -742,7 +738,7 @@ class Pages_Admin extends Module {
 	
 		$path = APPLICATION_PATH . '/themes/' . settings()->getConfig('active_theme');
 		
-		$files = app()->file->dirList($path);
+		$files = files()->dirList($path);
 		$page_templates = array ();
 	
 		foreach($files as $file){
@@ -752,7 +748,7 @@ class Pages_Admin extends Module {
 			// if the file found is a directory, look inside it
 			if(is_dir($dir)){
 			
-				$subfiles = app()->file->dirList($dir);
+				$subfiles = files()->dirList($dir);
 				foreach($subfiles as $subfile){
 					if(strpos($subfile, 'tpl.php')){
 						$fileinfo = $this->parseTemplateFile($dir, $subfile);

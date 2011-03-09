@@ -45,8 +45,8 @@ class News_Admin {
 		$model->limit(5,100);
 		$data['past_news'] = $model->results();
 		
-		if(!app()->file->setUploadDirectory()){
-			sml()->addNewMessage("The file upload directory does not appear to be writable. Please create the folder and set proper permissions.");
+		if(!files()->setUploadDirectory()){
+			sml()->say("The file upload directory does not appear to be writable. Please create the folder and set proper permissions.");
 		}
 
 		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
@@ -80,7 +80,7 @@ class News_Admin {
 			// if we have no errors, save the record
 			if(!$form->error()){
 			
-				$file = app()->file->upload('pdf_filename');
+				$file = files()->upload('pdf_filename');
 				
 				$form->setCurrentValue('user_id', session()->getInt('user_id'));
 				$form->setCurrentValue('public', 1);
@@ -95,7 +95,7 @@ class News_Admin {
 				// insert a new record with available data
 				if($form->save()){
 					// if successful insert, redirect to the list
-					sml()->addNewMessage('News entry has successfully been added.');
+					sml()->say('News entry has successfully been added.');
 					router()->redirect('view');
 				}
 			}
@@ -120,8 +120,8 @@ class News_Admin {
 	 */
 	public function edit($id = false){
 		
-		if(!app()->file->setUploadDirectory()){
-			sml()->addNewMessage("The file upload directory does not appear to be writable. Please create the folder and set proper permissions.");
+		if(!files()->setUploadDirectory()){
+			sml()->say("The file upload directory does not appear to be writable. Please create the folder and set proper permissions.");
 		}
 
 		$form = new Form('news', $id);
@@ -140,7 +140,7 @@ class News_Admin {
 			// if we have no errors, save the record
 			if(!$form->error()){
 			
-				$file = app()->file->upload('pdf_filename');
+				$file = files()->upload('pdf_filename');
 				if(is_array($file) && !empty($file[0])){
 					$form->setCurrentValue('pdf_filename', $file[0]['file_name']);
 				}
@@ -151,7 +151,7 @@ class News_Admin {
 				// insert a new record with available data
 				if($form->save($id)){
 					// if successful insert, redirect to the list
-					sml()->addNewMessage('News entry has successfully been updated.');
+					sml()->say('News entry has successfully been updated.');
 					router()->redirect('view');
 				}
 			}
@@ -175,7 +175,7 @@ class News_Admin {
 	 */
 	public function delete($id = false){
 		if($model->delete('news', $id)){
-			sml()->addNewMessage('News entry has successfully been deleted.');
+			sml()->say('News entry has successfully been deleted.');
 			router()->redirect('view');
 		}
 	}

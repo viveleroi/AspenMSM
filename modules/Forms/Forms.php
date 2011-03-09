@@ -40,9 +40,9 @@ class Forms {
 		$results = false;
 		$error = '';
 
-		if(app()->params->post->getInt('form_id')){
+		if(post()->getInt('form_id')){
 			
-			if($form_db = $model->quickSelectSingle('forms', app()->params->post->getInt('form_id'))){
+			if($form_db = $model->quickSelectSingle('forms', post()->getInt('form_id'))){
 		
 				if(sha1($form_db['structure']) == $form_db['hash']){
 					
@@ -57,7 +57,7 @@ class Forms {
 
 							if($field['class'] == 'input_text' || $field['class'] == 'textarea'){
 								
-								$val = app()->params->post->getRaw( $this->elemId($field['values']));
+								$val = post()->getRaw( $this->elemId($field['values']));
 								
 								if($field['required'] && empty($val)){
 									$error .= '<li>Please complete the ' . $field['values'] . ' field.</li>' . "\n";
@@ -68,7 +68,7 @@ class Forms {
 							}
 							elseif($field['class'] == 'radio' || $field['class'] == 'select'){
 
-								$val = app()->params->post->getRaw( $this->elemId($field['title']));
+								$val = post()->getRaw( $this->elemId($field['title']));
 								
 								if($field['required'] && empty($val)){
 									$error .= '<li>Please complete the ' . $field['title'] . ' field.</li>' . "\n";
@@ -86,13 +86,13 @@ class Forms {
 
 										$elem_id = $this->elemId($item['value'], $field['title']);
 										
-										$val = app()->params->post->getRaw($elem_id);
+										$val = post()->getRaw($elem_id);
 		
 										if(!empty($val)){
 											$at_least_one_checked = true;
 										}
 										
-										$results[ $this->elemId($item['value']) ] = app()->params->post->getRaw($elem_id);
+										$results[ $this->elemId($item['value']) ] = post()->getRaw($elem_id);
 									}
 									
 									if(!$at_least_one_checked && $field['required']){
@@ -322,7 +322,7 @@ class Forms {
 	 * @return <type> 
 	 */
 	private function getPostValue($key){
-		return app()->params->post->getRaw($key);
+		return post()->getRaw($key);
 	}
 	
 	

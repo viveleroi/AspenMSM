@@ -23,6 +23,8 @@
 		$config['default_module'] = 'Pages';
 	}
 	
+	$config['print_js_variables'] = true;
+	
 	// text w/image thumbnail size
 	$config['text_image_thm_maxwidth'] = 100;
 	$config['text_image_thm_maxheight'] = 100;

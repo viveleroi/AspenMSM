@@ -109,7 +109,7 @@ class Display {
 		$path = APPLICATION_PATH . '/themes/' . app()->settings->getConfig('active_theme');
 		$path .= $rel_path ? '/' . $rel_path : '';
 
-		$files = app()->file->dirList($path);
+		$files = files()->dirList($path);
 		$page_templates = array ();
 
 		foreach($files as $file){
@@ -119,7 +119,7 @@ class Display {
 			// if the file found is a directory, look inside it
 			if(is_dir($dir)){
 				if($recursive){
-					$subfiles = app()->file->dirList($dir);
+					$subfiles = files()->dirList($dir);
 					foreach($subfiles as $subfile){
 						$fileinfo = $this->parseTemplateFile($dir, $subfile);
 						if($fileinfo){

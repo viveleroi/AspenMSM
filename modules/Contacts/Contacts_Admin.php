@@ -178,7 +178,7 @@ class Contacts_Admin {
 					app()->setConfig('upload_server_path', APPLICATION_PATH.DS.'files'.DS.'contacts'.DS.$id);
 					app()->setConfig('enable_uploads', true); // enable uploads
 
-					$uploads = app()->file->upload('file_path');
+					$uploads = files()->upload('file_path');
 
 					// small thumb
 					$thm_width = app()->config('contact_image_thm_maxwidth');
@@ -199,8 +199,8 @@ class Contacts_Admin {
 							if (is_array($images)){
 								foreach($images as $image){
 									$base = APPLICATION_PATH.DS.'files'.DS.'contacts'.DS.$image['contact_id'];
-									app()->file->delete($base.DS.$image['filename_orig']);
-									app()->file->delete($base.DS.$image['filename_thumb']);
+									files()->delete($base.DS.$image['filename_orig']);
+									files()->delete($base.DS.$image['filename_thumb']);
 									$model->delete('contact_images', $image['id']);
 								}
 							}
@@ -237,7 +237,7 @@ class Contacts_Admin {
 						}
 					}
 
-				  sml()->addNewMessage('Contact changes have been saved successfully.');
+				  sml()->say('Contact changes have been saved successfully.');
 					router()->redirect('view');
 
 				}
@@ -270,7 +270,7 @@ class Contacts_Admin {
 	 */
 	public function delete($id){
 		$model->delete('contacts', $id);
-		sml()->addNewMessage('Contact has successfully been deleted.');
+		sml()->say('Contact has successfully been deleted.');
 		router()->redirect('view');
 	}
 	
@@ -285,9 +285,9 @@ class Contacts_Admin {
 		$image = $model->quickSelectSingle('contact_images', $id);
 		$base = APPLICATION_PATH.DS.'files'.DS.'contacts'.DS.$image['contact_id'];
 
-		app()->file->delete($base.DS.$image['filename_orig']);
-		app()->file->delete($base.DS.$image['filename_thumb']);
-		app()->file->delete($base);
+		files()->delete($base.DS.$image['filename_orig']);
+		files()->delete($base.DS.$image['filename_thumb']);
+		files()->delete($base);
 		
 		$model->delete('contact_images', $id);
 		

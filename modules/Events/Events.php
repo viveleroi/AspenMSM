@@ -81,8 +81,8 @@ class Events {
 						$model->where('group_id', $section_content['group_id']);
 					}
 
-					if(app()->params->get->getInt('year')){
-						$model->where('YEAR(start_date)', app()->params->get->getInt('year'));
+					if(get()->getInt('year')){
+						$model->where('YEAR(start_date)', get()->getInt('year'));
 					}
 
 					$model->where('public', 1);

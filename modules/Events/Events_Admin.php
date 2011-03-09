@@ -174,7 +174,7 @@ class Events_Admin {
 			$this->timeString('start');
 			$this->timeString('end');
 
-			if(!app()->params->post->keyExists('recurring')){
+			if(!post()->keyExists('recurring')){
 				$form->setCurrentValue('recurring', false);
 			} else {
 				$form->setCurrentValue('start_date', '');
@@ -199,13 +199,13 @@ class Events_Admin {
 						$model->query($sql);
 					}
 					
-					sml()->addNewMessage('Event entry has successfully been added.');
+					sml()->say('Event entry has successfully been added.');
 					header("Location: " . template()->createUrl('view'));
 					exit;
 
 				} else {
 
-					sml()->addNewMessage('An error occurred. Please try again.');
+					sml()->say('An error occurred. Please try again.');
 
 				}
 			}
@@ -267,7 +267,7 @@ class Events_Admin {
 				$this->timeString('start');
 				$this->timeString('end');
 
-				if(!app()->params->post->keyExists('recurring')){
+				if(!post()->keyExists('recurring')){
 					$form->setCurrentValue('recurring', false);
 				} else {
 					$form->setCurrentValue('start_date', '');
@@ -292,13 +292,13 @@ class Events_Admin {
 							$model->query($sql);
 						}
 						
-						sml()->addNewMessage('Event has successfully been updated.');
+						sml()->say('Event has successfully been updated.');
 						header("Location: " . template()->createUrl('view'));
 						exit;
 	
 					} else {
 	
-						sml()->addNewMessage('An error occurred. Please try again.');
+						sml()->say('An error occurred. Please try again.');
 	
 					}
 				}
@@ -320,7 +320,7 @@ class Events_Admin {
 	 */
 	public function delete($id = false){
 		if($model->delete('events', $id)){
-			sml()->addNewMessage('Event entry has successfully been deleted.');
+			sml()->say('Event entry has successfully been deleted.');
 			router()->redirect('view');
 		}
 	}
