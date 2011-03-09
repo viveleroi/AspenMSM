@@ -191,9 +191,11 @@ class Events_Admin {
 				// update groups
 				// @todo update this
 				$groups = $form->cv('groups');
-				foreach($groups as $group){
-					$sql = sprintf('INSERT INTO event_groups_link (event_id, group_id) VALUES ("%s", "%s")', $id, $group);
-					$model->query($sql);
+				if(is_array($groups)){
+					foreach($groups as $group){
+						$sql = sprintf('INSERT INTO event_groups_link (event_id, group_id) VALUES ("%s", "%s")', $id, $group);
+						$model->query($sql);
+					}
 				}
 
 				sml()->say('Event entry has successfully been added.');

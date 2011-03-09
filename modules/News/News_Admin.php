@@ -6,19 +6,13 @@
  */
 class News_Admin {
 
-	/**
-	 * @var object $APP Holds a reference to our application
-	 * @access private
-	 */
-	private $APP;
-
 	
 	/**
 	 * @abstract Constructor, initializes the module
 	 * @access public
 	 */
 	public function __construct(){
-		$this->APP = get_instance();
+		template()->addCss('style.css');
 		director()->registerPageSection(__CLASS__, 'News Display', 'news_display');
 		app()->setConfig('enable_uploads', true); // enable uploads
 		if(router()->module() == __CLASS__){
@@ -49,9 +43,7 @@ class News_Admin {
 			sml()->say("The file upload directory does not appear to be writable. Please create the folder and set proper permissions.");
 		}
 
-		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
-		template()->addView(template()->getModuleTemplateDir().DS . 'index.tpl.php');
-		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
+		template()->addJs('view.js');
 		template()->display($data);
 
 	}
@@ -62,6 +54,10 @@ class News_Admin {
 	 * @access public
 	 */
 	public function add(){
+		
+		template()->addCss('admin/datepicker.css');
+		template()->addJs('admin/datepicker.js');
+		template()->addJs('edit.js');
  
 		$form = new Form('news');
 		$form->setCurrentValue('timestamp', date("Y-m-d H:i:s"));
@@ -69,44 +65,40 @@ class News_Admin {
 		// if form has been submitted
 		if($form->isSubmitted()){
 			
-			if(!$form->isFilled('title')){
-				$form->addError('body', 'You must enter a title.');
+			// @a13
+//			if(!$form->isFilled('title')){
+//				$form->addError('body', 'You must enter a title.');
+//			}
+//			
+//			if(!$form->isFilled('body')){
+//				$form->addError('body', 'You must enter some content.');
+//			}
+			
+			$file = files()->upload('pdf_filename');
+
+			$form->setCurrentValue('user_id', session()->getInt('user_id'));
+			$form->setCurrentValue('public', 1);
+
+			if(isset($file[0]) && is_array($file[0])){
+				$form->setCurrentValue('pdf_filename', $file[0]['file_name']);
+			}
+
+			// set html security rules
+			// @a13
+//			$model->setSecurityRule('body', 'allow_html', true);
+
+			// insert a new record with available data
+			if($form->save()){
+				// if successful insert, redirect to the list
+				sml()->say('News entry has successfully been added.');
+				router()->redirect('view');
 			}
 			
-			if(!$form->isFilled('body')){
-				$form->addError('body', 'You must enter some content.');
-			}
-			
-			// if we have no errors, save the record
-			if(!$form->error()){
-			
-				$file = files()->upload('pdf_filename');
-				
-				$form->setCurrentValue('user_id', session()->getInt('user_id'));
-				$form->setCurrentValue('public', 1);
-				
-				if(isset($file[0]) && is_array($file[0])){
-					$form->setCurrentValue('pdf_filename', $file[0]['file_name']);
-				}
-				
-				// set html security rules
-				$model->setSecurityRule('body', 'allow_html', true);
-	
-				// insert a new record with available data
-				if($form->save()){
-					// if successful insert, redirect to the list
-					sml()->say('News entry has successfully been added.');
-					router()->redirect('view');
-				}
-			}
 		}
  
 		// make sure the template has access to all current values
 		$data['form'] = $form;
- 
-		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
-		template()->addView(template()->getModuleTemplateDir().DS . 'add.tpl.php');
-		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
+
 		template()->display($data);
  
 	}
@@ -120,6 +112,10 @@ class News_Admin {
 	 */
 	public function edit($id = false){
 		
+		template()->addCss('admin/datepicker.css');
+		template()->addJs('admin/datepicker.js');
+		template()->addJs('edit.js');
+		
 		if(!files()->setUploadDirectory()){
 			sml()->say("The file upload directory does not appear to be writable. Please create the folder and set proper permissions.");
 		}
@@ -129,40 +125,36 @@ class News_Admin {
 		// if form has been submitted
 		if($form->isSubmitted()){
 			
-			if(!$form->isFilled('title')){
-				$form->addError('body', 'You must enter a title.');
+			// @a13
+//			if(!$form->isFilled('title')){
+//				$form->addError('body', 'You must enter a title.');
+//			}
+//			
+//			if(!$form->isFilled('body')){
+//				$form->addError('body', 'You must enter some content.');
+//			}
+			
+			
+			$file = files()->upload('pdf_filename');
+			if(is_array($file) && !empty($file[0])){
+				$form->setCurrentValue('pdf_filename', $file[0]['file_name']);
 			}
-			
-			if(!$form->isFilled('body')){
-				$form->addError('body', 'You must enter some content.');
-			}
-			
-			// if we have no errors, save the record
-			if(!$form->error()){
-			
-				$file = files()->upload('pdf_filename');
-				if(is_array($file) && !empty($file[0])){
-					$form->setCurrentValue('pdf_filename', $file[0]['file_name']);
-				}
-				
-				// set html security rules
-				$model->setSecurityRule('body', 'allow_html', true);
 
-				// insert a new record with available data
-				if($form->save($id)){
-					// if successful insert, redirect to the list
-					sml()->say('News entry has successfully been updated.');
-					router()->redirect('view');
-				}
+			// set html security rules
+			// @a13
+//			$model->setSecurityRule('body', 'allow_html', true);
+
+			// insert a new record with available data
+			if($form->save($id)){
+				// if successful insert, redirect to the list
+				sml()->say('News entry has successfully been updated.');
+				router()->redirect('view');
 			}
 		}
  
 		// make sure the template has access to all current values
 		$data['form'] = $form;
- 
-		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
-		template()->addView(template()->getModuleTemplateDir().DS . 'edit.tpl.php');
-		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
+
 		template()->display($data);
  
 	}
@@ -174,7 +166,7 @@ class News_Admin {
 	 * @access public
 	 */
 	public function delete($id = false){
-		if($model->delete('news', $id)){
+		if(model()->open('news')->delete($id, 'news_id')){
 			sml()->say('News entry has successfully been deleted.');
 			router()->redirect('view');
 		}
@@ -195,7 +187,7 @@ class News_Admin {
 		
 		if($record){
 			$public = ($record['public'] == 1 ? 0 : 1);
-			$model->executeUpdate('news', array('public'=>$public), $id, 'news_id');
+			model()->open('news')->update(array('public'=>$public), $id, 'news_id');
 		}
 		
 		$xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'."\n";
@@ -247,7 +239,7 @@ class News_Admin {
 			$section['show_title'] = isset($section['show_title']) ? $section['show_title'] : false;
 			$section['show_description'] = isset($section['show_description']) ? $section['show_description'] : false;
 			
-			$model->query(sprintf('
+			model()->open('section_news_display')->query(sprintf('
 				INSERT INTO section_news_display (page_id, title, display_num, link_to_full_page, detail_page_id, show_title, show_description, template)
 				VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")',
 					app()->security->dbescape($page_id),
