@@ -39,7 +39,7 @@
 							<?php
 								$options = $this->grabSelectArray('pages', 'page_title', 'distinct', 'page_title', 'page_id');
 								foreach($options as $option){
-								  	print '<option value="'.$option['page_id'].'"'.($values['return_page'] == $option['page_id'] ? ' selected="selected"' : '').'>' . $option['page_title'] . '</option>';
+								  	print '<option value="'.$option['page_id'].'"'.($form->cv('return_page') == $option['page_id'] ? ' selected="selected"' : '').'>' . $option['page_title'] . '</option>';
 								}
 							 ?>
 						</select>

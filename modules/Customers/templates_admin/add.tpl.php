@@ -37,7 +37,7 @@
 						<div class="multi">
 							<?php $groups = user()->groupList(); ?>
 							<?php foreach($groups as $group){ ?>
-							<input id="group_<?php print $group['id'] ?>" name="group[]" type="checkbox" value="<?php print $group['id'] ?>"<?php print (in_array($group['id'],$values['group'])? ' checked="checked"' : '') ?> />
+							<input id="group_<?php print $group['id'] ?>" name="group[]" type="checkbox" value="<?php print $group['id'] ?>"<?php print (in_array($group['id'],$form->cv('group'))? ' checked="checked"' : '') ?> />
 							<label for="group_<?php print $group['id'] ?>"><?php print $group['name'] ?></label>
 							<?php } ?>
 						</div>

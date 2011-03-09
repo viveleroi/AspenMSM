@@ -14,14 +14,14 @@
 							<?php
 							$options = $this->grabSelectArray('course_groups', 'name', 'DISTINCT', 'name');
 							foreach($options as $option){
-								print '<option value="'.$option['id'].'"'.(in_array($option['id'], $values['groups']) ? ' selected="selected"' : '').'>' . $option['name'] . '</option>';
+								print '<option value="'.$option['id'].'"'.(in_array($option['id'], $form->cv('groups')) ? ' selected="selected"' : '').'>' . $option['name'] . '</option>';
 							}
 						?>
 						</select>
 					</li>
 					<li>
 						<label for="title">Course Title:</label>
-						<input type="text" name="title" id="title" value="<?php print htmlentities($values['title'], ENT_QUOTES, 'UTF-8'); ?>" />
+						<input type="text" name="title" id="title" value="<?php print htmlentities($form->cv('title'), ENT_QUOTES, 'UTF-8'); ?>" />
 					</li>
 					<li class="short">
 						<label for="code">Course Code:</label>
@@ -52,7 +52,7 @@
 							<span class="false-seating-label">Seating:</span>
 							<div class="individual">
 								<input class="sch-date" type="text" name="date" id="date" value="<?php print $form->cv('date') ?>" />
-								<input class="sch-location" type="text" name="location" id="location" value="<?php print htmlentities($values['location'], ENT_QUOTES, 'UTF-8'); ?>" />
+								<input class="sch-location" type="text" name="location" id="location" value="<?php print htmlentities($form->cv('location'), ENT_QUOTES, 'UTF-8'); ?>" />
 								<input class="sch-seating" type="text" name="seating" id="seating" value="<?php print $form->cv('seating') ?>" />
 							</div>
 						</span>
@@ -71,11 +71,11 @@
 				<ol>
 					<li>
 						<label for="summary">Brief Description:</label>
-						<textarea id="summary" name="summary" rows="5" cols="60"><?php print htmlentities($values['summary'], ENT_QUOTES, 'UTF-8'); ?></textarea>
+						<textarea id="summary" name="summary" rows="5" cols="60"><?php print htmlentities($form->cv('summary'), ENT_QUOTES, 'UTF-8'); ?></textarea>
 					</li>
 					<li class="tmce">
 						<label for="body">Body:</label>
-						<textarea id="body" name="body" class="mce-editor content-area" rows="10" cols="60"><?php print htmlentities($values['body'], ENT_QUOTES, 'UTF-8'); ?></textarea>
+						<textarea id="body" name="body" class="mce-editor content-area" rows="10" cols="60"><?php print htmlentities($form->cv('body'), ENT_QUOTES, 'UTF-8'); ?></textarea>
 					</li>
 				</ol>
 				<ol>

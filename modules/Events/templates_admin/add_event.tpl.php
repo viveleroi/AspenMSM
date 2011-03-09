@@ -47,7 +47,7 @@
 							<?php
 							for($h = 1; $h <= 12; $h++){
 							?>
-								<option<?php print ($values['start_hour'] == $h ? ' selected' : '') ?>><?php print $h ?></option>
+								<option<?php print ($form->cv('start_hour') == $h ? ' selected' : '') ?>><?php print $h ?></option>
 							<?php
 							}
 							?>
@@ -55,15 +55,15 @@
 						<span class="time-sep">:</span>
 						<select id="start_minute" name="start_minute">
 							<option value="">--</option>
-							<option<?php print ($values['start_minute'] == '00' ? ' selected' : '') ?>>00</option>
-							<option<?php print ($values['start_minute'] == '15' ? ' selected' : '') ?>>15</option>
-							<option<?php print ($values['start_minute'] == '30' ? ' selected' : '') ?>>30</option>
-							<option<?php print ($values['start_minute'] == '45' ? ' selected' : '') ?>>45</option>
+							<option<?php print ($form->cv('start_minute') == '00' ? ' selected' : '') ?>>00</option>
+							<option<?php print ($form->cv('start_minute') == '15' ? ' selected' : '') ?>>15</option>
+							<option<?php print ($form->cv('start_minute') == '30' ? ' selected' : '') ?>>30</option>
+							<option<?php print ($form->cv('start_minute') == '45' ? ' selected' : '') ?>>45</option>
 						</select>
 						<select id="start_ampm" name="start_ampm">
 							<option value="">--</option>
-							<option<?php print ($values['start_ampm'] == 'am' ? ' selected' : '') ?>>am</option>
-							<option<?php print ($values['start_ampm'] == 'pm' ? ' selected' : '') ?>>pm</option>
+							<option<?php print ($form->cv('start_ampm') == 'am' ? ' selected' : '') ?>>am</option>
+							<option<?php print ($form->cv('start_ampm') == 'pm' ? ' selected' : '') ?>>pm</option>
 						</select>
 						<a class="help" href="<?php print router()->moduleUrl() ?>/help/events-start_time.htm" title="Start Time">Help</a>
 					</li>
@@ -74,7 +74,7 @@
 						<?php
 						for($h = 1; $h <= 12; $h++){
 						?>
-							<option<?php print ($values['end_hour'] == $h ? ' selected' : '') ?>><?php print $h ?></option>
+							<option<?php print ($form->cv('end_hour') == $h ? ' selected' : '') ?>><?php print $h ?></option>
 						<?php
 						}
 						?>
@@ -82,15 +82,15 @@
 						<span class="time-sep">:</span>
 						<select id="end_minute" name="end_minute">
 							<option value="">--</option>
-							<option<?php print ($values['end_minute'] == '00' ? ' selected' : '') ?>>00</option>
-							<option<?php print ($values['end_minute'] == '15' ? ' selected' : '') ?>>15</option>
-							<option<?php print ($values['end_minute'] == '30' ? ' selected' : '') ?>>30</option>
-							<option<?php print ($values['end_minute'] == '45' ? ' selected' : '') ?>>45</option>
+							<option<?php print ($form->cv('end_minute') == '00' ? ' selected' : '') ?>>00</option>
+							<option<?php print ($form->cv('end_minute') == '15' ? ' selected' : '') ?>>15</option>
+							<option<?php print ($form->cv('end_minute') == '30' ? ' selected' : '') ?>>30</option>
+							<option<?php print ($form->cv('end_minute') == '45' ? ' selected' : '') ?>>45</option>
 						</select>
 						<select id="end_ampm" name="end_ampm" >
 							<option value="">--</option>
-							<option<?php print ($values['end_ampm'] == 'am' ? ' selected' : '') ?>>am</option>
-							<option<?php print ($values['end_ampm'] == 'pm' ? ' selected' : '') ?>>pm</option>
+							<option<?php print ($form->cv('end_ampm') == 'am' ? ' selected' : '') ?>>am</option>
+							<option<?php print ($form->cv('end_ampm') == 'pm' ? ' selected' : '') ?>>pm</option>
 						</select>
 						<a class="help" href="<?php print router()->moduleUrl() ?>/help/events-expiration_time.htm" title="Expiration Time">Help</a>
 					</li>
@@ -106,7 +106,7 @@
 				<ol>
 					<li class="tmce">
 						<label for="body">Content:</label>
-						<textarea id="body" name="content" class="mce-editor content-area" rows="25" cols="30"><?php print htmlentities($values['content'], ENT_QUOTES, 'UTF-8'); ?></textarea>
+						<textarea id="body" name="content" class="mce-editor content-area" rows="25" cols="30"><?php print htmlentities($form->cv('content'), ENT_QUOTES, 'UTF-8'); ?></textarea>
 					</li>
 				</ol>
 			</fieldset>

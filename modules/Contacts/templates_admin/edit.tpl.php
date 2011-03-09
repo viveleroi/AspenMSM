@@ -38,7 +38,7 @@
 				</li>
 				<li>
 					<label for="website">Website:</label>
-					<input type="text" name="website" id="website" value="<?php print empty($values['website']) ? 'http://' : $values['website'] ?>" />
+					<input type="text" name="website" id="website" value="<?php print empty($form->cv('website')) ? 'http://' : $form->cv('website') ?>" />
 				</li>
 			</ol>
 			<ol>
@@ -93,7 +93,7 @@
 						<?php
 							$options = $this->grabSelectArray('contact_groups', 'name', 'DISTINCT', 'name');
 							foreach($options as $option){
-								print '<option value="'.$option['id'].'"'.(in_array($option['id'], $values['groups']) ? ' selected="selected"' : '').'>' . $option['name'] . '</option>';
+								print '<option value="'.$option['id'].'"'.(in_array($option['id'], $form->cv('groups')) ? ' selected="selected"' : '').'>' . $option['name'] . '</option>';
 							}
 						?>
 					</select>
@@ -118,7 +118,7 @@
 					foreach($images as $image){
 				?>
 				<div>
-					<img src="<?php print router()->getUploadsUrl() . '/contacts/' . $values['id'] . '/' . $image['filename_thumb']; ?>" width="<?php print $image['width_thumb']; ?>" height="<?php print $image['height_thumb']; ?>" alt="Contact Profile Picture" />
+					<img src="<?php print router()->getUploadsUrl() . '/contacts/' . $form->cv('id') . '/' . $image['filename_thumb']; ?>" width="<?php print $image['width_thumb']; ?>" height="<?php print $image['height_thumb']; ?>" alt="Contact Profile Picture" />
 					<a href="#" class="delete del-img" id="del-<?php print $image['id']; ?>">Delete</a>
 				</div>
 				<?php
@@ -130,7 +130,7 @@
 				</li>
 			</ol>
 		</fieldset>
-		<a class="dark-button confirm" href="<?php print $this->xhtmlUrl('delete', array('id' => $values['id'])); ?>" title="Are you sure you want to delete this contact?"><span>Delete</span></a>
+		<a class="dark-button confirm" href="<?php print $this->xhtmlUrl('delete', array('id' => $form->cv('id'))); ?>" title="Are you sure you want to delete this contact?"><span>Delete</span></a>
 	</div>
 	<fieldset class="action">
 		<button class="right" type="submit" name="submit"><span><em>Save</em></span></button>

@@ -105,7 +105,7 @@ class Events_Admin {
 	 * @param string $field
 	 * @access private
 	 */
-	private function timeString($field){
+	private function timeString($field, $form){
 		
 		$hour = $form->cv($field . '_hour');
 		$minute = $form->cv($field . '_minute');
@@ -168,8 +168,8 @@ class Events_Admin {
 		// proces the form if submitted
 		if($form->isSubmitted()){
 			
-			$this->timeString('start');
-			$this->timeString('end');
+			$this->timeString('start', $form);
+			$this->timeString('end', $form);
 
 			if(!post()->keyExists('recurring')){
 				$form->setCurrentValue('recurring', false);
@@ -260,8 +260,8 @@ class Events_Admin {
 			// proces the form if submitted
 			if($form->isSubmitted()){
 				
-				$this->timeString('start');
-				$this->timeString('end');
+				$this->timeString('start', $form);
+				$this->timeString('end', $form);
 
 				if(!post()->keyExists('recurring')){
 					$form->setCurrentValue('recurring', false);
@@ -328,11 +328,11 @@ class Events_Admin {
 		
 		// obtain original state
 		$public = 0;
-		$record = $model->quickSelectSingle('events', $id);
+		$record = model()->open('events', $id);
 		
 		if($record){
 			$public = ($record['public'] == 1 ? 0 : 1);
-			$model->executeUpdate('events', array('public'=>$public), $id);
+			model()->open('events')->update(array('public'=>$public), $id);
 		}
 		
 		$xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'."\n";
@@ -387,7 +387,7 @@ class Events_Admin {
 			$section['show_title'] = isset($section['show_title']) ? $section['show_title'] : false;
 			$section['show_description'] = isset($section['show_description']) ? $section['show_description'] : false;
 			
-			$model->query(sprintf('
+			model()->open('section_events_display')->query(sprintf('
 				INSERT INTO section_events_display (page_id, title, hide_expired, show_recurring, show_nonrecurring, display_num, link_to_full_page, detail_page_id, show_title, show_description, group_id, template)
 				VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")',
 					app()->security->dbescape($page_id),
@@ -427,7 +427,7 @@ class Events_Admin {
 			SELECT event_groups.*, IF(event_groups.id IN (SELECT group_id FROM event_groups_link WHERE event_id = "%s"), 1, 0 ) as selected
 			FROM event_groups
 			ORDER BY event_groups.name ASC', $id);
-		$groups = $model->results(false, $sql);
+		$groups = model()->open('event_groups')->results(false, $sql);
 		
 		print json_encode( array('groups'=>$groups) );
 		
@@ -442,7 +442,7 @@ class Events_Admin {
 	
 		$id = false;
 		if(!empty($name)){
-			$id = $model->executeInsert('event_groups', array('name'=>$name));
+			$id = model()->open('event_groups')->insert(array('name'=>$name));
 		}
 		
 		print json_encode( array('success'=>(bool)$id, 'id'=>$id, 'name'=>$name) );
@@ -458,10 +458,10 @@ class Events_Admin {
 	
 		$result = false;
 		if($id && ctype_digit($id)){
-			$result = $model->delete('event_groups', $id);
+			$result = model()->open('event_groups')->delete($id);
 			
 			if($result){
-				$result = $model->delete('event_groups_link', $id, 'group_id');
+				$result = model()->open('event_groups_link')->delete($id, 'group_id');
 			}
 		}
 		

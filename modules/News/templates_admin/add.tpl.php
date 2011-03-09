@@ -8,24 +8,24 @@
 				<ol>
 					<li>
 						<label for="title">Article Title:</label>
-						<input id="title" name="title" type="text" value="<?php print htmlentities($values['title'], ENT_QUOTES, 'UTF-8'); ?>" />
+						<input id="title" name="title" type="text" value="<?php print htmlentities($form->cv('title'), ENT_QUOTES, 'UTF-8'); ?>" />
 						<a class="help" href="<?php print router()->moduleUrl() ?>/help/news-article_title.htm" title="Article Title">Help</a>
 					</li>
 					<li>
 						<label for="timestamp">Date:</label>
-						<input id="timestamp" name="timestamp" type="text" value="<?php print date("Y-m-d", strtotime($values['timestamp'])); ?>" class="dateformat-Y-ds-m-ds-d" />
+						<input id="timestamp" name="timestamp" type="text" value="<?php print date("Y-m-d", strtotime($form->cv('timestamp'))); ?>" class="dateformat-Y-ds-m-ds-d" />
 						<a class="help" href="<?php print router()->moduleUrl() ?>/help/news-article_title.htm" title="Article Date">Help</a>
 					</li>
 				</ol>
 				<ol>
 					<li>
 						<label for="summary">Summary:</label>
-						<textarea id="summary" name="summary" rows="5" cols="60"><?php print htmlentities($values['summary'], ENT_QUOTES, 'UTF-8'); ?></textarea>
+						<textarea id="summary" name="summary" rows="5" cols="60"><?php print htmlentities($form->cv('summary'), ENT_QUOTES, 'UTF-8'); ?></textarea>
 						<a class="help" href="<?php print router()->moduleUrl() ?>/help/news-summary.htm" title="Summary">Help</a>
 					</li>
 					<li class="tmce">
 						<label for="body">Body:</label>
-						<textarea id="body" name="body" class="mce-editor content-area" rows="10" cols="60"><?php print htmlentities($values['body'], ENT_QUOTES, 'UTF-8'); ?></textarea>
+						<textarea id="body" name="body" class="mce-editor content-area" rows="10" cols="60"><?php print htmlentities($form->cv('body'), ENT_QUOTES, 'UTF-8'); ?></textarea>
 					</li>
 				</ol>
 				<ol>
