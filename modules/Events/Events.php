@@ -105,7 +105,7 @@ class Events {
 
 				} else {
 
-					$event = $model->quickSelectSingle('events', app()->cms_lib->getUriBit(1));
+					$event = model()->open('events', app()->cms_lib->getUriBit(1));
 
 					if($event){
 						$section_content['events'] = array($event['id']=>$event);

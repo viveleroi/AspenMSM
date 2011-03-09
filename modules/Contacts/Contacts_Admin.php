@@ -6,12 +6,8 @@
  * @uses Admin
  */
 class Contacts_Admin {
-
-	/**
-	 * @var object Holds our original application
-	 * @access private
-	 */
-	private $APP;
+	
+	
 
 
 	/**
@@ -20,7 +16,7 @@ class Contacts_Admin {
 	 * @access public
 	 */
 	public function __construct(){
-		$this->APP = get_instance();
+		template()->addCss('style.css');
 		director()->registerPageSection(__CLASS__, 'Contact Display', 'contacts_display');
 		director()->registerPageSection(__CLASS__, 'Contact Group Display', 'contactgroup_display');
 		app()->setConfig('enable_uploads', true); // enable uploads
@@ -32,6 +28,10 @@ class Contacts_Admin {
 	 * @access public
 	 */
 	public function view(){
+		
+		template()->addJs('admin/jquery.listnav.js');
+		template()->addJs('admin/jScrollPane.js');
+		template()->addJs('view.js');
 		
 		$model = model()->open('contacts');
 		$model->orderBy('last_name');
@@ -55,10 +55,7 @@ class Contacts_Admin {
 		}
 		
 		$data['group_list'] = $groups;
-
-		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
-		template()->addView(template()->getModuleTemplateDir().DS . 'index.tpl.php');
-		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
+		
 		template()->display($data);
 		
 	}
@@ -79,6 +76,8 @@ class Contacts_Admin {
 	 * @access public
 	 */
 	public function edit($id = false){
+		
+		template()->addJs('edit.js');
 
 		$form = new Form('contacts', $id);
 
@@ -128,119 +127,120 @@ class Contacts_Admin {
 		if($form->isSubmitted()){
 
 			// validation
-			if(!$form->isFilled('first_name')){
-				$form->addError('first_name', 'You must enter a first name.');
-			}
-
-			if(!$form->isFilled('last_name')){
-				$form->addError('last_name', 'You must enter a last name.');
-			}
+			// @a13
+//			if(!$form->isFilled('first_name')){
+//				$form->addError('first_name', 'You must enter a first name.');
+//			}
+//
+//			if(!$form->isFilled('last_name')){
+//				$form->addError('last_name', 'You must enter a last name.');
+//			}
 
 			// remove http:// if left empty
-			if($form->cv('website') == 'http://'){
-				$form->setCurrentValue('website', '');
-			}
+//			if($form->cv('website') == 'http://'){
+//				$form->setCurrentValue('website', '');
+//			}
 
 			// set html security rules
-			$model->setSecurityRule('bio', 'allow_html', true);
+//			$model->setSecurityRule('bio', 'allow_html', true);
 
-			// if we have no errors, process sql
-			if(!$form->error()){
-				if($res_id = $form->save($id)){
+			if($res_id = $form->save($id)){
 
-					$id = $id ? $id : $res_id;
+				$id = $id ? $id : $res_id;
+				
+				// @todo cleanup all of this
+				$model = model()->open('contacts');
 
-					// update languages
-					$model->delete('contact_languages_link', $id, 'contact_id');
-					$languages = $form->cv('languages');
-					foreach($languages as $language){
-						$sql = sprintf('INSERT INTO contact_languages_link (contact_id, language_id) VALUES ("%s", "%s")', $id, $language);
-						$model->query($sql);
-					}
-
-					// update groups
-					$model->delete('contact_groups_link', $id, 'contact_id');
-					$groups = $form->cv('groups');
-					foreach($groups as $group){
-						$sql = sprintf('INSERT INTO contact_groups_link (contact_id, group_id) VALUES ("%s", "%s")', $id, $group);
-						$model->query($sql);
-					}
-
-					// update specialties
-					$model->delete('contact_specialties_link', $id, 'contact_id');
-					$specialties = $form->cv('specialties');
-					foreach($specialties as $specialty){
-						$sql = sprintf('INSERT INTO contact_specialties_link (contact_id, specialty_id) VALUES ("%s", "%s")', $id, $specialty);
-						$model->query($sql);
-					}
-
-					// upload file
-					app()->setConfig('upload_server_path', APPLICATION_PATH.DS.'files'.DS.'contacts'.DS.$id);
-					app()->setConfig('enable_uploads', true); // enable uploads
-
-					$uploads = files()->upload('file_path');
-
-					// small thumb
-					$thm_width = app()->config('contact_image_thm_maxwidth');
-					$thm_height = app()->config('contact_image_thm_maxheight');
-
-					// resized original
-					$orig_width = app()->config('contact_image_maxwidth');
-					$orig_height = app()->config('contact_image_maxheight');
-
-					if(is_array($uploads) && !empty($uploads[0])){
-						foreach($uploads as $file){
-
-							// delete previous images
-							$model = model()->open('contact_images');
-							$model->where('contact_id', $id);
-							$images = $model->results();
-							
-							if (is_array($images)){
-								foreach($images as $image){
-									$base = APPLICATION_PATH.DS.'files'.DS.'contacts'.DS.$image['contact_id'];
-									files()->delete($base.DS.$image['filename_orig']);
-									files()->delete($base.DS.$image['filename_thumb']);
-									$model->delete('contact_images', $image['id']);
-								}
-							}
-
-								// get new thumb file name, new path
-							$thm_name = str_replace($file['file_extension'], '_thm'.$file['file_extension'], $file['file_name']);
-							$thm_path = str_replace($file['file_name'], $thm_name, $file['server_file_path']);
-
-							// get new file name, new path
-							$orig_name = str_replace($file['file_extension'], '_orig'.$file['file_extension'], $file['file_name']);
-							$orig_path = str_replace($file['file_name'], $orig_name, $file['server_file_path']);
-
-							// load original in thumbnail
-							$thm_create = new Thumbnail($file['server_file_path']);
-							$thm_create->adaptiveResize($thm_width,$thm_height);
-							$thm_create->save($thm_path);
-
-							$orig_create = new Thumbnail($file['server_file_path']);
-							$orig_create->adaptiveResize($orig_width,$orig_height);
-							$orig_create->save($orig_path);
-
-							// store image and thumb info to database
-							$model->executeInsert('contact_images',
-																	array(
-																		'contact_id'=>$id,
-																		'filename_orig'=>$orig_name,
-																		'filename_thumb'=>$thm_name,
-																		'width_orig'=>$orig_width,
-																		'height_orig'=>$orig_height,
-																		'width_thumb'=>$thm_width,
-																		'height_thumb'=>$thm_height
-																	));
-
-						}
-					}
-
-				  sml()->say('Contact changes have been saved successfully.');
-					router()->redirect('view');
-
+				// update languages
+				$model->delete('contact_languages_link', $id, 'contact_id');
+				$languages = $form->cv('languages');
+				foreach($languages as $language){
+					$sql = sprintf('INSERT INTO contact_languages_link (contact_id, language_id) VALUES ("%s", "%s")', $id, $language);
+					$model->query($sql);
 				}
+
+				// update groups
+				$model->delete('contact_groups_link', $id, 'contact_id');
+				$groups = $form->cv('groups');
+				foreach($groups as $group){
+					$sql = sprintf('INSERT INTO contact_groups_link (contact_id, group_id) VALUES ("%s", "%s")', $id, $group);
+					$model->query($sql);
+				}
+
+				// update specialties
+				$model->delete('contact_specialties_link', $id, 'contact_id');
+				$specialties = $form->cv('specialties');
+				foreach($specialties as $specialty){
+					$sql = sprintf('INSERT INTO contact_specialties_link (contact_id, specialty_id) VALUES ("%s", "%s")', $id, $specialty);
+					$model->query($sql);
+				}
+
+				// upload file
+				app()->setConfig('upload_server_path', APPLICATION_PATH.DS.'files'.DS.'contacts'.DS.$id);
+				app()->setConfig('enable_uploads', true); // enable uploads
+
+				$uploads = files()->upload('file_path');
+
+				// small thumb
+				$thm_width = app()->config('contact_image_thm_maxwidth');
+				$thm_height = app()->config('contact_image_thm_maxheight');
+
+				// resized original
+				$orig_width = app()->config('contact_image_maxwidth');
+				$orig_height = app()->config('contact_image_maxheight');
+
+				if(is_array($uploads) && !empty($uploads[0])){
+					foreach($uploads as $file){
+
+						// delete previous images
+						$model = model()->open('contact_images');
+						$model->where('contact_id', $id);
+						$images = $model->results();
+
+						if (is_array($images)){
+							foreach($images as $image){
+								$base = APPLICATION_PATH.DS.'files'.DS.'contacts'.DS.$image['contact_id'];
+								files()->delete($base.DS.$image['filename_orig']);
+								files()->delete($base.DS.$image['filename_thumb']);
+								$model->delete('contact_images', $image['id']);
+							}
+						}
+
+							// get new thumb file name, new path
+						$thm_name = str_replace($file['file_extension'], '_thm'.$file['file_extension'], $file['file_name']);
+						$thm_path = str_replace($file['file_name'], $thm_name, $file['server_file_path']);
+
+						// get new file name, new path
+						$orig_name = str_replace($file['file_extension'], '_orig'.$file['file_extension'], $file['file_name']);
+						$orig_path = str_replace($file['file_name'], $orig_name, $file['server_file_path']);
+
+						// load original in thumbnail
+						$thm_create = new Thumbnail($file['server_file_path']);
+						$thm_create->adaptiveResize($thm_width,$thm_height);
+						$thm_create->save($thm_path);
+
+						$orig_create = new Thumbnail($file['server_file_path']);
+						$orig_create->adaptiveResize($orig_width,$orig_height);
+						$orig_create->save($orig_path);
+
+						// store image and thumb info to database
+						$model->executeInsert('contact_images',
+																array(
+																	'contact_id'=>$id,
+																	'filename_orig'=>$orig_name,
+																	'filename_thumb'=>$thm_name,
+																	'width_orig'=>$orig_width,
+																	'height_orig'=>$orig_height,
+																	'width_thumb'=>$thm_width,
+																	'height_thumb'=>$thm_height
+																));
+
+					}
+				}
+
+			  sml()->say('Contact changes have been saved successfully.');
+				router()->redirect('view');
+
 			}
 		}
 		
@@ -255,9 +255,6 @@ class Contacts_Admin {
 			$data['images'] = false;
 		}
 
-		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
-		template()->addView(template()->getModuleTemplateDir().DS . 'edit.tpl.php');
-		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
 		template()->display($data);
 		
 	}
@@ -269,7 +266,7 @@ class Contacts_Admin {
 	 * @access public
 	 */
 	public function delete($id){
-		$model->delete('contacts', $id);
+		model()->open('contacts')->delete($id);
 		sml()->say('Contact has successfully been deleted.');
 		router()->redirect('view');
 	}
@@ -282,7 +279,7 @@ class Contacts_Admin {
 	 */
 	public function ajax_deleteImage($id){
 		
-		$image = $model->quickSelectSingle('contact_images', $id);
+		$image = model()->open('contact_images', $id);
 		$base = APPLICATION_PATH.DS.'files'.DS.'contacts'.DS.$image['contact_id'];
 
 		files()->delete($base.DS.$image['filename_orig']);
@@ -302,7 +299,7 @@ class Contacts_Admin {
 	 * @param integer $next_id
 	 * @access public
 	 */
-	public function sectionEditor($type = false, $next_id = 1, $section = false, $page_id = false, $template = false){
+	public function sectionEditor($type = false, $next_id = 1, $section = false, $page_id = false, $template = false, $form = false){
 		
 		$template = $template ? $template : $form->cv('page_template');
 		
@@ -360,7 +357,7 @@ class Contacts_Admin {
 			
 			$section['show_title'] = isset($section['show_title']) ? $section['show_title'] : false;
 			
-			$model->query(sprintf('
+			model()->open('section_contacts_display')->query(sprintf('
 				INSERT INTO section_contacts_display (page_id, title, show_title, template, link_to_full_page, detail_page_id, contact_id)
 				VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s")',
 					app()->security->dbescape($page_id),
@@ -400,7 +397,7 @@ class Contacts_Admin {
 			
 			$section['show_title'] = isset($section['show_title']) ? $section['show_title'] : false;
 			
-			$model->query(sprintf('
+			model()->open('section_contactgroup_display')->query(sprintf('
 				INSERT INTO section_contactgroup_display (page_id, title, show_title, template, group_id, link_to_full_page, detail_page_id, sort_method)
 				VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")',
 					app()->security->dbescape($page_id),
@@ -447,6 +444,7 @@ class Contacts_Admin {
 	 */
 	public function ajax_sortGroup($group_id, $ul){
 		$success = false;
+		$model = model()->open('contact_groups_link');
 		$sql = 'UPDATE contact_groups_link SET sort_order = "%d" WHERE contact_id = "%d" AND group_id = "%s"';
 		if(is_array($ul)){
 			foreach($ul as $key => $contact){
@@ -466,10 +464,9 @@ class Contacts_Admin {
 	
 		$result = false;
 		if($id && ctype_digit($id)){
-			$result = $model->delete('contact_groups', $id);
-			
+			$result = model()->open('contact_groups')->delete($id);
 			if($result){
-				$result = $model->delete('contact_groups_link', $id, 'group_id');
+				$result = model()->open('contact_groups_link')->delete($id, 'group_id');
 			}
 		}
 		
@@ -505,10 +502,10 @@ class Contacts_Admin {
 				}
 			} else {
 				// if not, add the new contact
-				$result = $id = $model->executeInsert('contact_groups_link', array('contact_id'=>$contact,'group_id'=>$group));
+				$result = $id = $model->insert(array('contact_id'=>$contact,'group_id'=>$group));
 			}
 			
-			$contact = $model->quickSelectSingle('contacts', $contact);
+			$contact = model()->open('contacts', $contact);
 			
 		}
 
@@ -526,7 +523,7 @@ class Contacts_Admin {
 		$result = false;
 		if($id && $group_id){
 			$sql = sprintf('DELETE FROM contact_groups_link WHERE contact_id = "%s" AND group_id = "%s"', $id, $group_id);
-			$result = $model->query($sql);
+			$result = model()->open('contact_groups_link')->query($sql);
 		}
 		
 		print json_encode( array('success'=>(bool)$result, 'id'=>$id ));
@@ -544,7 +541,7 @@ class Contacts_Admin {
 			SELECT contact_languages.*, IF(contact_languages.id IN (SELECT language_id FROM contact_languages_link WHERE contact_id = "%s"), 1, 0 ) as selected
 			FROM contact_languages
 			ORDER BY contact_languages.language ASC', $id);
-		$languages = $model->results(false, $sql);
+		$languages = model()->open('contact_languages')->results(false, $sql);
 
 		print json_encode( array('langs'=>$languages) );
 
@@ -561,7 +558,7 @@ class Contacts_Admin {
 			SELECT contact_specialties.*, IF(contact_specialties.id IN (SELECT specialty_id FROM contact_specialties_link WHERE contact_id = "%s"), 1, 0 ) as selected
 			FROM contact_specialties
 			ORDER BY contact_specialties.specialty ASC', $id);
-		$specialties = $model->results(false, $sql);
+		$specialties = model()->open('contact_specialties')->results(false, $sql);
 
 		print json_encode( array('specialties'=>$specialties) );
 
@@ -576,7 +573,7 @@ class Contacts_Admin {
 	
 		$id = false;
 		if(!empty($name)){
-			$id = $model->executeInsert('contact_languages', array('language'=>$name));
+			$id = model()->open('contact_languages')->insert(array('language'=>$name));
 		}
 		
 		print json_encode( array('success'=>(bool)$id, 'id'=>$id, 'name'=>$name) );
@@ -592,7 +589,7 @@ class Contacts_Admin {
 
 		$id = false;
 		if(!empty($name)){
-			$id = $model->executeInsert('contact_specialties', array('specialty'=>$name));
+			$id = model()->open('contact_specialties')->insert(array('specialty'=>$name));
 		}
 
 		print json_encode( array('success'=>(bool)$id, 'id'=>$id, 'name'=>$name) );
@@ -608,10 +605,10 @@ class Contacts_Admin {
 	
 		$result = false;
 		if($id && ctype_digit($id)){
-			$result = $model->delete('contact_languages', $id);
+			$result = model()->open('contact_languages')->delete($id);
 			
 			if($result){
-				$result = $model->delete('contact_languages_link', $id, 'language_id');
+				$result = model()->open('contact_languages_link')->delete($id, 'language_id');
 			}
 		}
 		
@@ -628,10 +625,10 @@ class Contacts_Admin {
 
 		$result = false;
 		if($id && ctype_digit($id)){
-			$result = $model->delete('contact_specialties', $id);
+			$result = model()->open('contact_specialties')->delete($id);
 
 			if($result){
-				$result = $model->delete('contact_specialties_link', $id, 'specialty_id');
+				$result = model()->open('contact_specialties_link')->delete($id, 'specialty_id');
 			}
 		}
 

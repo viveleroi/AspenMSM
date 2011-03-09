@@ -16,6 +16,9 @@
 class Users_Admin extends Module {
 	
 	
+	/**
+	 * 
+	 */
 	public function __construct() {
 		template()->addCss('style.css');
 	}

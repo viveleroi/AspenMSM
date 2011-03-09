@@ -5,7 +5,7 @@
 	<type>Module</type>
 	<guid>9e385c30-3e5c-11dd-ae16-0800200c9a66</guid>
 	<classname>Admin</classname>
-	<name>Welcome</name>
+	<name>Admin</name>
 	<version>1.0</version>
 	<description>Manages application configuration.</description>
 	<vendor>Trellis Development, LLC</vendor>

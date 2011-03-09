@@ -61,7 +61,7 @@
 		<div id="groupholder-<?php print $group['id']; ?>" class="group">
 			<div class="legend">
 				<a id="group_<?php print $group['id']; ?>" class="toggle-group open" href="#">Show</a>
-				<strong><?php print $this->truncateString($group['name'], 25); ?></strong>
+				<strong><?php print DataDisplay::truncateString($group['name'], 25); ?></strong>
 			</div>
 			<div id="group_<?php print $group['id']; ?>_details" class="group-info clearfix">
 				<ul class="group-list" id="group_<?php print $group['id']; ?>_list">

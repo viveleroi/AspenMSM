@@ -85,7 +85,8 @@ class Modules {
 			'007b300a-fe0c-4f7b-b36f-ef458c32753a', // install
 			'652d519c-b7f3-11dc-8314-0800200c9a66', // index
 			'eee1d8c0-d50a-11dc-95ff-0800200c9a66', // users
-			'2f406120-3f1e-11dd-ae16-0800200c9a66' // cms
+			'2f406120-3f1e-11dd-ae16-0800200c9a66', // cms
+			'9e385c30-3e5c-11dd-ae16-0800200c9a66' // admin
 		);
 		$nonbase = array();
 
@@ -151,11 +152,9 @@ class Modules {
 			if(is_object($reg)){
 				if(isset($reg->disable_menu) && $reg->disable_menu){
 				} else {
-					
-					$link = template()->link($reg->name, 'view', false, $reg->classname . (LOADING_SECTION ? '_' . LOADING_SECTION : false));
-					
+					$link = template()->link($reg->name, $reg->classname.'/view');
 					if(!empty($link)){
-						$menu .= '<li'.(router()->here($reg->classname . (LOADING_SECTION ? '_' . LOADING_SECTION : false)) ? ' class="at"' : '').'>';
+						$menu .= '<li'.(router()->here($reg->classname.'/view') ? ' class="at"' : '').'>';
 						$menu .= $link;
 						$menu .= '</li>';
 					}

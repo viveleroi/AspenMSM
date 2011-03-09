@@ -158,7 +158,7 @@ class Courses_Admin {
 		
 		// obtain original state
 		$public = 0;
-		$record = $model->quickSelectSingle('courses', $id, 'id');
+		$record = model()->open('courses', $id);
 		
 		if($record){
 			$public = ($record['public'] == 1 ? 0 : 1);

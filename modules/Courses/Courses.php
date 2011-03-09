@@ -39,7 +39,7 @@ class Menus extends Display {
 				$section_content['placement_group'] = $section_data['group_name'];
 
 				// pull the groups
-				$menu = $model->quickSelectSingle('menu_groups', $section_content['group_id']);
+				$menu = model()->open('menu_groups', $section_content['group_id']);
 					
 				$model = model()->open('menu_items');
 				$model->leftJoin('menu_link', 'item_id', 'id', array('menu_id'));

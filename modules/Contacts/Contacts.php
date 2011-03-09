@@ -64,7 +64,7 @@ class Contacts extends Display {
 						$results[$key] = array_merge($results[$key], $related);
 					}
 				} else {
-					$results = $model->quickSelectSingle('contacts', app()->cms_lib->getUriBit(1));
+					$results = model()->open('contacts', app()->cms_lib->getUriBit(1));
 					if($results){
 						$related = $this->pullRelatedContactContent($results['id']);
 						$results = array_merge($results, $related);

@@ -131,7 +131,7 @@ class Forms_Admin {
 	public function ajax_loadForm($id){
 		
 		// pull the record from the db
-		$form = $model->quickSelectSingle('forms', $id);
+		$form = model()->open('forms', $id);
 		
 		$editor = false;
 		if(sha1($form['structure']) == $form['hash']){

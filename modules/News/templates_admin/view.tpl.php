@@ -11,7 +11,7 @@
 				<li id="item_<?php print $record['news_id'] ?>_listing">
 					<div class="legend">
 						<a id="item_<?php print $record['news_id'] ?>" class="toggle-news open" href="#">Hide</a>
-						<strong><?php print $this->truncateText($record['title'],5) ?></strong>
+						<strong><?php print DataDisplay::truncateText($record['title'],5) ?></strong>
 						<span class="icons">
 							<a class="edit" href="<?php print $this->xhtmlUrl('edit', array('id' => $record['news_id'])) ?>" title="Edit this News Item">Edit</a>
 							<a class="delete confirm" href="<?php print $this->xhtmlUrl('delete', array('id' => $record['news_id'])) ?>" title="Are you sure you want to delete this news article?">Delete</a>
@@ -47,7 +47,7 @@
 				<li id="item_<?php print $record['news_id'] ?>_listing">
 					<div class="legend">
 						<a id="item_<?php print $record['news_id'] ?>" class="toggle-news open" href="#">Hide</a>
-						<strong><?php print $this->truncateText($record['title'],5) ?></strong>
+						<strong><?php print DataDisplay::truncateText($record['title'],5) ?></strong>
 						<span class="icons">
 							<a class="edit" href="<?php print $this->xhtmlUrl('edit', array('id' => $record['news_id'])) ?>" title="Edit this News Item">Edit</a>
 							<a class="delete confirm" href="<?php print $this->xhtmlUrl('delete', array('id' => $record['news_id'])) ?>" title="Are you sure you want to delete this news article?">Delete</a>

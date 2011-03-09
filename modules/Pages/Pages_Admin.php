@@ -366,7 +366,7 @@ class Pages_Admin extends Module {
 	 * @param integer $id
 	 */
 	public function ajax_removeSection($id){
-		$section = model()->open('section_list')->quickSelectSingle($id);
+		$section = model()->open('section_list', $id);
 		if(is_array($section)){
 			$section = model()->open('section_list')->delete('section_'.$section['section_type'], $section['section_id']);
 			$section = model()->open('section_list')->delete('section_list', $id);

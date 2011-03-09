@@ -42,7 +42,7 @@ class Forms {
 
 		if(post()->getInt('form_id')){
 			
-			if($form_db = $model->quickSelectSingle('forms', post()->getInt('form_id'))){
+			if($form_db = model()->open('forms', post()->getInt('form_id'))){
 		
 				if(sha1($form_db['structure']) == $form_db['hash']){
 					
@@ -223,7 +223,7 @@ class Forms {
 				$section_content['type'] = $section_data['section_type'];
 				$section_content['placement_group'] = $section_data['group_name'];
 
-				$section_content['form'] = $model->quickSelectSingle('forms', $section_content['form_id']);
+				$section_content['form'] = model()->open('forms', $section_content['form_id']);
 				$data['section'] = $section_content;
 			
 				if(!$section_data['called_in_template']){

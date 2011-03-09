@@ -191,7 +191,7 @@ class News_Admin {
 		
 		// obtain original state
 		$public = 0;
-		$record = $model->quickSelectSingle('news', $id, 'news_id');
+		$record = model()->open('news')->quickSelectSingle($id, 'news_id');
 		
 		if($record){
 			$public = ($record['public'] == 1 ? 0 : 1);

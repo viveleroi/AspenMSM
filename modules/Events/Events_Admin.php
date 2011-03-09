@@ -7,12 +7,6 @@
  */
 class Events_Admin {
 
-	/**
-	 * @var object Holds our original application
-	 * @access private
-	 */
-	private $APP;
-
 
 	/**
 	 * @abstract Constructor, initializes the module
@@ -20,7 +14,7 @@ class Events_Admin {
 	 * @access public
 	 */
 	public function __construct(){
-		$this->APP = get_instance();
+		template()->addCss('style.css');
 		director()->registerPageSection(__CLASS__, 'Events Display', 'events_display');
 	}
 
@@ -30,6 +24,8 @@ class Events_Admin {
 	 * @access public
 	 */
 	public function view(){
+		
+		template()->addJs('view.js');
 		
 		$model = model()->open('events');
 		$model->whereFuture('CONCAT(start_date," ", start_time)');
@@ -99,9 +95,6 @@ class Events_Admin {
 			}
 		}
 
-		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
-		template()->addView(template()->getModuleTemplateDir().DS . 'index.tpl.php');
-		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
 		template()->display($data);
 		
 	}
@@ -130,24 +123,24 @@ class Events_Admin {
 	 * @access private
 	 */
 	private function validate(){
-		
-		if(!$form->isFilled('title')){
-			$form->addError('title', 'You must enter a title.');
-		}
-		
-		if(!$form->isFilled('recurring') && !$form->isDate('start_date')){
-			$form->addError('start_date', 'Please enter a valid start date.');
-		}
-		
-		if($form->isFilled('end_date')){
-			if($form->isDate('end_date')){
-				if(strtotime($form->cv('start_date')) > strtotime($form->cv('end_date'))){
-					$form->addError('content', 'Please choose a starting date that occurs before the end date.');
-				}
-			} else {
-				$form->addError('end_date', 'Please enter a valid end date.');
-			}
-		}
+		// @a13
+//		if(!$form->isFilled('title')){
+//			$form->addError('title', 'You must enter a title.');
+//		}
+//		
+//		if(!$form->isFilled('recurring') && !$form->isDate('start_date')){
+//			$form->addError('start_date', 'Please enter a valid start date.');
+//		}
+//		
+//		if($form->isFilled('end_date')){
+//			if($form->isDate('end_date')){
+//				if(strtotime($form->cv('start_date')) > strtotime($form->cv('end_date'))){
+//					$form->addError('content', 'Please choose a starting date that occurs before the end date.');
+//				}
+//			} else {
+//				$form->addError('end_date', 'Please enter a valid end date.');
+//			}
+//		}
 	}
 
 
@@ -156,6 +149,10 @@ class Events_Admin {
 	 * @access public
 	 */
 	public function add_event(){
+		
+		template()->addCss('admin/datepicker.css');
+		template()->addJs('admin/datepicker.js');
+		template()->addJs('edit.js');
 
 		$form = new Form('events');
 		$form->setDefaultValue('start_date', date("Y-m-d"));
@@ -182,40 +179,35 @@ class Events_Admin {
 			}
 
 			// validation
-			$this->validate();
+//			$this->validate();
 
 			// set security rules
-			$model->setSecurityRule('content', 'allow_html', true);
-			$form->setCurrentValue('public', 1);
+			// @a13
+//			$model->setSecurityRule('content', 'allow_html', true);
+//			$form->setCurrentValue('public', 1);
 
-			// if we have no errors, process sql
-			if(!$form->error()){
-				if($id = $form->save()){
-					
-					// update groups
-					$groups = $form->cv('groups');
-					foreach($groups as $group){
-						$sql = sprintf('INSERT INTO event_groups_link (event_id, group_id) VALUES ("%s", "%s")', $id, $group);
-						$model->query($sql);
-					}
-					
-					sml()->say('Event entry has successfully been added.');
-					header("Location: " . template()->createUrl('view'));
-					exit;
+			if($id = $form->save()){
 
-				} else {
-
-					sml()->say('An error occurred. Please try again.');
-
+				// update groups
+				// @todo update this
+				$groups = $form->cv('groups');
+				foreach($groups as $group){
+					$sql = sprintf('INSERT INTO event_groups_link (event_id, group_id) VALUES ("%s", "%s")', $id, $group);
+					$model->query($sql);
 				}
+
+				sml()->say('Event entry has successfully been added.');
+				router()->redirect('view');
+
+			} else {
+
+				sml()->say('An error occurred. Please try again.');
+
 			}
 		}
 		
 		$data['form'] = $form;
 		
-		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
-		template()->addView(template()->getModuleTemplateDir().DS . 'add_event.tpl.php');
-		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
 		template()->display($data);
 		
 	}
@@ -227,6 +219,10 @@ class Events_Admin {
 	 * @access public
 	 */
 	public function edit_event($id = false){
+		
+		template()->addCss('admin/datepicker.css');
+		template()->addJs('admin/datepicker.js');
+		template()->addJs('edit.js');
 
 		if($id){
 			
@@ -275,39 +271,35 @@ class Events_Admin {
 				}
 				
 				// validation
-				$this->validate();
+//				$this->validate();
 	
 				// set security rules
-				$model->setSecurityRule('content', 'allow_html', true);
+				// // @a13
+//				$model->setSecurityRule('content', 'allow_html', true);
 	
-				// if we have no errors, process sql
-				if(!$form->error()){
-					if($form->save($id)){
-						
-						// update groups
-						$model->delete('event_groups_link', $id, 'event_id');
-						$groups = $form->cv('groups');
-						foreach($groups as $group){
-							$sql = sprintf('INSERT INTO event_groups_link (event_id, group_id) VALUES ("%s", "%s")', $id, $group);
-							$model->query($sql);
-						}
-						
-						sml()->say('Event has successfully been updated.');
-						header("Location: " . template()->createUrl('view'));
-						exit;
 	
-					} else {
-	
-						sml()->say('An error occurred. Please try again.');
-	
+				if($form->save($id)){
+
+					// update groups
+					// @todo update this
+					$model->delete('event_groups_link', $id, 'event_id');
+					$groups = $form->cv('groups');
+					foreach($groups as $group){
+						$sql = sprintf('INSERT INTO event_groups_link (event_id, group_id) VALUES ("%s", "%s")', $id, $group);
+						$model->query($sql);
 					}
+
+					sml()->say('Event has successfully been updated.');
+					router()->redirect('view');
+
+				} else {
+
+					sml()->say('An error occurred. Please try again.');
+
 				}
 			}
 		}
 
-		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
-		template()->addView(template()->getModuleTemplateDir().DS . 'edit_event.tpl.php');
-		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
 		template()->display($data);
 		
 	}
@@ -319,7 +311,7 @@ class Events_Admin {
 	 * @access public
 	 */
 	public function delete($id = false){
-		if($model->delete('events', $id)){
+		if(model()->open('events')->delete($id)){
 			sml()->say('Event entry has successfully been deleted.');
 			router()->redirect('view');
 		}
