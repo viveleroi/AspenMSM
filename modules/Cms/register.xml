@@ -27,4 +27,8 @@
 		<classname>Display</classname>
 		<autoload>true</autoload>
 	</library>
+	<library>
+		<classname>Modules</classname>
+		<autoload>true</autoload>
+	</library>
 </package>

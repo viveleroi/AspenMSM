@@ -57,7 +57,7 @@
 			<?php if(user()->userHasAccess('Pages')){ ?>
 			<li<?php print router()->here('admin/pages') ? ' class="at"' : '' ?>><a href="<?php print $this->xhtmlUrl('pages/view') ?>" accesskey="p">Site Pages</a></li>
 			<?php } ?>
-			<?php //print app()->generateNonBaseModuleLinks(); ?>
+			<?php print modules()->generateNonBaseModuleLinks(); ?>
 			
 			<?php if(IS_ADMIN){ ?>
 			<li<?php print router()->here('admin/users') ? ' class="at"' : '' ?>><a href="<?php print $this->xhtmlUrl('users/view') ?>" accesskey="u">Manage Users</a></li>

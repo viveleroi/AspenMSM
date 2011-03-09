@@ -14,6 +14,11 @@
  * @uses Module
  */
 class Users_Admin extends Module {
+	
+	
+	public function __construct() {
+		template()->addCss('style.css');
+	}
 
 
 	/**
@@ -21,6 +26,9 @@ class Users_Admin extends Module {
 	 * @access public
 	 */
 	public function view(){
+		
+		template()->addJs('view.js');
+		
 		$model = model()->open('users');
 		$model->contains('groups');
 		$model->orderBy('username', 'ASC');
