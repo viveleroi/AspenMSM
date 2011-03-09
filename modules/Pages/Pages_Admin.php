@@ -100,12 +100,12 @@ class Pages_Admin extends Module {
 				
 				if($page_id = $form->save()){
 
-					app()->sml->addNewMessage('Your page has been created successfully.');
+					sml()->addNewMessage('Your page has been created successfully.');
 					router()->redirect('edit', array('id' => $page_id));
 
 				} else {
 
-					app()->sml->addNewMessage('An error occurred. Please try again.');
+					sml()->addNewMessage('An error occurred. Please try again.');
 
 				}
 			}
@@ -171,59 +171,57 @@ class Pages_Admin extends Module {
 		if($form->isSubmitted()){
 
 			// form field validation
-			if(!$form->isFilled('page_title')){
-				$form->addError('page_title', 'You must enter a page title.');
+			// @a13
+//			if(!$form->isFilled('page_title')){
+//				$form->addError('page_title', 'You must enter a page title.');
+//			}
+
+				
+			// set checkboxes to false if they're not sent from browser
+			if(!app()->params->post->keyExists('show_in_menu')){
+				$form->setCurrentValue('show_in_menu', false);
+			}
+			if(!app()->params->post->keyExists('page_is_live')){
+				$form->setCurrentValue('page_is_live', false);
+			}
+			if(!app()->params->post->keyExists('is_parent_default')){
+				$form->setCurrentValue('is_parent_default', false);
+			}
+			if(!app()->params->post->keyExists('login_required')){
+				$form->setCurrentValue('login_required', false);
 			}
 
-			// if we have no errors, process sql
-			if(!$form->error()){
-				
-				// set checkboxes to false if they're not sent from browser
-				if(!app()->params->post->keyExists('show_in_menu')){
-					$form->setCurrentValue('show_in_menu', false);
-				}
-				if(!app()->params->post->keyExists('page_is_live')){
-					$form->setCurrentValue('page_is_live', false);
-				}
-				if(!app()->params->post->keyExists('is_parent_default')){
-					$form->setCurrentValue('is_parent_default', false);
-				}
-				if(!app()->params->post->keyExists('login_required')){
-					$form->setCurrentValue('login_required', false);
+			// update page information
+			if($form->save($id)){
+
+				// remove all current sections references
+				$model->query(sprintf('DELETE FROM section_list WHERE page_id = "%s"', $id));
+
+				$sections = director()->savePageSections($id);
+
+				// store references to the specifc sections
+				foreach($sections as $key => $section){
+					$sql = sprintf('
+						INSERT INTO section_list (page_id, section_type, section_id, sort_order, called_in_template, placement_group)
+						VALUES ("%s", "%s", "%s", "%s", "%s", "%s")',
+							app()->security->dbescape($id),
+							app()->security->dbescape($section['type']),
+							app()->security->dbescape($section['id']),
+							$key,
+							app()->security->dbescape($section['called_in_template']),
+							app()->security->dbescape($section['placement_group']));
+
+					$model->query($sql);
 				}
 
-				// update page information
-				if($form->save($id)){
-					
-					// remove all current sections references
-					$model->query(sprintf('DELETE FROM section_list WHERE page_id = "%s"', $id));
-					
-					$sections = director()->savePageSections($id);
-						
-					// store references to the specifc sections
-					foreach($sections as $key => $section){
-						$sql = sprintf('
-							INSERT INTO section_list (page_id, section_type, section_id, sort_order, called_in_template, placement_group)
-							VALUES ("%s", "%s", "%s", "%s", "%s", "%s")',
-								app()->security->dbescape($id),
-								app()->security->dbescape($section['type']),
-								app()->security->dbescape($section['id']),
-								$key,
-								app()->security->dbescape($section['called_in_template']),
-								app()->security->dbescape($section['placement_group']));
-							
-						$model->query($sql);
-					}
+				sml()->addNewMessage('Page changes have been saved successfully. ' .
+										template()->createLink('Edit Again', 'edit', array('id'=>$id)));
+				router()->redirect('view');
 
-					app()->sml->addNewMessage('Page changes have been saved successfully. ' .
-											template()->createLink('Edit Again', 'edit', array('id'=>$id)));
-					router()->redirect('view');
-					
-				} else {
+			} else {
 
-					app()->sml->addNewMessage('An error occurred. Please try again.');
+				sml()->addNewMessage('An error occurred. Please try again.');
 
-				}
 			}
 		}
 
@@ -484,7 +482,7 @@ class Pages_Admin extends Module {
 		if($id){
 			app()->db->Execute(sprintf("DELETE FROM pages WHERE page_id = %s", app()->security->dbescape((int)$id)));
 			app()->db->Execute(sprintf("UPDATE pages SET parent_id = 0 WHERE parent_id = %s", app()->security->dbescape((int)$id)));
-			app()->sml->addNewMessage('Page has been deleted successfully.');
+			sml()->addNewMessage('Page has been deleted successfully.');
 			router()->redirect('view');
 		}
 	}

@@ -78,7 +78,7 @@ class Forms_Admin {
 
 				// insert a new record with available data
 				if($form->save($id)){
-					app()->sml->addNewMessage('Form has been updated successfully.');
+					sml()->addNewMessage('Form has been updated successfully.');
 					router()->redirect('view');
 				}
 			}
@@ -205,7 +205,7 @@ class Forms_Admin {
 	 */
 	public function delete($id = false){
 		if($model->delete('forms', $id)){
-			app()->sml->addNewMessage('Your form has successfully been deleted.');
+			sml()->addNewMessage('Your form has successfully been deleted.');
 			router()->redirect('view');
 		}
 	}

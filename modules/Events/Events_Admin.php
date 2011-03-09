@@ -199,13 +199,13 @@ class Events_Admin {
 						$model->query($sql);
 					}
 					
-					app()->sml->addNewMessage('Event entry has successfully been added.');
+					sml()->addNewMessage('Event entry has successfully been added.');
 					header("Location: " . template()->createUrl('view'));
 					exit;
 
 				} else {
 
-					app()->sml->addNewMessage('An error occurred. Please try again.');
+					sml()->addNewMessage('An error occurred. Please try again.');
 
 				}
 			}
@@ -292,13 +292,13 @@ class Events_Admin {
 							$model->query($sql);
 						}
 						
-						app()->sml->addNewMessage('Event has successfully been updated.');
+						sml()->addNewMessage('Event has successfully been updated.');
 						header("Location: " . template()->createUrl('view'));
 						exit;
 	
 					} else {
 	
-						app()->sml->addNewMessage('An error occurred. Please try again.');
+						sml()->addNewMessage('An error occurred. Please try again.');
 	
 					}
 				}
@@ -320,7 +320,7 @@ class Events_Admin {
 	 */
 	public function delete($id = false){
 		if($model->delete('events', $id)){
-			app()->sml->addNewMessage('Event entry has successfully been deleted.');
+			sml()->addNewMessage('Event entry has successfully been deleted.');
 			router()->redirect('view');
 		}
 	}

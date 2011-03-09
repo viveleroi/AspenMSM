@@ -46,7 +46,7 @@ class News_Admin {
 		$data['past_news'] = $model->results();
 		
 		if(!app()->file->setUploadDirectory()){
-			app()->sml->addNewMessage("The file upload directory does not appear to be writable. Please create the folder and set proper permissions.");
+			sml()->addNewMessage("The file upload directory does not appear to be writable. Please create the folder and set proper permissions.");
 		}
 
 		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
@@ -95,7 +95,7 @@ class News_Admin {
 				// insert a new record with available data
 				if($form->save()){
 					// if successful insert, redirect to the list
-					app()->sml->addNewMessage('News entry has successfully been added.');
+					sml()->addNewMessage('News entry has successfully been added.');
 					router()->redirect('view');
 				}
 			}
@@ -121,7 +121,7 @@ class News_Admin {
 	public function edit($id = false){
 		
 		if(!app()->file->setUploadDirectory()){
-			app()->sml->addNewMessage("The file upload directory does not appear to be writable. Please create the folder and set proper permissions.");
+			sml()->addNewMessage("The file upload directory does not appear to be writable. Please create the folder and set proper permissions.");
 		}
 
 		$form = new Form('news', $id);
@@ -151,7 +151,7 @@ class News_Admin {
 				// insert a new record with available data
 				if($form->save($id)){
 					// if successful insert, redirect to the list
-					app()->sml->addNewMessage('News entry has successfully been updated.');
+					sml()->addNewMessage('News entry has successfully been updated.');
 					router()->redirect('view');
 				}
 			}
@@ -175,7 +175,7 @@ class News_Admin {
 	 */
 	public function delete($id = false){
 		if($model->delete('news', $id)){
-			app()->sml->addNewMessage('News entry has successfully been deleted.');
+			sml()->addNewMessage('News entry has successfully been deleted.');
 			router()->redirect('view');
 		}
 	}

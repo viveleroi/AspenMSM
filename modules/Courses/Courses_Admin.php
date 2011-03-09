@@ -118,7 +118,7 @@ class Courses_Admin {
 						}
 				      
 						// if successful insert, redirect to the list
-						app()->sml->addNewMessage('The course has successfully been saved.');
+						sml()->addNewMessage('The course has successfully been saved.');
 						router()->redirect('view');
 	
 					}
@@ -142,7 +142,7 @@ class Courses_Admin {
 	 */
 	public function delete($id){
 		$model->delete('courses', $id);
-		app()->sml->addNewMessage('The course has successfully been deleted.');
+		sml()->addNewMessage('The course has successfully been deleted.');
 		router()->redirect('view');
 	}
 	

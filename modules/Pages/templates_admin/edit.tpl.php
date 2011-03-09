@@ -59,7 +59,7 @@
 							<label for="parent_id">Page Parent:</label>
 							<select id="parent_id" name="parent_id">
 								<option value="0">--</option>
-								<?php print app()->Pages_Admin->pageOptionGroups(false, false, $values['parent_id'], $values['page_id']); ?>
+								<?php print app()->Pages_Admin->pageOptionGroups(false, false, $form->cv('parent_id'), $form->cv('page_id')); ?>
 							</select>
 							<a class="help" href="<?php print router()->moduleUrl() ?>/help/settings-choose_parent.htm" title="Choose Parent">Help</a>
 						</li>
@@ -71,7 +71,7 @@
 								if(isset($templates) && is_array($templates)){
 									foreach($templates as $template){
 								?>
-								<option value="<?php print $template['FILENAME'] ?>"<?php print ($values['page_template'] == $template['FILENAME'] ? ' selected' : '')?>><?php print $template['NAME'] ?></option>
+								<option value="<?php print $template['FILENAME'] ?>"<?php print ($form->cv('page_template') == $template['FILENAME'] ? ' selected' : '')?>><?php print $template['NAME'] ?></option>
 								<?php
 									}
 								}
@@ -93,7 +93,7 @@
 							<input id="meta_description" name="meta_description" type="text" value="<?php print $form->cv('meta_description') ?>" />
 							<a class="help" href="<?php print router()->moduleUrl() ?>/help/settings-meta_description.htm" title="Meta Description">Help</a>
 						</li>
-						<?php if($values['parent_id']){ ?>
+						<?php if($form->cv('parent_id')){ ?>
 						<li>
 							<label for="is_parent_default">Parent Default:</label>
 							<input id="is_parent_default" name="is_parent_default" type="checkbox" value="1"<?php print $form->checked('is_parent_default', 1) ?> />

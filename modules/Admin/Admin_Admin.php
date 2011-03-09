@@ -59,7 +59,7 @@ class Admin_Admin extends App {
 					$model->query($sql);
 				}
 				
-				app()->sml->addNewMessage('Website settings have been updated successfully.');
+				sml()->addNewMessage('Website settings have been updated successfully.');
 				router()->redirect('view');
 			}
 		}

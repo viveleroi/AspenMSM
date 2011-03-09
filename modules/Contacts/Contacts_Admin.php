@@ -237,7 +237,7 @@ class Contacts_Admin {
 						}
 					}
 
-				  app()->sml->addNewMessage('Contact changes have been saved successfully.');
+				  sml()->addNewMessage('Contact changes have been saved successfully.');
 					router()->redirect('view');
 
 				}
@@ -270,7 +270,7 @@ class Contacts_Admin {
 	 */
 	public function delete($id){
 		$model->delete('contacts', $id);
-		app()->sml->addNewMessage('Contact has successfully been deleted.');
+		sml()->addNewMessage('Contact has successfully been deleted.');
 		router()->redirect('view');
 	}
 	
