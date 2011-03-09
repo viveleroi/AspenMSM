@@ -85,7 +85,7 @@ class Forms_Admin {
 		}
  
 		// make sure the template has access to all current values
-		$data['values'] = $form->getCurrentValues();
+		$data['form'] = $form;
  
 		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
 		template()->addView(template()->getModuleTemplateDir().DS . 'edit.tpl.php');

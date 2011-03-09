@@ -21,12 +21,6 @@ class Cms_lib {
 	public $nav_max_nesting_level = 25;
 	
 	/**
-	 * @var object $APP Holds our original application
-	 * @access private
-	 */
-	private $APP;
-	
-	/**
 	 * @var integer Holds the id of the parent if "at"
 	 * @access private
 	 */
@@ -91,18 +85,12 @@ class Cms_lib {
 	 */
 	private $sections;
 
-	/**
-	 * @var array Holds an array of the current URI
-	 * @access public
-	 */
-	private $uri = false;
-
 	
 	/**
 	 * @abstract Constructor, initializes the module
 	 * @access public
 	 */
-	public function __construct(){ $this->APP = get_instance();
+	public function aspen_init(){
 	
 		if(app()->isInstalled()){
 		
@@ -441,7 +429,7 @@ class Cms_lib {
 	 */
 	private function setThemeUrl(){
 		$template_name = app()->settings->getConfig('active_theme');
-		$this->theme_url = (app()->config('site_theme_url') ? app()->config('site_theme_url') : app()->router->getApplicationUrl() . '/themes') . '/' . $template_name;
+		$this->theme_url = (app()->config('site_theme_url') ? app()->config('site_theme_url') : app()->router->appUrl() . '/themes') . '/' . $template_name;
 	}
 	
 	
@@ -503,7 +491,7 @@ class Cms_lib {
 		// determine of we should make this a cleanurl
 		$enable_mod_rewrite = $force_no_rewrite ? false : app()->config('enable_mod_rewrite');
 
-		$url_base = app()->router->getApplicationUrl();
+		$url_base = app()->router->appUrl();
 		$url_base .= $enable_mod_rewrite ? '/' : '/index.php?redirected=';
 		$url = $url_base . implode('/', array_reverse($this->getFullPagePath($page_id)));
 		
@@ -528,7 +516,7 @@ class Cms_lib {
 		// determine of we should make this a cleanurl
 		$enable_mod_rewrite = $force_no_rewrite ? false : app()->config('enable_mod_rewrite');
 
-		$url_base = app()->router->getApplicationUrl();
+		$url_base = app()->router->appUrl();
 		$url_base .= $enable_mod_rewrite ? '/' : '/index.php?redirected=';
 		$url = $url_base . implode('/', array_reverse($this->getFullPagePath($this->page['page_id'])));
 		

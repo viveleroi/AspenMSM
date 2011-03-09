@@ -19,4 +19,12 @@
 		<classname>Director</classname>
 		<autoload>true</autoload>
 	</library>
+	<library>
+		<classname>Cms_lib</classname>
+		<autoload>true</autoload>
+	</library>
+	<library>
+		<classname>Display</classname>
+		<autoload>true</autoload>
+	</library>
 </package>

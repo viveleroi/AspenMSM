@@ -125,7 +125,7 @@ class Courses_Admin {
 				}
 			}
 		
-		$data['values'] = $form->getCurrentValues();
+		$data['form'] = $form;
 
 		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
 		template()->addView(template()->getModuleTemplateDir().DS . 'edit.tpl.php');

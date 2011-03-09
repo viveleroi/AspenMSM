@@ -211,7 +211,7 @@ class Events_Admin {
 			}
 		}
 		
-		$data['values'] = $form->getCurrentValues();
+		$data['form'] = $form;
 		
 		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
 		template()->addView(template()->getModuleTemplateDir().DS . 'add_event.tpl.php');
@@ -259,7 +259,7 @@ class Events_Admin {
 				$form->addField('end_ampm');
 			}
 			
-			$data['values'] = $form->getCurrentValues();
+			$data['form'] = $form;
 
 			// proces the form if submitted
 			if($form->isSubmitted()){

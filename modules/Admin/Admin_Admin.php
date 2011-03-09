@@ -64,7 +64,7 @@ class Admin_Admin extends App {
 			}
 		}
 		
-		$data['values'] = $form->getCurrentValues();
+		$data['form'] = $form;
 		
 		$model = model()->open('pages');
 		$model->where('page_is_live', 1);

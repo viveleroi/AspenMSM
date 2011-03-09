@@ -227,7 +227,7 @@ class Pages_Admin extends Module {
 			}
 		}
 
-		$data['values'] = $form->getCurrentValues();
+		$data['form'] = $form;
 
 		template()->display($data);
 
@@ -458,7 +458,7 @@ class Pages_Admin extends Module {
 
 						if($editing_page_id !== $page['page']['page_id'] && !in_array($editing_page_id, $parents)){
 							$selected = $opt_selected == $page['page']['page_id'] ? ' selected="selected"' : '';
-							$html .= sprintf('<option value="%d"%s>%s</option>', $page['page']['page_id'], $selected, template()->truncateString($page['page']['page_title'],35));
+							$html .= sprintf('<option value="%d"%s>%s</option>', $page['page']['page_id'], $selected, DataDisplay::truncateString($page['page']['page_title'],35));
 						}
 
 						if(isset($page['children'])){
@@ -670,7 +670,7 @@ class Pages_Admin extends Module {
 	 * @param integer $next_id
 	 * @access public
 	 */
-	public function sectionEditor($type = false, $next_id = 1, $section = false, $page_id = false, $template = false){
+	public function sectionEditor($type = false, $next_id = 1, $section = false, $page_id = false, $template = false, $form = false){
 		
 		$template = $template ? $template : $form->cv('page_template');
 

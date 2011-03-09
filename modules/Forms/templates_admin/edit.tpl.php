@@ -10,27 +10,27 @@
 					<li>
 						<label for="title">Title:</label>
 						<input id="title" name="title" type="text" value="<?php print $form->cv('title'); ?>" />
-						<a class="help" href="<?php print router()->getModuleUrl() ?>/help/formbuilder-settings-title.htm" title="Title">Help</a>
+						<a class="help" href="<?php print router()->moduleUrl() ?>/help/formbuilder-settings-title.htm" title="Title">Help</a>
 					</li>
 					<li>
 						<label for="email">E-mail Form to:</label>
 						<input id="email" name="email" type="text" value="<?php print $form->cv('email'); ?>" />
-						<a class="help" href="<?php print router()->getModuleUrl() ?>/help/formbuilder-settings-email.htm" title="Email Form To">Help</a>
+						<a class="help" href="<?php print router()->moduleUrl() ?>/help/formbuilder-settings-email.htm" title="Email Form To">Help</a>
 					</li>
 					<li>
 						<label for="email_to_user">E-mail User:</label>
 						<input id="email_to_user" name="email_to_user" type="checkbox" value="1"<?php print $form->cv('email_to_user') ? ' checked="checked"' : ''; ?> />
-						<a class="help" href="<?php print router()->getModuleUrl() ?>/help/formbuilder-settings-email_user.htm" title="E-mail User">Help</a>
+						<a class="help" href="<?php print router()->moduleUrl() ?>/help/formbuilder-settings-email_user.htm" title="E-mail User">Help</a>
 					</li>
 					<li>
 						<label for="email_to_user_text">E-mail Message:</label>
 						<textarea id="email_to_user_text" name="email_to_user_text"><?php print $form->cv('email_to_user_text'); ?></textarea>
-						<a class="help" href="<?php print router()->getModuleUrl() ?>/help/formbuilder-settings-email_message.htm" title="E-mail Message">Help</a>
+						<a class="help" href="<?php print router()->moduleUrl() ?>/help/formbuilder-settings-email_message.htm" title="E-mail Message">Help</a>
 					</li>
 					<li>
 						<label for="email_form_to_user">Include Form Data:</label>
 						<input id="email_form_to_user" name="email_form_to_user" type="checkbox" value="1"<?php print $form->cv('email_form_to_user') ? ' checked="checked"' : ''; ?> />
-						<a class="help" href="<?php print router()->getModuleUrl() ?>/help/formbuilder-settings-include_data.htm" title="Include Form Data">Help</a>
+						<a class="help" href="<?php print router()->moduleUrl() ?>/help/formbuilder-settings-include_data.htm" title="Include Form Data">Help</a>
 					</li>
 					<li>
 						<label for="return_page">Return Page:</label>
@@ -43,7 +43,7 @@
 								}
 							 ?>
 						</select>
-						<a class="help" href="<?php print router()->getModuleUrl() ?>/help/formbuilder-settings-return.htm" title="Return Page:">Help</a>
+						<a class="help" href="<?php print router()->moduleUrl() ?>/help/formbuilder-settings-return.htm" title="Return Page:">Help</a>
 					</li>
 				</ol>
 			</fieldset>

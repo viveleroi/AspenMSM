@@ -244,7 +244,7 @@ class Contacts_Admin {
 			}
 		}
 		
-		$data['values'] = $form->getCurrentValues();
+		$data['form'] = $form;
 		
 		// get images
 		if($id){

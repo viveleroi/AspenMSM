@@ -1,6 +1,6 @@
-<link rel="stylesheet" type="text/css" href="<?php print router()->getModuleUrl() ?>/css/style.css" />
+<link rel="stylesheet" type="text/css" href="<?php print router()->moduleUrl() ?>/css/style.css" />
 <script type="text/javascript" src="<?php print router()->interfaceUrl() ?>/js/jquery.qtip.js"></script>
-<script type="text/javascript" src="<?php print router()->getModuleUrl() ?>/js/view.js"></script>
+<script type="text/javascript" src="<?php print router()->moduleUrl() ?>/js/view.js"></script>
 
 <script type="text/javascript">
 	// send an ajax toggle to make page live or private

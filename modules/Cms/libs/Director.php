@@ -53,7 +53,7 @@ class Director {
 	 * @param unknown_type $type
 	 * @param unknown_type $next_id
 	 */
-	public function loadPageSection($type = false, $next_id = false, $section_data = false, $page_id = false, $template = false){
+	public function loadPageSection($type = false, $next_id = false, $section_data = false, $page_id = false, $template = false, $form = false){
 		
 		$load_sec = false;
 
@@ -67,7 +67,7 @@ class Director {
 		// if we have a matched module, load the proper function
 		if($load_sec){
 			if(isset(app()->{$load_sec['module']}) && method_exists(app()->{$load_sec['module']}, 'sectionEditor')){
-				app()->{$load_sec['module']}->sectionEditor($type, $next_id, $section_data, $page_id, $template);
+				app()->{$load_sec['module']}->sectionEditor($type, $next_id, $section_data, $page_id, $template, $form);
 			}
 		}
 	}

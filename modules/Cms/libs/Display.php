@@ -3,12 +3,6 @@
 class Display {
 
 	/**
-	 * @var object Holds our original application
-	 * @access private
-	 */
-	protected $APP;
-
-	/**
 	 * @var string Holds the section type which is used in the db, tables, page sections
 	 */
 	protected $section_type = false;
@@ -20,8 +14,6 @@ class Display {
 	 * @access public
 	 */
 	public function __construct($section_type = false, $class = false){
-		$this->APP = get_instance();
-
 		if($section_type && $class){
 			$this->section_type = $section_type;
 			director()->registerCmsSection($class, $section_type);
