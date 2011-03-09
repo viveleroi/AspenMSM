@@ -8,8 +8,12 @@
 				<input type="hidden" name="id" value="<?php print $form->cv('id') ?>" />
 				<ol>
 					<li>
-						<label for="nice_name">Name:</label>
-						<input id="nice_name" name="nice_name" type="text" value="<?php print $form->cv('nice_name') ?>" />
+						<label for="first_name">First Name:</label>
+						<input id="first_name" name="first_name" type="text" value="<?php print $form->cv('first_name') ?>" />
+					</li>
+					<li>
+						<label for="last_name">Last Name:</label>
+						<input id="last_name" name="last_name" type="text" value="<?php print $form->cv('last_name') ?>" />
 					</li>
 					<li>
 						<label for="username">User Name:</label>
@@ -38,7 +42,7 @@
 						<div class="multi">
 							<?php $groups = user()->groupList(); ?>
 							<?php foreach($groups as $group){ ?>
-							<input id="group_<?php print $group['id'] ?>" name="group[]" type="checkbox" value="<?php print $group['id'] ?>"<?php print (in_array($group['id'],$values['group'])? ' checked="checked"' : '') ?> />
+							<input type="checkbox" name="Groups[]" value="<?php print $group['id'] ?>" id="group_<?php print $group['id'] ?>"<?php print $form->checked('Groups', $group['id']); ?> />
 							<label for="group_<?php print $group['id'] ?>"><?php print $group['name'] ?></label>
 							<?php } ?>
 						</div>

@@ -54,15 +54,14 @@
 	<?php if(user()->isLoggedIn()){ // if logged in ?>
 	<div id="nav">
 		<ul class="clearfix">
-			<!-- <li<?php print router()->here('Index_Admin') ? ' class="at"' : '' ?>><a href="<?php print $this->xhtmlUrl('view', false, 'Index') ?>" accesskey="i">Dashboard</a></li> -->
 			<?php if(user()->userHasAccess('Pages')){ ?>
-			<li<?php print router()->here('Pages_Admin') ? ' class="at"' : '' ?>><a href="<?php print $this->xhtmlUrl('view', false, 'Pages') ?>" accesskey="p">Site Pages</a></li>
+			<li<?php print router()->here('admin/pages') ? ' class="at"' : '' ?>><a href="<?php print $this->xhtmlUrl('pages/view') ?>" accesskey="p">Site Pages</a></li>
 			<?php } ?>
 			<?php //print app()->generateNonBaseModuleLinks(); ?>
 			
 			<?php if(IS_ADMIN){ ?>
-			<li<?php print router()->here('Users_Admin') ? ' class="at"' : '' ?>><a href="<?php print $this->xhtmlUrl('view', false, 'Users') ?>" accesskey="u">Manage Users</a></li>
-			<li class="admin<?php print router()->here('Admin_Admin') ? ' at' : '' ?>"><a href="<?php print $this->xhtmlUrl('view', false, 'Admin') ?>" accesskey="s">Admin Settings</a></li>
+			<li<?php print router()->here('admin/users') ? ' class="at"' : '' ?>><a href="<?php print $this->xhtmlUrl('users/view') ?>" accesskey="u">Manage Users</a></li>
+			<li class="admin<?php print router()->here('admin/admin') ? ' at' : '' ?>"><a href="<?php print $this->xhtmlUrl('admin/view') ?>" accesskey="s">Admin Settings</a></li>
 			<?php } ?>
 		</ul>
 	</div>

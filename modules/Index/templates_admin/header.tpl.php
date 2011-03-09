@@ -1,1 +1,0 @@
-<link rel="stylesheet" type="text/css" href="<?php print router()->moduleUrl() ?>/css/style.css" />

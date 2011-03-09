@@ -11,23 +11,7 @@
  * @author Michael Botsko, Botsko.net LLC
  * @uses Admin
  */
-class Index_Admin {
-
-	/**
-	 * @var object Holds our original application
-	 * @access public
-	 */
-	public $APP;
-
-
-	/**
-	 * @abstract Constructor, initializes the module
-	 * @return Index_Admin
-	 * @access public
-	 */
-	public function Index_Admin(){
-		$this->APP = get_instance();
-	}
+class Index_Admin extends Module {
 
 
 	/**
@@ -35,9 +19,6 @@ class Index_Admin {
 	 */
 	public function view(){
 
-		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
-		template()->addView(template()->getModuleTemplateDir().DS . 'index.tpl.php');
-		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
 		template()->display();
 		
 	}

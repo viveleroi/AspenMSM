@@ -193,6 +193,8 @@ class Pages_Admin extends Module {
 
 			// update page information
 			if($form->save($id)){
+				
+				$model = model()->open('section_list');
 
 				// remove all current sections references
 				$model->query(sprintf('DELETE FROM section_list WHERE page_id = "%s"', $id));
@@ -215,7 +217,7 @@ class Pages_Admin extends Module {
 				}
 
 				sml()->addNewMessage('Page changes have been saved successfully. ' .
-										template()->createLink('Edit Again', 'edit', array('id'=>$id)));
+										template()->link('Edit Again', 'edit', array('id'=>$id)));
 				router()->redirect('view');
 
 			} else {
@@ -341,7 +343,7 @@ class Pages_Admin extends Module {
 		
 		$section['show_title'] = isset($section['show_title']) ? $section['show_title'] : false;
 			
-		$model->query(sprintf('
+		model()->open('section_basic_editor')->query(sprintf('
 			INSERT INTO section_basic_editor (page_id, title, date_created, content, show_title, template)
 			VALUES ("%s", "%s", "%s", "%s", "%s", "%s")',
 				app()->security->dbescape($page_id),
