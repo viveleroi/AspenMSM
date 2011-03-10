@@ -51,7 +51,7 @@
 			<li class="auto">
 				<label for="contactgroup_<?php print $next_id ?>_contact_id">Select Contact:</label>
 				<select id="contactgroup_<?php print $next_id ?>_contact_id" name="page_sections[<?php print $next_id ?>][contact_id]">
-				<?php print template()->getSelectOptions( template()->grabSelectArray('contacts', 'last_name', 'DISTINCT', 'last_name'), $section['content']['contact_id'], true); ?>
+				<?php print template()->getSelectOptions( template()->selectArray('contacts', 'last_name', 'DISTINCT', 'last_name'), $section['content']['contact_id'], true); ?>
 				</select>
 				<a class="help" href="<?php print router()->moduleUrl('Contacts_Admin') ?>/help/section-group-select.htm" title="Select Form">Help</a>
 			</li>

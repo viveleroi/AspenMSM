@@ -7,8 +7,6 @@
  */
 class Contacts_Admin {
 	
-	
-
 
 	/**
 	 * @abstract Constructor, initializes the module
@@ -29,10 +27,6 @@ class Contacts_Admin {
 	 */
 	public function view(){
 		
-		template()->addJs('admin/jquery.listnav.js');
-		template()->addJs('admin/jScrollPane.js');
-		template()->addJs('view.js');
-		
 		$model = model()->open('contacts');
 		$model->orderBy('last_name');
 		$data['directory_list'] = $model->results();
@@ -42,6 +36,7 @@ class Contacts_Admin {
 		$model->orderBy('name');
 		$groups = $model->results();
 		
+		// @todo turn this into a contain - fields need renaming though
 		if($groups){
 			foreach($groups as $g_id => $group){
 				
@@ -56,6 +51,9 @@ class Contacts_Admin {
 		
 		$data['group_list'] = $groups;
 		
+		template()->addJs('admin/jquery.listnav.js');
+		template()->addJs('admin/jScrollPane.js');
+		template()->addJs('view.js');
 		template()->display($data);
 		
 	}
@@ -85,12 +83,10 @@ class Contacts_Admin {
 		$model = model()->open('contact_languages_link');
 		$model->where('contact_id', $id);
 		$languages_records = $model->results();
-
+		
 		$languages = array();
 		if($languages_records){
-			foreach($languages_records as $languages_record){
-				$languages[] = $languages_record['language_id'];
-			}
+			$languages = Utils::extract('{n}.language_id', $languages_record);
 		}
 		$form->addField('languages', $languages, $languages);
 
@@ -102,48 +98,27 @@ class Contacts_Admin {
 
 		$groups = array();
 		if($groups_records){
-			foreach($groups_records as $groups_record){
-				$groups[] = $groups_record['group_id'];
-			}
+			$groups = Utils::extract('{n}.group_id', $groups_records);
 		}
 		$form->addField('groups', $groups, $groups);
 
 
 		// grab existing specialty settings
-		$model = model()->open('contact_specialties_link');
-		$model->where('contact_id', $id);
-		$specs_records = $model->results();
-
-		$specialties = array();
-		if($specs_records){
-			foreach($specs_records as $specs_record){
-				$specialties[] = $specs_record['specialty_id'];
-			}
-		}
-		$form->addField('specialties', $specialties, $specialties);
+//		$model = model()->open('contact_specialties_link');
+//		$model->where('contact_id', $id);
+//		$specs_records = $model->results();
+//
+//		$specialties = array();
+//		if($specs_records){
+//			foreach($specs_records as $specs_record){
+//				$specialties[] = $specs_record['specialty_id'];
+//			}
+//		}
+//		$form->addField('specialties', $specialties, $specialties);
 
 
 		// proces the form if submitted
 		if($form->isSubmitted()){
-
-			// validation
-			// @a13
-//			if(!$form->isFilled('first_name')){
-//				$form->addError('first_name', 'You must enter a first name.');
-//			}
-//
-//			if(!$form->isFilled('last_name')){
-//				$form->addError('last_name', 'You must enter a last name.');
-//			}
-
-			// remove http:// if left empty
-//			if($form->cv('website') == 'http://'){
-//				$form->setCurrentValue('website', '');
-//			}
-
-			// set html security rules
-//			$model->setSecurityRule('bio', 'allow_html', true);
-
 			if($res_id = $form->save($id)){
 
 				$id = $id ? $id : $res_id;
@@ -168,12 +143,12 @@ class Contacts_Admin {
 				}
 
 				// update specialties
-				$model->delete('contact_specialties_link', $id, 'contact_id');
-				$specialties = $form->cv('specialties');
-				foreach($specialties as $specialty){
-					$sql = sprintf('INSERT INTO contact_specialties_link (contact_id, specialty_id) VALUES ("%s", "%s")', $id, $specialty);
-					$model->query($sql);
-				}
+//				$model->delete('contact_specialties_link', $id, 'contact_id');
+//				$specialties = $form->cv('specialties');
+//				foreach($specialties as $specialty){
+//					$sql = sprintf('INSERT INTO contact_specialties_link (contact_id, specialty_id) VALUES ("%s", "%s")', $id, $specialty);
+//					$model->query($sql);
+//				}
 
 				// upload file
 				app()->setConfig('upload_server_path', APPLICATION_PATH.DS.'files'.DS.'contacts'.DS.$id);

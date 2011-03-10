@@ -12,7 +12,7 @@
 						<select id="groups" name="groups[]">
 							<option></option>
 							<?php
-							$options = $this->grabSelectArray('course_groups', 'name', 'DISTINCT', 'name');
+							$options = $this->selectArray('course_groups', 'name', 'DISTINCT', 'name');
 							foreach($options as $option){
 								print '<option value="'.$option['id'].'"'.(in_array($option['id'], $form->cv('groups')) ? ' selected="selected"' : '').'>' . $option['name'] . '</option>';
 							}

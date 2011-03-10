@@ -38,13 +38,13 @@
 				</li>
 				<li>
 					<label for="website">Website:</label>
-					<input type="text" name="website" id="website" value="<?php print empty($form->cv('website')) ? 'http://' : $form->cv('website') ?>" />
+					<input type="text" name="website" id="website" value="<?php print $form->cv('website') == '' ? 'http://' : $form->cv('website') ?>" />
 				</li>
 			</ol>
 			<ol>
 				<li>
 					<label for="address_1">Address:</label>
-					<input type="text" name="address_1" id="address_1" value="<?php print $values['address_1'] ?>" />
+					<input type="text" name="address_1" id="address_1" value="<?php print $form->cv('address_1') ?>" />
 				</li>
 				<li>
 					<label for="city">City:</label>
@@ -68,7 +68,7 @@
 				</li>
 				<li>
 					<label for="telephone_2">Second Telephone:</label>
-					<input type="text" name="telephone_2" id="telephone_2" value="<?php print $values['telephone_2'] ?>" />
+					<input type="text" name="telephone_2" id="telephone_2" value="<?php print $form->cv('telephone_2') ?>" />
 				</li>
 				<li>
 					<label for="fax">Fax:</label>
@@ -89,13 +89,7 @@
 				<li>
 					<label for="groups" class="required">Groups:</label>
 					<select id="groups" name="groups[]" size="7" multiple >
-						<option></option>
-						<?php
-							$options = $this->grabSelectArray('contact_groups', 'name', 'DISTINCT', 'name');
-							foreach($options as $option){
-								print '<option value="'.$option['id'].'"'.(in_array($option['id'], $form->cv('groups')) ? ' selected="selected"' : '').'>' . $option['name'] . '</option>';
-							}
-						?>
+						<?php $this->optionArray( $this->selectArray('contact_groups', 'name', 'DISTINCT', 'name'), $form->cv('groups'), true); ?>
 					</select>
 				</li>
 				<li>
@@ -112,21 +106,15 @@
 				</li>
 				<li>
 					<label for="file_path">Picture:</label>
-					
-					<?php
-				if($images){
-					foreach($images as $image){
-				?>
-				<div>
-					<img src="<?php print router()->getUploadsUrl() . '/contacts/' . $form->cv('id') . '/' . $image['filename_thumb']; ?>" width="<?php print $image['width_thumb']; ?>" height="<?php print $image['height_thumb']; ?>" alt="Contact Profile Picture" />
-					<a href="#" class="delete del-img" id="del-<?php print $image['id']; ?>">Delete</a>
-				</div>
-				<?php
-					}
-				} else { ?>
+					<?php if($images): foreach($images as $image): ?>
+					<div>
+						<img src="<?php print router()->getUploadsUrl() . '/contacts/' . $form->cv('id') . '/' . $image['filename_thumb']; ?>" width="<?php print $image['width_thumb']; ?>" height="<?php print $image['height_thumb']; ?>" alt="Contact Profile Picture" />
+						<a href="#" class="delete del-img" id="del-<?php print $image['id']; ?>">Delete</a>
+					</div>
+					<?php endforeach; else: ?>
 					<img src="/admin/img/no-contact-photo.png" width="100" height="100" alt="No Photo Available" />
 					<input type="file" name="file_path" id="file_path" />
-				<?php } ?>
+					<?php endif; ?>
 				</li>
 			</ol>
 		</fieldset>
@@ -134,6 +122,6 @@
 	</div>
 	<fieldset class="action">
 		<button class="right" type="submit" name="submit"><span><em>Save</em></span></button>
-		<a class="button left" href="<?php print $this->xhtmlUrl('view', false, 'Contacts_Admin'); ?>" title="Click to Cancel"><span>Cancel</span></a>
+		<a class="button left" href="<?php print $this->xhtmlUrl('contacts/view'); ?>" title="Click to Cancel"><span>Cancel</span></a>
 	</fieldset>
 </form>

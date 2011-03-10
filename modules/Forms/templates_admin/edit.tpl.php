@@ -37,7 +37,7 @@
 						<select id="return_page" name="return_page">
 							<option value="0">--</option>
 							<?php
-								$options = $this->grabSelectArray('pages', 'page_title', 'distinct', 'page_title', 'page_id');
+								$options = $this->selectArray('pages', 'page_title', 'distinct', 'page_title', 'page_id');
 								foreach($options as $option){
 								  	print '<option value="'.$option['page_id'].'"'.($form->cv('return_page') == $option['page_id'] ? ' selected="selected"' : '').'>' . $option['page_title'] . '</option>';
 								}
