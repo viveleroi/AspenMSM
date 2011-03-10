@@ -113,7 +113,6 @@
 					<?php
 					if(isset($sections) && is_array($sections) && count($sections)){
 						foreach($sections as $section){
-							
 							print '<li id="editor_'.$section['meta']['id'].'_sort" class="list">' . "\n";
 							director()->loadPageSection($section['meta']['section_type'], false, $section, false, false, $form);
 							print '</li>';

@@ -207,7 +207,7 @@ class News_Admin {
 	 * @param integer $next_id
 	 * @access public
 	 */
-	public function sectionEditor($type = false, $next_id = 1, $section = false, $page_id = false, $template = false){
+	public function sectionEditor($type = false, $next_id = 1, $section = false, $page_id = false, $template = false, $form = false){
 		
 		$template = $template ? $template : $form->cv('page_template');
 		

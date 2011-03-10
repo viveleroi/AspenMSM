@@ -45,15 +45,9 @@
 					<label for="page_template">Page Template:</label>
 					<select id="page_template" name="page_template">
 						<option value="index.php">Default</option>
-						<?php
-						if(isset($templates) && is_array($templates)){
-							foreach($templates as $template){
-						?>
-						<option value="<?php print $template['FILENAME'] ?>"<?php print ($form->cv('page_template') == $template['FILENAME'] ? ' selected' : '')?>><?php print $template['NAME'] ?></option>
-						<?php
-							}
-						}
-						?>
+						<?php if($templates): foreach($templates as $template): ?>
+						<option value="<?php print $template['FILENAME'] ?>"<?php print $form->selected('page_template', $template['FILENAME']); ?>><?php print $template['NAME'] ?></option>
+						<?php endforeach; endif; ?>
 					</select>
 					<a class="help" href="<?php print router()->moduleUrl() ?>/help/settings-page_template.htm" title="Page Template">Help</a>
 				</li>

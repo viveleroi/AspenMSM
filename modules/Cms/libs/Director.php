@@ -54,16 +54,13 @@ class Director {
 	 * @param unknown_type $next_id
 	 */
 	public function loadPageSection($type = false, $next_id = false, $section_data = false, $page_id = false, $template = false, $form = false){
-		
 		$load_sec = false;
-
 		// load the proper module/section info that matches
 		foreach($this->sections as $section){
 			if($section['option_value'] == $type){
 				$load_sec = $section;
 			}
 		}
-		
 		// if we have a matched module, load the proper function
 		if($load_sec){
 			if(isset(app()->{$load_sec['module']}) && method_exists(app()->{$load_sec['module']}, 'sectionEditor')){
@@ -82,14 +79,14 @@ class Director {
 		
 		$sections = array();
 		
-		$post = app()->params->getRawSource('post');
-		
+		$post = post()->getRawSource();
+
 		if(isset($post['page_sections']) && is_array($post['page_sections'])){
 		
 			// first, wipe all section content so that our saves are new
 			foreach($post['page_sections'] as $section){
 				if(array_key_exists($section['section_type'], $this->sections)){
-					model()->query(sprintf('DELETE FROM section_%s WHERE page_id = "%s"', $section['section_type'], $id));
+					model()->open('section_'.$section['section_type'])->delete($id, 'page_id');
 				}
 			}
 		

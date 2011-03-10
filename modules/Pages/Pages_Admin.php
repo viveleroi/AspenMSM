@@ -78,45 +78,18 @@ class Pages_Admin extends Module {
 	public function add(){
 
 		$form = new Form('pages');
-
-		// process the form if submitted
 		if($form->isSubmitted()){
-			
-			$form->setCurrentValue('page_sort_order', ($model->quickValue('SELECT MAX(page_sort_order) FROM pages', 'MAX(page_sort_order)') + 1));
-
-			// form field validation
-			// @a13
-//			if(!$form->isFilled('page_title')){
-//				$form->addError('page_title', 'You must enter a page title.');
-//			}
-
-
-				
-				// set the link text field to the page title if blank
-				// @a13
-//				if(!$form->isFilled('page_link_text')){
-//					$form->setCurrentValue('page_link_text', $form->cv('page_title'));
-//				}
-
 			if($page_id = $form->save()){
-
 				sml()->say('Your page has been created successfully.');
 				router()->redirect('edit', array('id' => $page_id));
-
 			} else {
-
 				sml()->say('An error occurred. Please try again.');
-
 			}
-
 		}
 		
-		$data['values'] 	= $form->getCurrentValues();
+		$data['form']		= $form;
 		$data['templates'] 	= $this->scanTemplateList();
 
-		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
-		template()->addView(template()->getModuleTemplateDir().DS . 'add.tpl.php');
-		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
 		template()->display($data);
 		
 	}
@@ -148,16 +121,9 @@ class Pages_Admin extends Module {
 
 		if($sections){
 			foreach($sections as $section){
-
-				// pull the section for the database
-				$section_results = $model->query(sprintf('SELECT * FROM section_%s WHERE id = "%s"',
-														strtolower($section['section_type']), $section['section_id']));
-				if($section_results->RecordCount()){
-					while($section_content = $section_results->FetchRow()){
-						$data['sections'][$section['id']]['meta'] = $section;
-						$data['sections'][$section['id']]['content'] = $section_content;
-					}
-				}
+				$section_results = model()->open('section_'.strtolower($section['section_type']), $section['section_id']);
+				$data['sections'][$section['id']]['meta'] = $section;
+				$data['sections'][$section['id']]['content'] = $section_results;
 			}
 			$this->section_count = count($data['sections']) - 1;
 		}
@@ -169,15 +135,9 @@ class Pages_Admin extends Module {
 
 		// process the form if submitted
 		if($form->isSubmitted()){
-
-			// form field validation
-			// @a13
-//			if(!$form->isFilled('page_title')){
-//				$form->addError('page_title', 'You must enter a page title.');
-//			}
-
 				
 			// set checkboxes to false if they're not sent from browser
+			// @todo is this really needed?
 			if(!post()->keyExists('show_in_menu')){
 				$form->setCurrentValue('show_in_menu', false);
 			}
@@ -197,7 +157,7 @@ class Pages_Admin extends Module {
 				$model = model()->open('section_list');
 
 				// remove all current sections references
-				$model->query(sprintf('DELETE FROM section_list WHERE page_id = "%s"', $id));
+				$model->delete($id, 'page_id');
 
 				$sections = director()->savePageSections($id);
 
@@ -214,13 +174,11 @@ class Pages_Admin extends Module {
 				}
 
 				sml()->say('Page changes have been saved successfully. ' .
-										template()->link('Edit Again', 'edit', array('id'=>$id)));
+										template()->link('Edit Again', 'edit', array($id)));
 				router()->redirect('view');
 
 			} else {
-
 				sml()->say('An error occurred. Please try again.');
-
 			}
 		}
 
@@ -239,13 +197,11 @@ class Pages_Admin extends Module {
 	 * @access public
 	 */
 	public function saveSection($section, $page_id){
-
 		// loop new section and add into the db
 		if(is_array($section)){
 			if($section['section_type'] == 'basic_editor'){
 				return $this->saveSection_basic($section, $page_id);
 			}
-			
 			if($section['section_type'] == 'imagetext_editor'){
 				return $this->saveSection_imagetext($section, $page_id);
 			}
@@ -302,27 +258,23 @@ class Pages_Admin extends Module {
 			
 		}
 		
-		
 		// save the data back
-		model()->open('section_imagetext_editor')->query(sprintf('
-			INSERT INTO section_imagetext_editor (page_id, title, date_created, content, show_title, image_filename, image_thumbname, image_alt, template)
-			VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")',
-				app()->security->dbescape($page_id),
-				app()->security->dbescape($section['title']),
-				date("Y-m-d H:i:s"),
-				app()->security->dbescape($section['content'], true),
-				app()->security->dbescape($section['show_title']),
-				$filename,
-				$thm_name,
-				app()->security->dbescape($section['image_alt']),
-				app()->security->dbescape($section['template'])
-				));
+		$ins_id = model()->open('section_imagetext_editor')->insert(array(
+			'page_id' => $page_id,
+			'title' => $section['title'], 
+			'content' => $section['content'], 
+			'show_title' => $section['show_title'], 
+			'image_filename' => $filename, 
+			'image_thumbname' => $thm_name,
+			'image_alt' => $section['image_alt'], 
+			'template' => $section['template']
+		));
 		
 		$sections[] = array(
 			'placement_group' => $section['placement_group'],
 			'type' => 'imagetext_editor',
 			'called_in_template' => $section['called_in_template'],
-			'id' => app()->db->Insert_ID());
+			'id' => $ins_id);
 		
 		return $sections;
 		
@@ -339,22 +291,21 @@ class Pages_Admin extends Module {
 	private function saveSection_basic($section, $page_id){
 		
 		$section['show_title'] = isset($section['show_title']) ? $section['show_title'] : false;
-			
-		model()->open('section_basic_editor')->query(sprintf('
-			INSERT INTO section_basic_editor (page_id, title, date_created, content, show_title, template)
-			VALUES ("%s", "%s", "%s", "%s", "%s", "%s")',
-				app()->security->dbescape($page_id),
-				app()->security->dbescape($section['title']),
-				date("Y-m-d H:i:s"),
-				app()->security->dbescape($section['content'], true),
-				app()->security->dbescape($section['show_title']),
-				app()->security->dbescape($section['template'])));
+	
+		// save the data back
+		$ins_id = model()->open('section_basic_editor')->insert(array(
+			'page_id' => $page_id,
+			'title' => $section['title'], 
+			'content' => $section['content'], 
+			'show_title' => $section['show_title'],  
+			'template' => $section['template']
+		));
 		
 		$sections[] = array(
 			'placement_group' => $section['placement_group'],
 			'type' => 'basic_editor',
 			'called_in_template' => $section['called_in_template'],
-			'id' => app()->db->Insert_ID());
+			'id' => $ins_id);
 		
 		return $sections;
 		
@@ -368,8 +319,8 @@ class Pages_Admin extends Module {
 	public function ajax_removeSection($id){
 		$section = model()->open('section_list', $id);
 		if(is_array($section)){
-			$section = model()->open('section_list')->delete('section_'.$section['section_type'], $section['section_id']);
-			$section = model()->open('section_list')->delete('section_list', $id);
+			$section = model()->open('section_'.$section['section_type'])->delete($section['section_id']);
+			$section = model()->open('section_list')->delete($id);
 		}
 	}
 	

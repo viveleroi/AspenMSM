@@ -6,19 +6,13 @@
  */
 class Forms_Admin {
 
-	/**
-	 * @var object $APP Holds a reference to our application
-	 * @access private
-	 */
-	private $APP;
 
-	
 	/**
 	 * @abstract Constructor, initializes the module
 	 * @access public
 	 */
 	public function __construct(){
-		$this->APP = get_instance();
+		template()->addCss('style.css');
 		director()->registerPageSection(__CLASS__, 'Form Display', 'form_display');
 	}
 	
@@ -34,9 +28,6 @@ class Forms_Admin {
 		$model = model()->open('forms');
 		$data['forms'] = $model->results();
 
-		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
-		template()->addView(template()->getModuleTemplateDir().DS . 'index.tpl.php');
-		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
 		template()->display($data);
 
 	}
@@ -47,7 +38,7 @@ class Forms_Admin {
 	 * @access public
 	 */
 	public function add(){
-		$form_id = $model->executeInsert('forms', array('title' => ''));
+		$form_id = model()->open('forms')->insert(array('title' => ''));
 		router()->redirect('edit', array('id'=>$form_id));
 	}
 
@@ -65,31 +56,26 @@ class Forms_Admin {
 		// if form has been submitted
 		if($form->isSubmitted()){
 			
-			if(!$form->isFilled('title')){
-				$form->addError('body', 'You must enter a title.');
-			}
+			// @a13
+//			if(!$form->isFilled('title')){
+//				$form->addError('body', 'You must enter a title.');
+//			}
+//			
+//			if(!$form->isFilled('body')){
+//				$form->addError('body', 'You must enter some content.');
+//			}
 			
-			if(!$form->isFilled('body')){
-				$form->addError('body', 'You must enter some content.');
-			}
-			
-			// if we have no errors, save the record
-			if(!$form->error()){
-
-				// insert a new record with available data
-				if($form->save($id)){
-					sml()->say('Form has been updated successfully.');
-					router()->redirect('view');
-				}
+			// insert a new record with available data
+			if($form->save($id)){
+				sml()->say('Form has been updated successfully.');
+				router()->redirect('view');
 			}
 		}
  
 		// make sure the template has access to all current values
 		$data['form'] = $form;
  
-		template()->addView(template()->getTemplateDir().DS . 'header.tpl.php');
-		template()->addView(template()->getModuleTemplateDir().DS . 'edit.tpl.php');
-		template()->addView(template()->getTemplateDir().DS . 'footer.tpl.php');
+		template()->addJs('edit.js');
 		template()->display($data);
  
 	}
@@ -118,7 +104,7 @@ class Forms_Admin {
 		'structure'=>$form,
 		'hash'=>$hash);
 		
-		$model->executeUpdate('forms', $data, post()->getInt('id'));
+		model()->open('forms')->update($data, post()->getInt('id'));
 
 	}
 	
@@ -204,7 +190,7 @@ class Forms_Admin {
 	 * @access public
 	 */
 	public function delete($id = false){
-		if($model->delete('forms', $id)){
+		if(model()->open('forms')->delete($id)){
 			sml()->say('Your form has successfully been deleted.');
 			router()->redirect('view');
 		}
@@ -217,7 +203,7 @@ class Forms_Admin {
 	 * @param integer $next_id
 	 * @access public
 	 */
-	public function sectionEditor($type = false, $next_id = 1, $section = false, $page_id = false, $template = false){
+	public function sectionEditor($type = false, $next_id = 1, $section = false, $page_id = false, $template = false, $form = false){
 		
 		$template = $template ? $template : $form->cv('page_template');
 		
@@ -248,7 +234,7 @@ class Forms_Admin {
 			$section['link_to_full_page'] = isset($section['link_to_full_page']) ? $section['link_to_full_page'] : false;
 			$section['show_title'] = isset($section['show_title']) ? $section['show_title'] : false;
 			
-			$model->query(sprintf('
+			model()->open('section_form_display')->query(sprintf('
 				INSERT INTO section_form_display (page_id, title, form_id, show_title)
 				VALUES ("%s", "%s", "%s", "%s")',
 					app()->security->dbescape($page_id),
