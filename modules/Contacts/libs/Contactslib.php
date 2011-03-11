@@ -84,14 +84,12 @@ class Contactslib {
 			$section['show_title'] = isset($section['show_title']) ? $section['show_title'] : false;
 			
 			model()->open('section_contacts_display')->query(sprintf('
-				INSERT INTO section_contacts_display (page_id, title, show_title, template, link_to_full_page, detail_page_id, contact_id)
-				VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s")',
+				INSERT INTO section_contacts_display (page_id, title, show_title, template, contact_id)
+				VALUES ("%s", "%s", "%s", "%s", "%s")',
 					app()->security->dbescape($page_id),
 					app()->security->dbescape($section['title']),
 					app()->security->dbescape($section['show_title']),
 					app()->security->dbescape($section['template']),
-					app()->security->dbescape($section['link_to_full_page']),
-					app()->security->dbescape($section['detail_page_id']),
 					app()->security->dbescape($section['contact_id'])));
 					
 			$sections[] = array(
@@ -124,15 +122,13 @@ class Contactslib {
 			$section['show_title'] = isset($section['show_title']) ? $section['show_title'] : false;
 			
 			model()->open('section_contactgroup_display')->query(sprintf('
-				INSERT INTO section_contactgroup_display (page_id, title, show_title, template, group_id, link_to_full_page, detail_page_id, sort_method)
-				VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")',
+				INSERT INTO section_contactgroup_display (page_id, title, show_title, template, group_id, sort_method)
+				VALUES ("%s", "%s", "%s", "%s", "%s", "%s")',
 					app()->security->dbescape($page_id),
 					app()->security->dbescape($section['title']),
 					app()->security->dbescape($section['show_title']),
 					app()->security->dbescape($section['template']),
 					app()->security->dbescape($section['group_id']),
-					app()->security->dbescape($section['link_to_full_page']),
-					app()->security->dbescape($section['detail_page_id']),
 					app()->security->dbescape($section['sort_method'])));
 					
 			$sections[] = array(

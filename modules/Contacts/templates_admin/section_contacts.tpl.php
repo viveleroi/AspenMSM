@@ -51,26 +51,10 @@
 			<li class="auto">
 				<label for="contactgroup_<?php print $next_id ?>_contact_id">Select Contact:</label>
 				<select id="contactgroup_<?php print $next_id ?>_contact_id" name="page_sections[<?php print $next_id ?>][contact_id]">
-				<?php print template()->getSelectOptions( template()->selectArray('contacts', 'last_name', 'DISTINCT', 'last_name'), $section['content']['contact_id'], true); ?>
+				<?php print template()->optionArray( template()->selectArray('contacts', 'last_name', 'DISTINCT', 'last_name'), $section['content']['contact_id'], true); ?>
 				</select>
 				<a class="help" href="<?php print router()->moduleUrl('Contacts_Admin') ?>/help/section-group-select.htm" title="Select Form">Help</a>
 			</li>
-			
-			
-			<li>
-				<label for="contactgroup_<?php print $next_id ?>_link_to_full_page">Link to Full Page:</label>
-				<input id="contactgroup_<?php print $next_id ?>_link_to_full_page" name="page_sections[<?php print $next_id ?>][link_to_full_page]" type="checkbox" value="1" <?php print isset($section['content']['link_to_full_page']) && $section['content']['link_to_full_page'] ? ' checked="checked"' : '' ?> />
-			</li>
-			<li class="auto">
-				<label for="contactgroup_<?php print $next_id ?>_detail_page_id">Detail Page:</label>
-				<select id="contactgroup_<?php print $next_id ?>_detail_page_id" name="page_sections[<?php print $next_id ?>][detail_page_id]">
-				<option value="">Self</option>
-				<?php print app()->Pages_Admin->pageOptionGroups(false, false, $section['content']['detail_page_id'], $section['meta']['page_id']); ?>
-				</select>
-			</li>
-			
-			
-			
 		</ol>
 		<a class="dark-button delete-confirm" href="#" title="Are you sure you want to delete &#8220;<?php print isset($section['content']['title']) ? (empty($section['content']['title']) ? 'Untitled Contact Display' : $section['content']['title']) : 'New Contact Display' ?>&#8221; and all it&#8217;s content?"><span>Delete Section</span></a>
 	</div>
