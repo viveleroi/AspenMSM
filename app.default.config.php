@@ -117,13 +117,6 @@
 	$config['html_purifier_settings'][] = array('Attr', 'EnableID', true);
 	$config['html_purifier_settings'][] = array('Core', 'EscapeNonASCIICharacters', true);
 
-	
-	// load additional classes
-	$config['load_add_core_class'][] = array('classname' => 'Xml', 'folder' => 'formats');
-	//$config['load_add_core_class'][] = array('classname' => 'Json', 'folder' => 'formats');
-	
-//	$config['load_add_core_class'][] = array('classname' => 'Thumbnail', 'autoload' => false);
-
 	// default modules for specific user groups (overrides default_module)
 	$config['usergroup_default_modules'] = array();
 

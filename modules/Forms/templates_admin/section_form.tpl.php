@@ -36,7 +36,7 @@
 			<li class="auto">
 				<label for="form_<?php print $next_id ?>_form_id">Select Form:</label>
 				<select id="form_<?php print $next_id ?>_form_id" name="page_sections[<?php print $next_id ?>][form_id]">
-				<?php print template()->getSelectOptions( template()->selectArray('forms', 'title', 'DISTINCT', 'title'), $section['content']['form_id']); ?>
+				<?php print template()->optionArray( template()->selectArray('forms', 'title', 'DISTINCT', 'title'), $section['content']['form_id']); ?>
 				</select>
 				<a class="help" href="<?php print router()->moduleUrl('Forms_Admin') ?>/help/section-form-select.htm" title="Select Form">Help</a>
 			</li>

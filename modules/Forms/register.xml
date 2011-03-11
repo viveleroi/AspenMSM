@@ -3,4 +3,9 @@
 	<guid>bb0a8240-ed69-11dd-ba2f-0800200c9a66</guid>
 	<classname>Forms</classname>
 	<name>Forms</name>
+	<library>
+		<classname>Formslib</classname>
+		<autoload>true</autoload>
+	</library>
+	<model>forms</model>
 </package>
