@@ -8,17 +8,17 @@
 					if($cur_news){
 						foreach($cur_news as $record){
 				?>
-				<li id="item_<?php print $record['news_id'] ?>_listing">
+				<li id="item_<?php print $record['id'] ?>_listing">
 					<div class="legend">
-						<a id="item_<?php print $record['news_id'] ?>" class="toggle-news open" href="#">Hide</a>
+						<a id="item_<?php print $record['id'] ?>" class="toggle-news open" href="#">Hide</a>
 						<strong><?php print DataDisplay::truncateText($record['title'],5) ?></strong>
 						<span class="icons">
-							<a class="edit" href="<?php print $this->xhtmlUrl('edit', array('id' => $record['news_id'])) ?>" title="Edit this News Item">Edit</a>
-							<a class="delete confirm" href="<?php print $this->xhtmlUrl('delete', array('id' => $record['news_id'])) ?>" title="Are you sure you want to delete this news article?">Delete</a>
-							<a href="#" id="vis_toggle_<?php print $record['news_id'] ?>" class="vis_toggle <?php print $record['public'] ? 'live' : 'private' ?>" title="Click to toggle visibility on live site">Hide</a>
+							<a class="edit" href="<?php print $this->xhtmlUrl('edit', array('id' => $record['id'])) ?>" title="Edit this News Item">Edit</a>
+							<a class="delete confirm" href="<?php print $this->xhtmlUrl('delete', array('id' => $record['id'])) ?>" title="Are you sure you want to delete this news article?">Delete</a>
+							<a href="#" id="vis_toggle_<?php print $record['id'] ?>" class="vis_toggle <?php print $record['public'] ? 'live' : 'private' ?>" title="Click to toggle visibility on live site">Hide</a>
 						</span>
 					</div>
-					<div id="item_<?php print $record['news_id'] ?>_details" class="news-info">
+					<div id="item_<?php print $record['id'] ?>_details" class="news-info">
 						<div class="brief">
 							<p class="dates"><?php print date("D M jS Y", strtotime($record['timestamp'])) ?></p>
 							<?php print $record['summary'] ?>
@@ -44,17 +44,17 @@
 					if($past_news){
 						foreach($past_news as $record){
 				?>
-				<li id="item_<?php print $record['news_id'] ?>_listing">
+				<li id="item_<?php print $record['id'] ?>_listing">
 					<div class="legend">
-						<a id="item_<?php print $record['news_id'] ?>" class="toggle-news open" href="#">Hide</a>
+						<a id="item_<?php print $record['id'] ?>" class="toggle-news open" href="#">Hide</a>
 						<strong><?php print DataDisplay::truncateText($record['title'],5) ?></strong>
 						<span class="icons">
-							<a class="edit" href="<?php print $this->xhtmlUrl('edit', array('id' => $record['news_id'])) ?>" title="Edit this News Item">Edit</a>
-							<a class="delete confirm" href="<?php print $this->xhtmlUrl('delete', array('id' => $record['news_id'])) ?>" title="Are you sure you want to delete this news article?">Delete</a>
-							<a href="#" id="vis_toggle_<?php print $record['news_id'] ?>" class="vis_toggle <?php print $record['public'] ? 'live' : 'private' ?>" title="Click to toggle visibility on live site">Hide</a>
+							<a class="edit" href="<?php print $this->xhtmlUrl('edit', array('id' => $record['id'])) ?>" title="Edit this News Item">Edit</a>
+							<a class="delete confirm" href="<?php print $this->xhtmlUrl('delete', array('id' => $record['id'])) ?>" title="Are you sure you want to delete this news article?">Delete</a>
+							<a href="#" id="vis_toggle_<?php print $record['id'] ?>" class="vis_toggle <?php print $record['public'] ? 'live' : 'private' ?>" title="Click to toggle visibility on live site">Hide</a>
 						</span>
 					</div>
-					<div id="item_<?php print $record['news_id'] ?>_details" class="news-info">
+					<div id="item_<?php print $record['id'] ?>_details" class="news-info">
 						<div class="brief">
 							<p class="dates"><?php print date("D M jS Y", strtotime($record['timestamp'])) ?></p>
 							<?php print $record['summary'] ?>

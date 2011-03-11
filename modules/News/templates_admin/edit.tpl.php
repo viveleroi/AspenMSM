@@ -1,4 +1,8 @@
+	<?php if($form->cv('id')): ?>
 	<h2><span>Currently Editing:</span> <?php print $form->cv('title'); ?></h2>
+	<?php else: ?>
+	<h2>Add News Item</h2>
+	<?php endif; ?>
 	<?= $form->printErrors(); ?>
 	<?= sml()->printMessage(); ?>
 	<form action="<?php print $this->action(); ?>" method="post" enctype="multipart/form-data">
@@ -29,21 +33,25 @@
 					</li>
 				</ol>
 				<ol>
+					<?php if($form->cv('id')): ?>
 					<li>
 						<label for="pdf_filename">PDF Attachment:</label>
-						<div class="attachment"><?php print $this->truncateFilename($form->cv('pdf_filename'), 35); ?></div>
+						<div class="attachment"><?php print DataDisplay::truncateFilename($form->cv('pdf_filename'), 35); ?></div>
 					</li>
+					<?php endif; ?>
 					<li>
-						<label>Replace File:</label>
+						<label><?php if($form->cv('id')): ?>Replace File:<?php else: ?>Upload File<?php endif; ?></label>
 						<input type="file" name="pdf_filename" id="pdf_filename" />
 						<a class="help" href="<?php print router()->moduleUrl() ?>/help/news-pdf_attachment.htm" title="PDF Attachment">Help</a>
 					</li>
 				</ol>
 			</fieldset>
-			<a class="dark-button confirm" href="<?php print $this->xhtmlUrl('delete', array('id' => $form->cv('news_id'))); ?>" title="Delete "><span>Delete</span></a>
+			<?php if($form->cv('id')): ?>
+			<a class="dark-button confirm" href="<?php print $this->xhtmlUrl('delete', array('id' => $form->cv('id'))); ?>" title="Delete "><span>Delete</span></a>
+			<?php endif; ?>
 		</div>
 		<fieldset class="action">
 			<button class="right" type="submit" name="submit"><span><em>Save</em></span></button>
-			<a class="button left" href="<?php print $this->xhtmlUrl('view', false, 'News'); ?>" title="Click to Cancel"><span>Cancel</span></a>
+			<a class="button left" href="<?php print $this->xhtmlUrl('news/view'); ?>" title="Click to Cancel"><span>Cancel</span></a>
 		</fieldset>
 	</form>

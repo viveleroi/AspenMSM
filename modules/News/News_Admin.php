@@ -54,53 +54,7 @@ class News_Admin {
 	 * @access public
 	 */
 	public function add(){
-		
-		template()->addCss('admin/datepicker.css');
-		template()->addJs('admin/datepicker.js');
-		template()->addJs('edit.js');
- 
-		$form = new Form('news');
-		$form->setCurrentValue('timestamp', date("Y-m-d H:i:s"));
- 
-		// if form has been submitted
-		if($form->isSubmitted()){
-			
-			// @a13
-//			if(!$form->isFilled('title')){
-//				$form->addError('body', 'You must enter a title.');
-//			}
-//			
-//			if(!$form->isFilled('body')){
-//				$form->addError('body', 'You must enter some content.');
-//			}
-			
-			$file = files()->upload('pdf_filename');
-
-			$form->setCurrentValue('user_id', session()->getInt('user_id'));
-			$form->setCurrentValue('public', 1);
-
-			if(isset($file[0]) && is_array($file[0])){
-				$form->setCurrentValue('pdf_filename', $file[0]['file_name']);
-			}
-
-			// set html security rules
-			// @a13
-//			$model->setSecurityRule('body', 'allow_html', true);
-
-			// insert a new record with available data
-			if($form->save()){
-				// if successful insert, redirect to the list
-				sml()->say('News entry has successfully been added.');
-				router()->redirect('view');
-			}
-			
-		}
- 
-		// make sure the template has access to all current values
-		$data['form'] = $form;
-
-		template()->display($data);
- 
+		$this->edit();
 	}
 
 	
@@ -111,42 +65,25 @@ class News_Admin {
 	 * @access public
 	 */
 	public function edit($id = false){
-		
-		template()->addCss('admin/datepicker.css');
-		template()->addJs('admin/datepicker.js');
-		template()->addJs('edit.js');
-		
+
 		if(!files()->setUploadDirectory()){
 			sml()->say("The file upload directory does not appear to be writable. Please create the folder and set proper permissions.");
 		}
 
 		$form = new Form('news', $id);
+		if(!$id){
+			$form->setCurrentValue('timestamp', date("Y-m-d H:i:s"));
+		}
  
 		// if form has been submitted
 		if($form->isSubmitted()){
-			
-			// @a13
-//			if(!$form->isFilled('title')){
-//				$form->addError('body', 'You must enter a title.');
-//			}
-//			
-//			if(!$form->isFilled('body')){
-//				$form->addError('body', 'You must enter some content.');
-//			}
-			
 			
 			$file = files()->upload('pdf_filename');
 			if(is_array($file) && !empty($file[0])){
 				$form->setCurrentValue('pdf_filename', $file[0]['file_name']);
 			}
 
-			// set html security rules
-			// @a13
-//			$model->setSecurityRule('body', 'allow_html', true);
-
-			// insert a new record with available data
 			if($form->save($id)){
-				// if successful insert, redirect to the list
 				sml()->say('News entry has successfully been updated.');
 				router()->redirect('view');
 			}
@@ -155,6 +92,9 @@ class News_Admin {
 		// make sure the template has access to all current values
 		$data['form'] = $form;
 
+		template()->addCss('admin/datepicker.css');
+		template()->addJs('admin/datepicker.js');
+		template()->addJs('edit.js');
 		template()->display($data);
  
 	}
@@ -166,7 +106,7 @@ class News_Admin {
 	 * @access public
 	 */
 	public function delete($id = false){
-		if(model()->open('news')->delete($id, 'news_id')){
+		if(model()->open('news')->delete($id)){
 			sml()->say('News entry has successfully been deleted.');
 			router()->redirect('view');
 		}
@@ -180,14 +120,13 @@ class News_Admin {
 	 * @access public
 	 */
 	public function ajax_toggleDisplay($id){
-		
+
 		// obtain original state
 		$public = 0;
-		$record = model()->open('news')->quickSelectSingle($id, 'news_id');
-		
+		$record = model()->open('news', $id);
 		if($record){
 			$public = ($record['public'] == 1 ? 0 : 1);
-			model()->open('news')->update(array('public'=>$public), $id, 'news_id');
+			model()->open('news')->update(array('public'=>$public), $id);
 		}
 		
 		$xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'."\n";
@@ -272,7 +211,7 @@ class News_Admin {
 		
 		$sql = '
 			CREATE TABLE `news` (
-			  `news_id` int(10) unsigned NOT NULL auto_increment,
+			  `id` int(10) unsigned NOT NULL auto_increment,
 			  `user_id` int(10) unsigned NOT NULL,
 			  `title` varchar(255) NOT NULL,
 			  `summary` varchar(255) NOT NULL,
@@ -280,7 +219,7 @@ class News_Admin {
 			  `pdf_filename` varchar(255) NOT NULL,
 			  `timestamp` datetime NOT NULL,
 			  `public` tinyint(1) NOT NULL,
-			  PRIMARY KEY  (`news_id`)
+			  PRIMARY KEY  (`id`)
 			) ENGINE=MyISAM DEFAULT CHARSET=latin1;';
 		$success = $model->query($sql);
 		

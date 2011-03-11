@@ -114,7 +114,7 @@ class News {
 				// pull news
 				$model = model()->open('news');
 				$model->where('public', 1);
-				$model->orderBy('news_id', 'ASC');
+				$model->orderBy('id', 'ASC');
 				if($section_content['display_num']){
 					$model->limit(0, $section_content['display_num']);
 				}

@@ -17,7 +17,7 @@ if(is_array($content['news'])){
 foreach($content['news'] as $news){
 	$date = template()->niceDate($news['timestamp'], "n/j/y", '-', true);
 	$detail_page = $content['detail_page_id'] ? $content['detail_page_id'] : $page['page_id'];
-	$link = app()->url($detail_page, false, array('id' => $news['news_id']));
+	$link = app()->url($detail_page, false, array('id' => $news['id']));
 ?>
 	<li>
 		<h5><span class="date"><?php print $date ?></span>
@@ -36,7 +36,7 @@ foreach($content['news'] as $news){
 <?php
 foreach($content['news'] as $news){
 	$date = template()->niceDate($news['timestamp'], "n/j/y", '-', true);
-	$link = app()->url(app()->config('news_page_id'), false, array('id' => $news['news_id']));
+	$link = app()->url(app()->config('news_page_id'), false, array('id' => $news['id']));
 	$title = sprintf('<h4><span class="date">%s</span> %s</h4>', $date, $news['title']);
 ?>
 	<?php print $title; ?>
