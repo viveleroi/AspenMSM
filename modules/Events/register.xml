@@ -17,7 +17,7 @@
 	</targetApplication>
 	<model>events</model>
 	<library>
-		<classname>Events</classname>
+		<classname>Eventslib</classname>
 		<autoload>true</autoload>
 	</library>
 </package>

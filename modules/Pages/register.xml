@@ -18,7 +18,7 @@
 	<model>pages</model>
 	<model>section_basic_editor</model>
 	<library>
-		<classname>Pages</classname>
+		<classname>Pageslib</classname>
 		<autoload>true</autoload>
 	</library>
 </package>

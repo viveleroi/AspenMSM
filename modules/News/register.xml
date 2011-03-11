@@ -17,7 +17,7 @@
 	</targetApplication>
 	<model>news</model>
 	<library>
-		<classname>News</classname>
+		<classname>Newslib</classname>
 		<autoload>true</autoload>
 	</library>
 </package>
