@@ -183,7 +183,7 @@ class Cms_lib {
 			$final_page = $this->findPageFromHeirarchy($uri);
 		} else {
 			$final_page = array();
-			$final_page['page'] = $model->quickSelectSingle('pages', app()->settings->getConfig('home_page'), 'page_id');
+			$final_page['page'] = model()->open('pages')->quickSelectSingle(app()->settings->getConfig('home_page'), 'page_id');
 			$final_page['bits'] = array();
 		}
 		

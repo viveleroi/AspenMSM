@@ -15,8 +15,6 @@ class Contacts_Admin {
 	 */
 	public function __construct(){
 		template()->addCss('style.css');
-		director()->registerPageSection(__CLASS__, 'Contact Display', 'contacts_display');
-		director()->registerPageSection(__CLASS__, 'Contact Group Display', 'contactgroup_display');
 		app()->setConfig('enable_uploads', true); // enable uploads
 	}
 
@@ -70,9 +68,6 @@ class Contacts_Admin {
 			if($res_id = $form->save($id)){
 
 				$id = $id ? $id : $res_id;
-
-//				$model = model()->open('contacts');
-
 
 				// upload file
 				app()->setConfig('upload_server_path', APPLICATION_PATH.DS.'files'.DS.'contacts'.DS.$id);
@@ -192,135 +187,6 @@ class Contacts_Admin {
 	
 	
 	/**
-	 * @abstract Displays page section editing form
-	 * @param array $section
-	 * @param integer $next_id
-	 * @access public
-	 */
-	public function sectionEditor($type = false, $next_id = 1, $section = false, $page_id = false, $template = false, $form = false){
-		
-		$template = $template ? $template : $form->cv('page_template');
-		
-		$next_id = isset($section['meta']['id']) ? $section['meta']['id'] : $next_id;
-		$model = model()->open('template_placement_group');
-		$model->where('template', $template);
-		$placement_groups = $model->results();
-		
-		if($type == 'contacts_display'){
-			$templates = app()->display->sectionTemplates('modules/contacts/contacts');
-			include(dirname(__FILE__).DS.'templates_admin'.DS.'section_contacts.tpl.php');
-		} else {
-			$templates = app()->display->sectionTemplates('modules/contacts/groups');
-			include(dirname(__FILE__).DS.'templates_admin'.DS.'section_group.tpl.php');
-		}
-		
-	}
-	
-	
-	/**
-	 * @abstract Saves event display content to the database
-	 * @param string $type
-	 * @param integer $id
-	 * @return array
-	 * @access public
-	 */
-	public function saveSection($section, $page_id){
-
-		// loop new section and add into the db
-		if(is_array($section)){
-			if($section['section_type'] == 'contacts_display'){
-				return $this->saveSection_contact($section, $page_id);
-			}
-			
-			if($section['section_type'] == 'contactgroup_display'){
-				return $this->saveSection_group($section, $page_id);
-			}
-		}
-	}
-	
-	
-	/**
-	 * Enter description here...
-	 *
-	 * @param unknown_type $section
-	 * @param unknown_type $page_id
-	 * @return unknown
-	 */
-	public function saveSection_contact($section, $page_id){
-		
-		$sections = array();
-
-		// loop new section and add into the db
-		if(is_array($section)){
-			
-			$section['show_title'] = isset($section['show_title']) ? $section['show_title'] : false;
-			
-			model()->open('section_contacts_display')->query(sprintf('
-				INSERT INTO section_contacts_display (page_id, title, show_title, template, link_to_full_page, detail_page_id, contact_id)
-				VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s")',
-					app()->security->dbescape($page_id),
-					app()->security->dbescape($section['title']),
-					app()->security->dbescape($section['show_title']),
-					app()->security->dbescape($section['template']),
-					app()->security->dbescape($section['link_to_full_page']),
-					app()->security->dbescape($section['detail_page_id']),
-					app()->security->dbescape($section['contact_id'])));
-					
-			$sections[] = array(
-				'placement_group' => $section['placement_group'],
-				'type' => 'contacts_display',
-				'called_in_template' => $section['called_in_template'],
-				'id' => app()->db->Insert_ID());
-		
-		}
-		
-		return $sections;
-		
-	}
-	
-	
-	/**
-	 * Enter description here...
-	 *
-	 * @param unknown_type $section
-	 * @param unknown_type $page_id
-	 * @return unknown
-	 */
-	public function saveSection_group($section, $page_id){
-		
-		$sections = array();
-
-		// loop new section and add into the db
-		if(is_array($section)){
-			
-			$section['show_title'] = isset($section['show_title']) ? $section['show_title'] : false;
-			
-			model()->open('section_contactgroup_display')->query(sprintf('
-				INSERT INTO section_contactgroup_display (page_id, title, show_title, template, group_id, link_to_full_page, detail_page_id, sort_method)
-				VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")',
-					app()->security->dbescape($page_id),
-					app()->security->dbescape($section['title']),
-					app()->security->dbescape($section['show_title']),
-					app()->security->dbescape($section['template']),
-					app()->security->dbescape($section['group_id']),
-					app()->security->dbescape($section['link_to_full_page']),
-					app()->security->dbescape($section['detail_page_id']),
-					app()->security->dbescape($section['sort_method'])));
-					
-			$sections[] = array(
-				'placement_group' => $section['placement_group'],
-				'type' => 'contactgroup_display',
-				'called_in_template' => $section['called_in_template'],
-				'id' => app()->db->Insert_ID());
-		
-		}
-		
-		return $sections;
-		
-	}
-	
-	
-	/**
 	 * @abstract Adds a new group
 	 * @param string $name
 	 */
@@ -340,17 +206,17 @@ class Contacts_Admin {
 	 * @abstract Adds a new group
 	 * @param string $name
 	 */
-	public function ajax_sortGroup($group_id, $ul){
+	public function ajax_sortGroup($contact_group_id, $ul){
 		$success = false;
 		$model = model()->open('contact_groups_link');
-		$sql = 'UPDATE contact_groups_link SET sort_order = "%d" WHERE contact_id = "%d" AND group_id = "%s"';
+		$sql = 'UPDATE contact_groups_link SET sort_order = "%d" WHERE contact_id = "%d" AND contact_group_id = "%s"';
 		if(is_array($ul)){
 			foreach($ul as $key => $contact){
-				$model->query( sprintf($sql, (int)$key, (int)$contact, (int)$group_id) );
+				$model->query( sprintf($sql, (int)$key, (int)$contact, (int)$contact_group_id) );
 			}
 			$success = true;
 		}
-		print json_encode( array('success'=>$success, 'group_id'=>$group_id) );
+		print json_encode( array('success'=>$success, 'contact_group_id'=>$contact_group_id) );
 	}
 	
 	
@@ -364,7 +230,7 @@ class Contacts_Admin {
 		if($id && ctype_digit($id)){
 			$result = model()->open('contact_groups')->delete($id);
 			if($result){
-				$result = model()->open('contact_groups_link')->delete($id, 'group_id');
+				$result = model()->open('contact_groups_link')->delete($id, 'contact_group_id');
 			}
 		}
 		
@@ -389,7 +255,7 @@ class Contacts_Admin {
 			// first, ensure the contact is not already in the group
 			$model = model()->open('contact_groups_link');
 			$model->where('contact_id', $contact);
-			$model->where('group_id', $group);
+			$model->where('contact_group_id', $group);
 			$contact_exists = $model->results();
 			
 			if($contact_exists){
@@ -400,7 +266,7 @@ class Contacts_Admin {
 				}
 			} else {
 				// if not, add the new contact
-				$result = $id = $model->insert(array('contact_id'=>$contact,'group_id'=>$group));
+				$result = $id = $model->insert(array('contact_id'=>$contact,'contact_group_id'=>$group));
 			}
 			
 			$contact = model()->open('contacts', $contact);
@@ -416,11 +282,11 @@ class Contacts_Admin {
 	 * @abstract Deletes a group
 	 * @param integer $id
 	 */
-	public function ajax_removeContactFromGroup($id = false, $group_id = false){
+	public function ajax_removeContactFromGroup($id = false, $contact_group_id = false){
 	
 		$result = false;
-		if($id && $group_id){
-			$sql = sprintf('DELETE FROM contact_groups_link WHERE contact_id = "%s" AND contact_group_id = "%s"', $id, $group_id);
+		if($id && $contact_group_id){
+			$sql = sprintf('DELETE FROM contact_groups_link WHERE contact_id = "%s" AND contact_contact_group_id = "%s"', $id, $contact_group_id);
 			$result = model()->open('contact_groups_link')->query($sql);
 		}
 		
@@ -555,7 +421,7 @@ class Contacts_Admin {
 			CREATE TABLE IF NOT EXISTS `contact_groups_link` (
 			  `id` int(10) unsigned NOT NULL auto_increment,
 			  `contact_id` int(10) unsigned NOT NULL,
-			  `group_id` int(10) unsigned NOT NULL,
+			  `contact_group_id` int(10) unsigned NOT NULL,
 			  `sort_order` int(11) NOT NULL,
 			  PRIMARY KEY  (`id`)
 			) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
@@ -658,7 +524,7 @@ class Contacts_Admin {
 			  `title` varchar(255) NOT NULL default '',
 			  `show_title` tinyint(1) NOT NULL default '1',
 			  `template` varchar(155) NOT NULL,
-			  `group_id` int(11) NOT NULL,
+			  `contact_group_id` int(11) NOT NULL,
 			  `sort_method` enum('sort_order','alpha') NOT NULL default 'sort_order',
 			  PRIMARY KEY  (`id`)
 			) ENGINE=MyISAM  DEFAULT CHARSET=latin1;";
@@ -678,7 +544,7 @@ class Contacts_Admin {
 		$success = $model->query($sql);
 
 
-		$sql = "INSERT INTO `permissions` (`user_id`, `group_id`, `interface`, `module`, `method`) VALUES (0, 2, 'Admin', 'Contacts', '*');";
+		$sql = "INSERT INTO `permissions` (`user_id`, `contact_group_id`, `interface`, `module`, `method`) VALUES (0, 2, 'Admin', 'Contacts', '*');";
 		$success = $model->query($sql);
 
 		// Autoload this class with the Pages module

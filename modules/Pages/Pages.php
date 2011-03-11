@@ -7,12 +7,6 @@
  */
 class Pages {
 
-	/**
-	 * @var object Holds our original application
-	 * @access private
-	 */
-	private $APP;
-
 
 	/**
 	 * @abstract Constructor, initializes the module
@@ -20,7 +14,6 @@ class Pages {
 	 * @access public
 	 */
 	public function __construct(){
-		$this->APP = get_instance();
 		director()->registerCmsSection(__CLASS__, 'basic_editor');
 		director()->registerCmsSection(__CLASS__, 'imagetext_editor');
 	}
@@ -53,21 +46,16 @@ class Pages {
 		$data = array();
 	
 		// pull the section for the database
-		$section_results = $model->query(sprintf('SELECT * FROM section_basic_editor WHERE id = "%s"', $section_data['section_id']));
-		if($section_results->RecordCount()){
-			while($section_content = $section_results->FetchRow()){
-				
-				$section_content['type'] = $section_data['section_type'];
-				$section_content['placement_group'] = $section_data['group_name'];
-				$data['section'] = $section_content;
-				
-				if(!$section_data['called_in_template']){
-					$data['content'] = $section_content;
-				}
-				
-			}
-		}
+		$section_content = model()->open('section_basic_editor', $section_data['section_id']);
 
+		$section_content['type'] = $section_data['section_type'];
+		$section_content['placement_group'] = $section_data['group_name'];
+		$data['section'] = $section_content;
+
+		if(!$section_data['called_in_template']){
+			$data['content'] = $section_content;
+		}
+			
 		return $data;
 	}
 	
@@ -83,19 +71,14 @@ class Pages {
 		$data = array();
 	
 		// pull the section for the database
-		$section_results = $model->query(sprintf('SELECT * FROM section_imagetext_editor WHERE id = "%s"', $section_data['section_id']));
-		if($section_results->RecordCount()){
-			while($section_content = $section_results->FetchRow()){
+		$section_content = model()->open('section_imagetext_editor', $section_data['section_id']);
 				
-				$section_content['type'] = $section_data['section_type'];
-				$section_content['placement_group'] = $section_data['group_name'];
-				$data['section'] = $section_content;
-				
-				if(!$section_data['called_in_template']){
-					$data['content'] = $section_content;
-				}
-				
-			}
+		$section_content['type'] = $section_data['section_type'];
+		$section_content['placement_group'] = $section_data['group_name'];
+		$data['section'] = $section_content;
+
+		if(!$section_data['called_in_template']){
+			$data['content'] = $section_content;
 		}
 
 		return $data;
