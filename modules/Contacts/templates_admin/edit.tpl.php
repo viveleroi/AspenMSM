@@ -88,20 +88,22 @@
 			<ol>
 				<li>
 					<label for="groups" class="required">Groups:</label>
-					<select id="groups" name="groups[]" size="7" multiple >
-						<?php $this->optionArray( $this->selectArray('contact_groups', 'name', 'DISTINCT', 'name'), $form->cv('groups'), true); ?>
+					<select id="groups" name="Contact_groups[]" size="7" multiple="multiple">
+						<option></option>
+						<?php $options = $this->selectArray('contact_groups', 'name', 'DISTINCT', 'name'); ?>
+						<?php if($options): foreach($options as $option): ?>
+						<option value="<?= $option['id']; ?>"<?= $form->selected('Contact_groups', $option['id']); ?>><?= $option['name']; ?></option>
+						<?php endforeach; endif; ?>
 					</select>
 				</li>
 				<li>
 					<label for="languages" class="required">Languages:</label>
-					<select id="languages" name="languages[]" size="7" multiple>
-					</select>
+					<select id="languages" name="Contact_languages[]" size="7" multiple="multiple"></select>
 					<a href="#" id="manage-langs">Manage Languages</a>
 				</li>
 				<li>
 					<label for="specialties" class="required">Specialties:</label>
-					<select id="specialties" name="specialties[]"  size="7" multiple>
-					</select>
+					<select id="specialties" name="Contact_specialties[]"  size="7" multiple="multiple"></select>
 					<a href="#" id="manage-specialties">Manage Specialties</a>
 				</li>
 				<li>

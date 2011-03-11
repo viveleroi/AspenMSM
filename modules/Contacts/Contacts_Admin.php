@@ -63,78 +63,16 @@ class Contacts_Admin {
 		
 		template()->addJs('edit.js');
 
-		$form = new Form('contacts', $id);
-
-		// grab existing language settings
-		$model = model()->open('contact_languages_link');
-		$model->where('contact_id', $id);
-		$languages_records = $model->results();
-		
-		$languages = array();
-		if($languages_records){
-			$languages = Utils::extract('{n}.language_id', $languages_record);
-		}
-		$form->addField('languages', $languages, $languages);
-
-
-		// grab existing groups settings
-		$model = model()->open('contact_groups_link');
-		$model->where('contact_id', $id);
-		$groups_records = $model->results();
-
-		$groups = array();
-		if($groups_records){
-			$groups = Utils::extract('{n}.group_id', $groups_records);
-		}
-		$form->addField('groups', $groups, $groups);
-
-
-		// grab existing specialty settings
-//		$model = model()->open('contact_specialties_link');
-//		$model->where('contact_id', $id);
-//		$specs_records = $model->results();
-//
-//		$specialties = array();
-//		if($specs_records){
-//			foreach($specs_records as $specs_record){
-//				$specialties[] = $specs_record['specialty_id'];
-//			}
-//		}
-//		$form->addField('specialties', $specialties, $specialties);
-
+		$form = new Form('contacts', $id, array('contact_languages','contact_groups','contact_specialties'));
 
 		// proces the form if submitted
 		if($form->isSubmitted()){
 			if($res_id = $form->save($id)){
 
 				$id = $id ? $id : $res_id;
-				
-				// @todo cleanup all of this
-				$model = model()->open('contacts');
 
-				// update languages
-				$model->delete('contact_languages_link', $id, 'contact_id');
-				$languages = $form->cv('languages');
-				foreach($languages as $language){
-					$sql = sprintf('INSERT INTO contact_languages_link (contact_id, language_id) VALUES ("%s", "%s")', $id, $language);
-					$model->query($sql);
-				}
+//				$model = model()->open('contacts');
 
-				// update groups
-				$model->delete('contact_groups_link', $id, 'contact_id');
-				$groups = $form->cv('groups');
-				foreach($groups as $group){
-					$sql = sprintf('INSERT INTO contact_groups_link (contact_id, group_id) VALUES ("%s", "%s")', $id, $group);
-					$model->query($sql);
-				}
-
-				// update specialties
-//				$model->delete('contact_specialties_link', $id, 'contact_id');
-//				$specialties = $form->cv('specialties');
-//				foreach($specialties as $specialty){
-//					$sql = sprintf('INSERT INTO contact_specialties_link (contact_id, specialty_id) VALUES ("%s", "%s")', $id, $specialty);
-//					$model->query($sql);
-//				}
 
 				// upload file
 				app()->setConfig('upload_server_path', APPLICATION_PATH.DS.'files'.DS.'contacts'.DS.$id);
@@ -185,8 +123,7 @@ class Contacts_Admin {
 						$orig_create->save($orig_path);
 
 						// store image and thumb info to database
-						$model->executeInsert('contact_images',
-																array(
+						model()->open('contact_images')->insert(array(
 																	'contact_id'=>$id,
 																	'filename_orig'=>$orig_name,
 																	'filename_thumb'=>$thm_name,
@@ -199,7 +136,7 @@ class Contacts_Admin {
 					}
 				}
 
-			  sml()->say('Contact changes have been saved successfully.');
+				sml()->say('Contact changes have been saved successfully.');
 				router()->redirect('view');
 
 			}
@@ -391,7 +328,7 @@ class Contacts_Admin {
 	
 		$id = false;
 		if(!empty($name)){
-			$id = $model->executeInsert('contact_groups', array('name'=>$name));
+			$id = model()->open('contact_groups')->insert(array('name'=>$name));
 		}
 		
 		print json_encode( array('success'=>(bool)$id, 'id'=>$id, 'name'=>$name) );
@@ -483,7 +420,7 @@ class Contacts_Admin {
 	
 		$result = false;
 		if($id && $group_id){
-			$sql = sprintf('DELETE FROM contact_groups_link WHERE contact_id = "%s" AND group_id = "%s"', $id, $group_id);
+			$sql = sprintf('DELETE FROM contact_groups_link WHERE contact_id = "%s" AND contact_group_id = "%s"', $id, $group_id);
 			$result = model()->open('contact_groups_link')->query($sql);
 		}
 		
@@ -499,7 +436,7 @@ class Contacts_Admin {
 	public function ajax_listLanguages($id = false){
 
 		$sql = sprintf('
-			SELECT contact_languages.*, IF(contact_languages.id IN (SELECT language_id FROM contact_languages_link WHERE contact_id = "%s"), 1, 0 ) as selected
+			SELECT contact_languages.*, IF(contact_languages.id IN (SELECT contact_language_id FROM contact_languages_link WHERE contact_id = "%s"), 1, 0 ) as selected
 			FROM contact_languages
 			ORDER BY contact_languages.language ASC', $id);
 		$languages = model()->open('contact_languages')->results(false, $sql);
@@ -516,7 +453,7 @@ class Contacts_Admin {
 	public function ajax_listSpecialties($id = false){
 
 		$sql = sprintf('
-			SELECT contact_specialties.*, IF(contact_specialties.id IN (SELECT specialty_id FROM contact_specialties_link WHERE contact_id = "%s"), 1, 0 ) as selected
+			SELECT contact_specialties.*, IF(contact_specialties.id IN (SELECT contact_specialty_id FROM contact_specialties_link WHERE contact_id = "%s"), 1, 0 ) as selected
 			FROM contact_specialties
 			ORDER BY contact_specialties.specialty ASC', $id);
 		$specialties = model()->open('contact_specialties')->results(false, $sql);
