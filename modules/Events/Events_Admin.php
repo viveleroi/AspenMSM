@@ -24,77 +24,28 @@ class Events_Admin {
 	 * @access public
 	 */
 	public function view(){
-		
-		template()->addJs('view.js');
-		
+
 		$model = model()->open('events');
+		$model->contains('event_groups');
 		$model->whereFuture('CONCAT(start_date," ", start_time)');
 		$model->where('recurring', 0);
 		$model->orderBy('id', 'DESC', 'events:list');
 		$data['cur_events'] = $model->results();
-
-		// attach groups
-		if($data['cur_events']){
-			foreach($data['cur_events'] as $key => $event){
-				$model = model()->open('event_groups');
-				$model->leftJoin('event_groups_link','group_id', 'id', array('event_id'));
-				$model->where('event_groups_link.event_id', $event['id']);
-				$model->orderBy('event_groups.name');
-				$groups = $model->results();
-	
-				if($groups){
-					foreach($groups as $group){
-						$data['cur_events'][$key]['groups'][] = $group['name'];
-					}
-				}
-			}
-		}
 		
-		$model = model()->open('events');
+		$model->select();
+		$model->contains('event_groups');
 		$model->wherePast('CONCAT(start_date," ", start_time)');
 		$model->where('recurring', 0);
 		$model->orderBy('id', 'DESC', 'events:list');
 		$data['past_events'] = $model->results();
 
-		// attach groups
-		if($data['past_events']){
-			foreach($data['past_events'] as $key => $event){
-				$model = model()->open('event_groups');
-				$model->leftJoin('event_groups_link','group_id', 'id', array('event_id'));
-				$model->where('event_id', $event['id']);
-				$model->orderBy('name');
-				$groups = $model->results();
-	
-				if($groups){
-					foreach($groups as $group){
-						$data['past_events'][$key]['groups'][] = $group['name'];
-					}
-				}
-			}
-		}
-
-		$model = model()->open('events');
+		$model->select();
+		$model->contains('event_groups');
 		$model->where('recurring', 1);
 		$model->orderBy('id', 'DESC', 'events:list');
 		$data['recurring_events'] = $model->results();
 
-		// attach groups
-		if($data['recurring_events']){
-			foreach($data['recurring_events'] as $key => $event){
-				$model = model()->open('event_groups');
-				$model->leftJoin('event_groups_link','group_id', 'id', array('event_id'));
-				$model->where('event_id', $event['id']);
-				$model->orderBy('name');
-				$groups = $model->results();
-	
-				if($groups){
-					foreach($groups as $group){
-						$data['recurring_events'][$key]['groups'][] = $group['name'];
-					}
-				}
-			}
-		}
-
+		template()->addJs('view.js');
 		template()->display($data);
 		
 	}
@@ -116,32 +67,6 @@ class Events_Admin {
 			$form->setDefaultValue($field . '_time', $time);
 		}
 	}
-	
-	
-	/**
-	 * @abstract Validates incoming form data
-	 * @access private
-	 */
-	private function validate(){
-		// @a13
-//		if(!$form->isFilled('title')){
-//			$form->addError('title', 'You must enter a title.');
-//		}
-//		
-//		if(!$form->isFilled('recurring') && !$form->isDate('start_date')){
-//			$form->addError('start_date', 'Please enter a valid start date.');
-//		}
-//		
-//		if($form->isFilled('end_date')){
-//			if($form->isDate('end_date')){
-//				if(strtotime($form->cv('start_date')) > strtotime($form->cv('end_date'))){
-//					$form->addError('content', 'Please choose a starting date that occurs before the end date.');
-//				}
-//			} else {
-//				$form->addError('end_date', 'Please enter a valid end date.');
-//			}
-//		}
-	}
 
 
 	/**
@@ -154,10 +79,9 @@ class Events_Admin {
 		template()->addJs('admin/datepicker.js');
 		template()->addJs('edit.js');
 
-		$form = new Form('events');
+		$form = new Form('events', false, array('event_groups'));
 		$form->setDefaultValue('start_date', date("Y-m-d"));
 		$form->setDefaultValue('end_date', '');
-		$form->addField('groups', array(), array());
 		$form->addField('start_hour');
 		$form->addField('start_minute');
 		$form->addField('start_ampm');
@@ -178,33 +102,11 @@ class Events_Admin {
 				$form->setCurrentValue('end_date', '');
 			}
 
-			// validation
-//			$this->validate();
-
-			// set security rules
-			// @a13
-//			$model->setSecurityRule('content', 'allow_html', true);
-//			$form->setCurrentValue('public', 1);
-
 			if($id = $form->save()){
-
-				// update groups
-				// @todo update this
-				$groups = $form->cv('groups');
-				if(is_array($groups)){
-					foreach($groups as $group){
-						$sql = sprintf('INSERT INTO event_groups_link (event_id, group_id) VALUES ("%s", "%s")', $id, $group);
-						$model->query($sql);
-					}
-				}
-
 				sml()->say('Event entry has successfully been added.');
 				router()->redirect('view');
-
 			} else {
-
 				sml()->say('An error occurred. Please try again.');
-
 			}
 		}
 		
@@ -228,8 +130,7 @@ class Events_Admin {
 
 		if($id){
 			
-			$form = new Form('events', $id);
-			$form->addField('groups', array(), array());
+			$form = new Form('events', $id, array('event_groups'));
 
 			if($form->cv('end_date') == '0000-00-00'){
 				$form->setDefaultValue('end_date', '');
@@ -265,39 +166,19 @@ class Events_Admin {
 				$this->timeString('start', $form);
 				$this->timeString('end', $form);
 
+				// @todo move to model
 				if(!post()->keyExists('recurring')){
 					$form->setCurrentValue('recurring', false);
 				} else {
 					$form->setCurrentValue('start_date', '');
 					$form->setCurrentValue('end_date', '');
 				}
-				
-				// validation
-//				$this->validate();
-	
-				// set security rules
-				// // @a13
-//				$model->setSecurityRule('content', 'allow_html', true);
-	
 	
 				if($form->save($id)){
-
-					// update groups
-					// @todo update this
-					$model->delete('event_groups_link', $id, 'event_id');
-					$groups = $form->cv('groups');
-					foreach($groups as $group){
-						$sql = sprintf('INSERT INTO event_groups_link (event_id, group_id) VALUES ("%s", "%s")', $id, $group);
-						$model->query($sql);
-					}
-
 					sml()->say('Event has successfully been updated.');
 					router()->redirect('view');
-
 				} else {
-
 					sml()->say('An error occurred. Please try again.');
-
 				}
 			}
 		}
@@ -426,7 +307,7 @@ class Events_Admin {
 	public function ajax_listGroups($id = false){
 
 		$sql = sprintf('
-			SELECT event_groups.*, IF(event_groups.id IN (SELECT group_id FROM event_groups_link WHERE event_id = "%s"), 1, 0 ) as selected
+			SELECT event_groups.*, IF(event_groups.id IN (SELECT event_group_id FROM event_groups_link WHERE event_id = "%s"), 1, 0 ) as selected
 			FROM event_groups
 			ORDER BY event_groups.name ASC', $id);
 		$groups = model()->open('event_groups')->results(false, $sql);

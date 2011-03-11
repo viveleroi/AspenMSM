@@ -25,7 +25,7 @@
 							<?php print DataDisplay::truncateText($events_item['description'], 25); ?>
 						</div>
 					</div>
-					<p class="groups"><strong>Groups:</strong> <?php print isset($events_item['groups']) ? implode(', ', $events_item['groups']) : 'N/A'; ?></p>
+					<p class="groups"><strong>Groups:</strong> <?php print $events_item['Event_groups'] ? implode(', ', Utils::extract('{n}.name', $events_item['Event_groups'])) : 'N/A'; ?></p>
 				</li>
 				<?php
 						}
@@ -61,7 +61,7 @@
 							<?php print DataDisplay::truncateText($events_item['description'], 25); ?>
 						</div>
 					</div>
-					<p class="groups"><strong>Groups:</strong> <?php print isset($events_item['groups']) ? implode(', ', $events_item['groups']) : 'N/A'; ?></p>
+					<p class="groups"><strong>Groups:</strong> <?php print $events_item['Event_groups'] ? implode(', ', Utils::extract('{n}.name', $events_item['Event_groups'])) : 'N/A'; ?></p>
 				</li>
 				<?php
 						}
@@ -98,7 +98,7 @@
 							<?php print DataDisplay::truncateText($events_item['description'], 25); ?>
 						</div>
 					</div>
-					<p class="groups"><strong>Groups:</strong> <?php print isset($events_item['groups']) ? implode(', ', $events_item['groups']) : 'N/A'; ?></p>
+					<p class="groups"><strong>Groups:</strong> <?php print $events_item['Event_groups'] ? implode(', ', Utils::extract('{n}.name', $events_item['Event_groups'])) : 'N/A'; ?></p>
 				</li>
 				<?php
 						}

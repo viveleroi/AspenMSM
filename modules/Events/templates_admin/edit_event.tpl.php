@@ -98,7 +98,7 @@
 				<ol>
 					<li class="full">
 						<label for="title">Event Group:</label>
-						<select name="groups[]" id="groups" multiple="multiple" size="4">
+						<select name="Event_groups[]" id="groups" multiple="multiple" size="4">
 						</select> <a href="#" id="manage-groups">Manage Groups</a>
 						<a class="help" href="<?php print router()->moduleUrl() ?>/help/events-event_title.htm" title="Event Title">Help</a>
 					</li>

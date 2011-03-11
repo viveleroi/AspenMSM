@@ -1,7 +1,5 @@
 <?xml version="1.0"?>
-
 <package>
-
 	<type>Module</type>
 	<guid>648a9090-2820-11dd-bd0b-0800200c9a66</guid>
 	<classname>Contacts</classname>
@@ -11,12 +9,11 @@
 	<description>Allows management of the staff directory.</description>
 	<pressUrl>http://www.trellisdevelopment.com</pressUrl>
 	<updateUrl>http://www.trellisdevelopment.com</updateUrl>
-
 	<targetApplication>
 		<name>AspenMSM</name>
 		<guid>a4cd8de0-197b-11de-8c30-0800200c9a66</guid>
 		<minVersion>1.0.0</minVersion>
 		<maxVersion>1.0.0</maxVersion>
 	</targetApplication>
-
+	<model>contacts</model>
 </package>

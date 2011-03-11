@@ -1,7 +1,5 @@
 <?xml version="1.0"?>
-
 <package>
-
 	<type>Module</type>
 	<guid>cdedbb30-4e12-11dd-ae16-0800200c9a66</guid>
 	<classname>Events</classname>
@@ -11,12 +9,11 @@
 	<vendor>Trellis Development, LLC</vendor>
 	<pressUrl>http://www.trellisdevelopment.com</pressUrl>
 	<updateUrl>http://www.trellisdevelopment.com</updateUrl>
-
 	<targetApplication>
 		<name>AspenMSM</name>
 		<guid>a4cd8de0-197b-11de-8c30-0800200c9a66</guid>
 		<minVersion>1.0.0</minVersion>
 		<maxVersion>1.0.0</maxVersion>
 	</targetApplication>
-
+	<model>events</model>
 </package>
