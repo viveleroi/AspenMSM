@@ -88,9 +88,9 @@
 				</select>
 			</li>
 			<li class="auto">
-				<label for="events_<?php print $next_id ?>_group_id">Select Group:</label>
-				<select id="events_<?php print $next_id ?>_group_id" name="page_sections[<?php print $next_id ?>][group_id]">
-				<?php print template()->getSelectOptions( template()->selectArray('event_groups', 'name', 'DISTINCT', 'name'), $section['content']['group_id'], true); ?>
+				<label for="events_<?php print $next_id ?>_event_group_id">Select Group:</label>
+				<select id="events_<?php print $next_id ?>_event_group_id" name="page_sections[<?php print $next_id ?>][event_group_id]">
+				<?php print template()->optionArray( template()->selectArray('event_groups', 'name', 'DISTINCT', 'name'), $section['content']['event_group_id'], true); ?>
 				</select>
 				<a class="help" href="<?php print router()->moduleUrl('Events_Admin') ?>/help/section-group-select.htm" title="Select Form">Help</a>
 			</li>

@@ -16,4 +16,8 @@
 		<maxVersion>1.0.0</maxVersion>
 	</targetApplication>
 	<model>events</model>
+	<library>
+		<classname>Events</classname>
+		<autoload>true</autoload>
+	</library>
 </package>

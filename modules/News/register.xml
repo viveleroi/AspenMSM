@@ -16,4 +16,8 @@
 		<maxVersion>1.0.0</maxVersion>
 	</targetApplication>
 	<model>news</model>
+	<library>
+		<classname>News</classname>
+		<autoload>true</autoload>
+	</library>
 </package>
