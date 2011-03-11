@@ -54,10 +54,7 @@
 				<input class="add-btn" type="submit" name="Add" />
 			</form>
 		</div>
-		<?php
-		if($group_list){
-			foreach($group_list as $group){
-		?>
+		<?php if($group_list): foreach($group_list as $group): ?>
 		<div id="groupholder-<?php print $group['id']; ?>" class="group">
 			<div class="legend">
 				<a id="group_<?php print $group['id']; ?>" class="toggle-group open" href="#">Show</a>
@@ -65,31 +62,20 @@
 			</div>
 			<div id="group_<?php print $group['id']; ?>_details" class="group-info clearfix">
 				<ul class="group-list" id="group_<?php print $group['id']; ?>_list">
-					<?php
-					if($group['contacts']){
-						foreach($group['contacts'] as $contact){
-					?>
+				<?php if($group['Contacts']): foreach($group['Contacts'] as $contact): ?>
 					<li class="contact-<?php print $contact['id']; ?> clearfix"><span class="drag">Drag</span><span class="listed"><?php print $contact['last_name']; ?>, <?php print $contact['first_name']; ?></span> <a href="#" class="remove" title="Are you sure you wish to remove this listing?">Remove</a></li>
-					<?php
-						}
-					} else {
-					?>
+				<?php endforeach; else: ?>
 					<li class="empty">There are no contacts in this group.</li>
-					<?php } ?>
+				<?php endif; ?>
 				</ul>
 				<a class="sort-toggle" id="group_<?php print $group['id']; ?>_trigger" href="#" title="Click to Enable/Disable Sorting">Enable Sorting</a>
 				<a class="delete" href="#" title="Are you sure you wish to delete this group?">Remove</a>
 			</div>
 		</div>
-		<?php
-				}
-			} else {
-			?>
+		<?php endforeach; else: ?>
 		<div class="group">
 			<p class="empty">There are currently no groups.</p>
 		</div>
-			<?php } ?>
-		
+		<?php endif; ?>
 	</div>
-	
 </div>

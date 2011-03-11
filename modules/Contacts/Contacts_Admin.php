@@ -33,23 +33,9 @@ class Contacts_Admin {
 		
 		// pull the groups
 		$model = model()->open('contact_groups');
+		$model->contains('contacts');
 		$model->orderBy('name');
-		$groups = $model->results();
-		
-		// @todo turn this into a contain - fields need renaming though
-		if($groups){
-			foreach($groups as $g_id => $group){
-				
-				$model = model()->open('contacts');
-				$model->leftJoin('contact_groups_link', 'contact_id', 'id', array('group_id'));
-				$model->where('group_id', $g_id);
-				$model->orderBy('sort_order, last_name, first_name');
-				$groups[$g_id]['contacts'] = $model->results();
-				
-			}
-		}
-		
-		$data['group_list'] = $groups;
+		$data['group_list'] = $model->results();
 		
 		template()->addJs('admin/jquery.listnav.js');
 		template()->addJs('admin/jScrollPane.js');
