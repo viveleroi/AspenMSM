@@ -138,7 +138,6 @@ class Director {
 				}
 			}
 		}
-		var_dump($sections);
 		return $sections;
 		
 	}
@@ -153,7 +152,7 @@ class Director {
 	 * @uses readPageSections
 	 */
 	public function displayPageSections($content, $page, $bits){
-		
+
 		if(!app()->cms_lib->error()){
 		
 			$sections = array();

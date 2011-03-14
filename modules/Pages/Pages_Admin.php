@@ -501,7 +501,7 @@ class Pages_Admin extends Module {
 	 */
 	public function ajax_getPlacementGroups($template = false){
 		
-		$model = model()->open('template_placement_group');
+		$model = model()->open('template_placement_groups');
 		$model->where('template', $template);
 		$placement_groups = $model->results();
 		

@@ -187,7 +187,7 @@ class Courses_Admin {
 		$template = $template ? $template : $form->cv('page_template');
 		
 		$next_id = isset($section['meta']['id']) ? $section['meta']['id'] : $next_id;
-		$model = model()->open('template_placement_group');
+		$model = model()->open('template_placement_groups');
 		$model->where('template', $template);
 		$placement_groups = $model->results();
 		

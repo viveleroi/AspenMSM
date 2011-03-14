@@ -34,7 +34,7 @@ class Contactslib {
 		$template = $template ? $template : $form->cv('page_template');
 		
 		$next_id = isset($section['meta']['id']) ? $section['meta']['id'] : $next_id;
-		$model = model()->open('template_placement_group');
+		$model = model()->open('template_placement_groups');
 		$model->where('template', $template);
 		$placement_groups = $model->results();
 		
@@ -176,24 +176,23 @@ class Contactslib {
 		$section_content = model()->open('section_'.$section_data['section_type'], $section_data['section_id']);
 				
 		$section_content['type'] = $section_data['section_type'];
-		$section_content['placement_group'] = $section_data['group_name'];
+		if(isset($section_data['group_name'])){
+			$section_content['placement_group'] = $section_data['group_name'];
+		}
 
 		$model = model()->open('contacts');
+		$model->contains('contact_images','contact_languages','contact_groups','contact_specialties');
 		$model->where('id', $section_content['contact_id']);
 		$results = $model->results();
 
 		$section_content['results'] = $results;
 
-		if($results){
-			foreach($results as $key => $contact){
-				$related = $this->pullRelatedContactContent($contact['id']);
-				$results[$key] = array_merge($results[$key], $related);
-			}
-		} else {
-			$results = model()->open('contacts', app()->cms_lib->getUriBit(1));
+		if(!$results){
+			$model = model()->open('contacts');
+			$model->where('id', app()->cms_lib->getUriBit(1));
+			$model->contains('contact_images','contact_languages','contact_groups','contact_specialties');
+			$results = $model->results();
 			if($results){
-				$related = $this->pullRelatedContactContent($results['id']);
-				$results = array_merge($results, $related);
 				$section_content['contacts'] = array($results['id']=>$results);
 			} else {
 				app()->cms_lib->error_404();
@@ -221,7 +220,9 @@ class Contactslib {
 		$section_content = model()->open('section_'.$section_data['section_type'], $section_data['section_id']);
 				
 		$section_content['type'] = $section_data['section_type'];
-		$section_content['placement_group'] = $section_data['group_name'];
+		if(isset($section_data['group_name'])){
+			$section_content['placement_group'] = $section_data['group_name'];
+		}
 
 		// pull the groups
 		$model = model()->open('contact_groups');
@@ -232,8 +233,9 @@ class Contactslib {
 			foreach($groups as $g_id => $group){
 
 				$model = model()->open('contacts');
-				$model->leftJoin('contact_groups_link', 'contact_id', 'id', array('group_id'));
-				$model->where('group_id', $g_id);
+				$model->contains('contact_images','contact_languages','contact_specialties');
+				$model->leftJoin('contact_groups_link', 'contact_id', 'id', array('contact_group_id'));
+				$model->where('contact_group_id', $g_id);
 
 				if($section_content['sort_method'] == 'sort_order'){
 					$model->orderBy('sort_order, last_name, first_name');
@@ -243,14 +245,6 @@ class Contactslib {
 
 				$groups[$g_id]['contacts'] = $model->results();
 
-				if($groups[$g_id]['contacts']){
-					foreach($groups[$g_id]['contacts'] as $key => $contact){
-
-						$related = $this->pullRelatedContactContent($contact['id']);
-						$groups[$g_id]['contacts'][$key] = array_merge($groups[$g_id]['contacts'][$key], $related);
-
-					}
-				}
 			}
 		}
 
@@ -265,42 +259,6 @@ class Contactslib {
 
 	}
 
-
-	/**
-	 * @abtract Pulls related contact info
-	 * @param <type> $contact_id
-	 * @return <type>
-	 */
-	private function pullRelatedContactContent($contact_id){
-
-		$content = array();
-
-		// pull images
-		$model = model()->open('contact_images');
-		$model->where('contact_id', $contact_id);
-		$content['images'] = $model->results();
-
-		// pull languages
-		$model = model()->open('contact_languages');
-		$model->leftJoin('contact_languages_link', 'language_id', 'id', array('contact_id'));
-		$model->where('contact_languages_link.contact_id', $contact_id);
-		$content['languages'] = $model->results();
-
-		// pull groups
-		$model = model()->open('contact_groups');
-		$model->leftJoin('contact_groups_link', 'group_id', 'id', array('contact_id'));
-		$model->where('contact_groups_link.contact_id', $contact_id);
-		$content['groups'] = $model->results();
-
-		// pull specialties
-		$model = model()->open('contact_specialties');
-		$model->leftJoin('contact_specialties_link', 'specialty_id', 'id', array('contact_id'));
-		$model->where('contact_specialties_link.contact_id', $contact_id);
-		$content['specialties'] = $model->results();
-
-		return $content;
-
-	}
 
 	
 	/**
@@ -349,6 +307,7 @@ class Contactslib {
 
 		$model->enablePagination();
 		$model = model()->open('contacts');
+		$model->contains('contact_images','contact_languages','contact_groups','contact_specialties');
 
 		if($group){
 			$model->leftJoin('contact_groups_link', 'contact_id', 'id', array('group_id'));
@@ -381,19 +340,10 @@ class Contactslib {
 //		print $model->getBuildQuery();
 		$results = $model->results();
 
-		if($results){
-			foreach($results as $key => $contact){
-
-				$related = $this->pullRelatedContactContent($contact['id']);
-				$results[$key] = array_merge($results[$key], $related);
-
-			}
-		}
-
-		app()->search->paginator_info['records'] 	= $results['TOTAL_RECORDS_FOUND'];
-		app()->search->paginator_info['current'] 	= $results['CURRENT_PAGE'];
-		app()->search->paginator_info['per_page'] 	= $results['RESULTS_PER_PAGE'];
-		app()->search->paginator_info['pages'] 	= $results['TOTAL_PAGE_COUNT'];
+//		app()->search->paginator_info['records'] 	= $results['TOTAL_RECORDS_FOUND'];
+//		app()->search->paginator_info['current'] 	= $results['CURRENT_PAGE'];
+//		app()->search->paginator_info['per_page'] 	= $results['RESULTS_PER_PAGE'];
+//		app()->search->paginator_info['pages'] 	= $results['TOTAL_PAGE_COUNT'];
 
 		return $results;
 

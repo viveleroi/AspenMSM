@@ -38,7 +38,7 @@ class Eventslib {
 		$template = $template ? $template : $form->cv('page_template');
 		
 		$next_id = isset($section['meta']['id']) ? $section['meta']['id'] : $next_id;
-		$model = model()->open('template_placement_group');
+		$model = model()->open('template_placement_groups');
 		$model->where('template', $template);
 		$placement_groups = $model->results();
 		$templates = app()->display->sectionTemplates('modules/events');
@@ -112,8 +112,9 @@ class Eventslib {
 		
 		$section_content['type'] = $section_data['section_type'];
 		$section_content['link_to_full_page'] = $section_content['link_to_full_page'];
-		$section_content['placement_group'] = $section_data['group_name'];
-
+		if(isset($section_data['group_name'])){
+			$section_content['placement_group'] = $section_data['group_name'];
+		}
 		if(!app()->cms_lib->getUriBit(1)){
 
 			// pull events

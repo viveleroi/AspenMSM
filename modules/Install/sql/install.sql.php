@@ -198,7 +198,7 @@ CREATE TABLE IF NOT EXISTS `section_list` (
 
 $sql[] = "
 
-CREATE TABLE IF NOT EXISTS `template_placement_group` (
+CREATE TABLE IF NOT EXISTS `template_placement_groups` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `template` varchar(255) NOT NULL,
   `group_name` varchar(255) NOT NULL,

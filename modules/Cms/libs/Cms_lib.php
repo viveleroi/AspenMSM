@@ -763,13 +763,13 @@ class Cms_lib {
 		
 		if($page){
 				
-			$sql = sprintf('
-					SELECT section_list.* FROM section_list
-					LEFT JOIN template_placement_group ON section_list.placement_group = template_placement_group.id
-					WHERE section_list.page_id = "%s" ORDER BY sort_order', $page);
-
 			// pull all references to sections for this page
-			$sections = model()->open('section_list')->results(false, $sql);
+			$model = model()->open('section_list');
+			$model->joins('template_placement_groups');
+			$model->where('page_id', $page);
+			$model->orderBy('sort_order');
+			$sections = $model->results();
+
 			if($sections){
 				foreach($sections as $section){
 					$section_data = director()->readPageSections($section);
@@ -860,13 +860,13 @@ class Cms_lib {
      * @access public
      */
 	public function getContent($placement_group = false){
-		
+
 		$content = array();
 
 		if(is_array($this->content) && count($this->content)){
 			foreach($this->content as $section){
 	
-				$section['placement_group'] = isset($section['placement_group']) ? $section['placement_group'] : false;
+				$section['placement_group'] = isset($section['template_placement_groups_id']) ? $section['template_placement_groups_id'] : false;
 				
 				if($placement_group){
 					if(strtolower($placement_group) == strtolower($section['placement_group'])){
@@ -886,21 +886,19 @@ class Cms_lib {
 		if($placement_group){
 			$this->placements_this_page[] = strtolower($placement_group);
 		}
-		
+	
 		if(count($content) == 0){
 			$content = false;
-			
 			// add the placement to the database because it doesn't exist
 			if(!empty($placement_group) && isset($this->page['page_template'])){
-				
 				// if nothing exists already
-				$model = model()->open('template_placement_group');
+				$model = model()->open('template_placement_groups');
 				$model->where('template', $this->page['page_template']);
 				$model->where('group_name', $placement_group);
 				$exists = $model->results();
 				
 				if(!$exists){
-					$model->query(sprintf('INSERT INTO template_placement_group (template, group_name) VALUES ("%s", "%s")',
+					$model->query(sprintf('INSERT INTO template_placement_groups (template, group_name) VALUES ("%s", "%s")',
 						strtolower($this->page['page_template']), $placement_group));
 				}
 			}
@@ -1089,9 +1087,7 @@ class Cms_lib {
      * @access public
      */
 	public function display_content($section = false){
-		
 		$content = $this->getContent($section);
-		
 		if($content){
 			foreach($content as $section){
 				director()->displayPageSections($section, $this->page, $this->bits);

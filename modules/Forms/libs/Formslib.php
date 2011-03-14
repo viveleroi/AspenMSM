@@ -33,7 +33,7 @@ class Formslib {
 		$template = $template ? $template : $form->cv('page_template');
 		
 		$next_id = isset($section['meta']['id']) ? $section['meta']['id'] : $next_id;
-		$model = model()->open('template_placement_group');
+		$model = model()->open('template_placement_groups');
 		$model->where('template', $template);
 		$placement_groups = $model->results();
 		
@@ -285,7 +285,9 @@ class Formslib {
 		$section_content = model()->open('section_form_display', $section_data['section_id']);
 
 		$section_content['type'] = $section_data['section_type'];
-		$section_content['placement_group'] = $section_data['group_name'];
+		if(isset($section_data['group_name'])){
+			$section_content['placement_group'] = $section_data['group_name'];
+		}
 
 		$section_content['form'] = model()->open('forms', $section_content['form_id']);
 		$data['section'] = $section_content;

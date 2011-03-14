@@ -89,7 +89,7 @@ class Display {
 	 * @param unknown_type $page
 	 * @param unknown_type $bits
 	 */
-	public function loadSectionTemplate($rel_path = false, $template_name, $content, $page, $bits){
+	public function loadSectionTemplate($rel_path, $template_name, $content, $page, $bits){
 		$templates = $this->sectionTemplates($rel_path);
 		foreach($templates as $template){
 			if(trim($template['FILENAME']) == trim($template_name)){

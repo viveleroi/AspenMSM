@@ -33,7 +33,7 @@ class Newslib {
 		$template = $template ? $template : $form->cv('page_template');
 		
 		$next_id = isset($section['meta']['id']) ? $section['meta']['id'] : $next_id;
-		$model = model()->open('template_placement_group');
+		$model = model()->open('template_placement_groups');
 		$model->where('template', $template);
 		$placement_groups = $model->results();
 		$templates = app()->display->sectionTemplates('modules/news');
@@ -116,8 +116,10 @@ class Newslib {
 	
 		$section_content['type'] = $section_data['section_type'];
 		$section_content['link_to_full_page'] = $section_content['link_to_full_page'];
-		$section_content['placement_group'] = $section_data['group_name'];
-
+		if(isset($section_data['group_name'])){
+			$section_content['placement_group'] = $section_data['group_name'];
+		}
+		
 		// pull news
 		$model = model()->open('news');
 		$model->where('public', 1);
@@ -160,29 +162,27 @@ class Newslib {
 		$data = array();
 		
 		// pull the section for the database
-		$section_results = $model->query(sprintf('SELECT * FROM section_newsarch_display WHERE id = "%s"', $section_data['section_id']));
-		
-		if($section_results->RecordCount()){
-			while($section_content = $section_results->FetchRow()){
-				$section_content['type'] = $section_data['section_type'];
-				$section_content['placement_group'] = $section_data['group_name'];
-				
-				// pull news
-				$model = model()->open('news');
-				$model->where('public', 1);
-				$model->orderBy('id', 'ASC');
-				if($section_content['display_num']){
-					$model->limit(0, $section_content['display_num']);
-				}
-				$news = $model->results();
-				
-				$section_content['news'] = $news;
-				$data['section'] = $section_content;
-				
-				if(!$section_data['called_in_template']){
-					$data['content'] = $section_content;
-				}
-			}
+		$section_results = model()->open('section_newsarch_display', $section_data['section_id']);
+
+		$section_content['type'] = $section_data['section_type'];
+		if(isset($section_data['group_name'])){
+			$section_content['placement_group'] = $section_data['group_name'];
+		}
+
+		// pull news
+		$model = model()->open('news');
+		$model->where('public', 1);
+		$model->orderBy('id', 'ASC');
+		if($section_content['display_num']){
+			$model->limit(0, $section_content['display_num']);
+		}
+		$news = $model->results();
+
+		$section_content['news'] = $news;
+		$data['section'] = $section_content;
+
+		if(!$section_data['called_in_template']){
+			$data['content'] = $section_content;
 		}
 		
 		return $data;
