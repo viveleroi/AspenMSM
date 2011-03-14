@@ -13,7 +13,12 @@ class Newslib {
 	 * @access public
 	 */
 	public function aspen_init(){
-		director()->registerPageSection('newslib', 'News Display', 'news_display');
+		if(LS == 'admin'){
+			director()->registerPageSection('newslib', 'News Display', 'news_display');
+		} else {
+			director()->registerCmsSection('newslib', 'news_display');
+			director()->registerCmsSection('newslib', 'newsarch_display');
+		}
 	}
 
 	
@@ -77,6 +82,141 @@ class Newslib {
 		
 		return $sections;
 		
+	}
+	
+	
+	/**
+	 * @abstract Returns an array of meta/content data for a section type
+	 * @param array $section_data
+	 * @return unknown
+	 * @access public
+	 */
+	public function readSection($section_data){
+		if($section_data['section_type'] == 'news_display'){
+			return $this->readSection_news($section_data);
+		}
+		if($section_data['section_type'] == 'newsarch_display'){
+			return $this->readSection_newsarch($section_data);
+		}
+	}
+	
+	
+	/**
+	 * Enter description here...
+	 *
+	 * @param unknown_type $section_data
+	 * @return unknown
+	 */
+	public function readSection_news($section_data){
+		
+		$data = array();
+		
+		// pull the section for the database
+		$section_content = model()->open('section_news_display', $section_data['section_id']);
+	
+		$section_content['type'] = $section_data['section_type'];
+		$section_content['link_to_full_page'] = $section_content['link_to_full_page'];
+		$section_content['placement_group'] = $section_data['group_name'];
+
+		// pull news
+		$model = model()->open('news');
+		$model->where('public', 1);
+		$model->orderBy('timestamp', 'DESC');
+		if($section_content['display_num']){
+			$model->limit(0, $section_content['display_num']);
+		}
+		$news = $model->results();
+
+		// if a specific id is set, ensure it exists or 404
+		if(app()->cms_lib->getUriBit(1)){
+			if(is_array($news)){
+				if(!isset($news[ app()->cms_lib->getUriBit(1) ])){
+					app()->cms_lib->error_404();
+				}
+			}
+		}
+
+		$section_content['news'] = $news;
+		$data['section'] = $section_content;
+
+		if(!$section_data['called_in_template']){
+			$data['content'] = $section_content;
+		}
+	
+		
+		return $data;
+
+	}
+	
+	
+	/**
+	 * Enter description here...
+	 *
+	 * @param unknown_type $section_data
+	 * @return unknown
+	 */
+	public function readSection_newsarch($section_data){
+		
+		$data = array();
+		
+		// pull the section for the database
+		$section_results = $model->query(sprintf('SELECT * FROM section_newsarch_display WHERE id = "%s"', $section_data['section_id']));
+		
+		if($section_results->RecordCount()){
+			while($section_content = $section_results->FetchRow()){
+				$section_content['type'] = $section_data['section_type'];
+				$section_content['placement_group'] = $section_data['group_name'];
+				
+				// pull news
+				$model = model()->open('news');
+				$model->where('public', 1);
+				$model->orderBy('id', 'ASC');
+				if($section_content['display_num']){
+					$model->limit(0, $section_content['display_num']);
+				}
+				$news = $model->results();
+				
+				$section_content['news'] = $news;
+				$data['section'] = $section_content;
+				
+				if(!$section_data['called_in_template']){
+					$data['content'] = $section_content;
+				}
+			}
+		}
+		
+		return $data;
+
+	}
+	
+	
+	/**
+	 * @abstract Displays the basic section
+	 * @param unknown_type $section
+	 * @param unknown_type $page
+	 * @param unknown_type $bits
+	 */
+	public function displaySection($section, $page, $bits){
+		app()->display->loadSectionTemplate('modules/news', $section['template'], $section, $page, $bits);
+	}
+	
+	
+	/**
+	 * @abstract Parses and returns proper content for the search indexer
+	 * @param array $content
+	 */
+	public function searchIndexer($content = false){
+		$source = array();
+		if($content['news']){
+			foreach($content['news'] as $news){
+				$source[0]['source_type'] 		= $content['type'];
+				$source[0]['source_page_id'] 	= $content['page_id'];
+				$source[0]['source_id'] 		= $content['id'];
+				$source[0]['source_title'] 		= $news['title'];
+				$source[0]['source_content'] 	= $news['summary'] . ' ' . $news['body'] . ' ' . $news['pdf_filename'];
+			}
+		}
+		return $source;
 	}
 }
 ?>

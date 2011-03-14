@@ -129,7 +129,7 @@ class Director {
 	public function readPageSections($section_data){
 		
 		$sections = array();
-		
+
 		foreach($this->sections as $section){
 			if($section_data['section_type'] == $section['type']){
 				if(isset(app()->{$section['module']}) && method_exists(app()->{$section['module']}, 'readSection')){
@@ -138,7 +138,7 @@ class Director {
 				}
 			}
 		}
-		
+		var_dump($sections);
 		return $sections;
 		
 	}

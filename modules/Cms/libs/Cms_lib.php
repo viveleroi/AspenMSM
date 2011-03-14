@@ -142,8 +142,7 @@ class Cms_lib {
 		$model = model()->open('pages');
 		$model->where('page_is_live', 1);
 		$model->orderBy('page_sort_order');
-		$pages = $model->results();
-		$this->pages = $pages;
+		$this->pages = $model->results();		
 	}
 	
 	
@@ -178,12 +177,12 @@ class Cms_lib {
 		
 		// if rewrites enabled, pull them from the url
 		$uri = explode('/', stripslashes(get()->getRaw('redirected')));
-		
+
 		if(isset($uri[0]) && !empty($uri[0])){
 			$final_page = $this->findPageFromHeirarchy($uri);
 		} else {
 			$final_page = array();
-			$final_page['page'] = model()->open('pages')->quickSelectSingle(app()->settings->getConfig('home_page'), 'page_id');
+			$final_page['page'] = model()->open('pages')->quickSelectSingle(settings()->getConfig('home_page'), 'page_id');
 			$final_page['bits'] = array();
 		}
 		
@@ -267,19 +266,17 @@ class Cms_lib {
 	 * @access public
 	 */
 	public function error_404($redirect_only = false){
-		
+	
 		$this->error = '404';
 		
 		// if there is a specific config page
 		if(app()->config('404_page_id')){
 			$error_404 = $this->url(app()->config('404_page_id'));
 			if(!empty($error_404)){
-				header("Location: " . $error_404);
-				exit;
+				router()->redirectToUrl($error_404);
 			}
 		}
 		
-
 		// begin output of 404
 		header("HTTP/1.0 404 Not Found");
 		$this->reset();
@@ -327,7 +324,7 @@ class Cms_lib {
 			// search pages array for this page name
 			$found = false;
 			foreach($this->pages as $page){
-				if(strtolower($page['page_title']) == strtolower(app()->router->decodeForRewriteUrl($potent_page)) && $page['parent_id'] == $parent_must_be){
+				if(strtolower($page['page_title']) == strtolower(router()->decodeForRewriteUrl($potent_page)) && $page['parent_id'] == $parent_must_be){
 					$parent_must_be 	= $page['page_id'];
 					$request['page'] 	= $page;
 					$found 				= true;
@@ -336,7 +333,7 @@ class Cms_lib {
 			
 			if(is_array($this->pages_private)){
 				foreach($this->pages_private as $page){
-					if(strtolower($page['page_title']) == strtolower(app()->router->decodeForRewriteUrl($potent_page)) && $page['parent_id'] == $parent_must_be){
+					if(strtolower($page['page_title']) == strtolower(router()->decodeForRewriteUrl($potent_page)) && $page['parent_id'] == $parent_must_be){
 						$this->private_page_found = $page['page_id'];
 						$parent_must_be 	= $page['page_id'];
 						$request['page'] 	= $page;
@@ -347,7 +344,7 @@ class Cms_lib {
 			
 			// append bits that weren't found (only if they're integers, for details pages)
 			if(!$found){
-				$request['bits'][] = app()->router->decodeForRewriteUrl($potent_page);
+				$request['bits'][] = router()->decodeForRewriteUrl($potent_page);
 			}
 		}
 
@@ -412,7 +409,7 @@ class Cms_lib {
 	public function getThemePath(){
 		
 		// determine the current website theme
-		$template_name = app()->settings->getConfig('active_theme');
+		$template_name = settings()->getConfig('active_theme');
 		
 		// set the theme path
 		$path = app()->config('site_theme_path') ? app()->config('site_theme_path') : APPLICATION_PATH . '/themes';
@@ -428,8 +425,8 @@ class Cms_lib {
 	 * @access private
 	 */
 	private function setThemeUrl(){
-		$template_name = app()->settings->getConfig('active_theme');
-		$this->theme_url = (app()->config('site_theme_url') ? app()->config('site_theme_url') : app()->router->appUrl() . '/themes') . '/' . $template_name;
+		$template_name = settings()->getConfig('active_theme');
+		$this->theme_url = (app()->config('site_theme_url') ? app()->config('site_theme_url') : router()->appUrl() . '/themes') . '/' . $template_name;
 	}
 	
 	
@@ -491,13 +488,13 @@ class Cms_lib {
 		// determine of we should make this a cleanurl
 		$enable_mod_rewrite = $force_no_rewrite ? false : app()->config('enable_mod_rewrite');
 
-		$url_base = app()->router->appUrl();
+		$url_base = router()->appUrl();
 		$url_base .= $enable_mod_rewrite ? '/' : '/index.php?redirected=';
 		$url = $url_base . implode('/', array_reverse($this->getFullPagePath($page_id)));
 		
 		if(is_array($params)){
 			foreach($params as $param){
-				$url .= '/' . app()->router->encodeForRewriteUrl($param);
+				$url .= '/' . router()->encodeForRewriteUrl($param);
 			}
 		}
 		
@@ -516,13 +513,13 @@ class Cms_lib {
 		// determine of we should make this a cleanurl
 		$enable_mod_rewrite = $force_no_rewrite ? false : app()->config('enable_mod_rewrite');
 
-		$url_base = app()->router->appUrl();
+		$url_base = router()->appUrl();
 		$url_base .= $enable_mod_rewrite ? '/' : '/index.php?redirected=';
 		$url = $url_base . implode('/', array_reverse($this->getFullPagePath($this->page['page_id'])));
 		
 		if(is_array($this->bits)){
 			foreach($this->bits as $param){
-				$url .= '/' . app()->router->encodeForRewriteUrl($param);
+				$url .= '/' . router()->encodeForRewriteUrl($param);
 			}
 		}
 		
@@ -540,13 +537,13 @@ class Cms_lib {
 		$parents = array();
 		
 		if(isset($this->pages[$page_id])){
-			$parents = array(app()->router->encodeForRewriteUrl($this->pages[$page_id]['page_title']));
+			$parents = array(router()->encodeForRewriteUrl($this->pages[$page_id]['page_title']));
 			if(isset($this->pages[$page_id]['parent_id'])){
 				$parents = array_merge($parents, $this->getFullPagePath($this->pages[$page_id]['parent_id']));
 			}
 		}
 		elseif(isset($this->pages_private[$page_id])){
-			$parents = array(app()->router->encodeForRewriteUrl($this->pages_private[$page_id]['page_title']));
+			$parents = array(router()->encodeForRewriteUrl($this->pages_private[$page_id]['page_title']));
 			if(isset($this->pages_private[$page_id]['parent_id'])){
 				$parents = array_merge($parents, $this->getFullPagePath($this->pages_private[$page_id]['parent_id']));
 			}
@@ -713,7 +710,7 @@ class Cms_lib {
 		
 		$link_id = false;
 		if(!$page['parent_id']){
-			$link_id = empty($page['page_body_id']) ? '' : ' id="'.$li_id_prepend.'-' . strtolower(app()->router->encodeForRewriteUrl($page['page_body_id'])) . '"';
+			$link_id = empty($page['page_body_id']) ? '' : ' id="'.$li_id_prepend.'-' . strtolower(router()->encodeForRewriteUrl($page['page_body_id'])) . '"';
 		}
 		$title = empty($page['page_link_hover']) ? '' : ' title="' . app()->html->purify($page['page_link_hover']) . '"';
 		$text = empty($page['page_link_text']) ? $page['page_title'] : $page['page_link_text'];
@@ -767,15 +764,14 @@ class Cms_lib {
 		if($page){
 				
 			$sql = sprintf('
-					SELECT * FROM section_list
+					SELECT section_list.* FROM section_list
 					LEFT JOIN template_placement_group ON section_list.placement_group = template_placement_group.id
 					WHERE section_list.page_id = "%s" ORDER BY sort_order', $page);
 
 			// pull all references to sections for this page
-			$sections = $model->query($sql);
-			if($sections->RecordCount()){
-				while($section = $sections->FetchRow()){
-					
+			$sections = model()->open('section_list')->results(false, $sql);
+			if($sections){
+				foreach($sections as $section){
 					$section_data = director()->readPageSections($section);
 					if(is_array($section_data) && isset($section_data['section'])){
 						$this->sections[]  	= $section_data['section'];
@@ -798,7 +794,7 @@ class Cms_lib {
 			foreach($this->sections as $section){
 				if($section['title'] == $section_title){
 					
-					$model->query(sprintf('
+					model()->open('section_list')->query(sprintf('
 						UPDATE section_list SET called_in_template = 1
 						WHERE section_type = "%s" AND section_id = "%s"',
 						$section['type'], $section['id']));
@@ -824,7 +820,7 @@ class Cms_lib {
 			foreach($this->sections as $section){
 				if($section['title'] == $section_title){
 					
-					$model->query(sprintf('
+					model()->open('section_list')->query(sprintf('
 						UPDATE section_list SET called_in_template = 1
 						WHERE section_type = "%s" AND section_id = "%s"',
 						$section['type'], $section['id']));
@@ -846,7 +842,7 @@ class Cms_lib {
 		
 		if(is_array($this->sections) && isset($this->sections[0])){
 				
-			$model->query(sprintf('
+			model()->open('section_list')->query(sprintf('
 				UPDATE section_list SET called_in_template = 1
 				WHERE section_type = "%s" AND section_id = "%s"',
 				$this->sections[0]['type'], $this->sections[0]['id']));
@@ -952,7 +948,7 @@ class Cms_lib {
      */
 	public function parent_classes($page_id = false){
 		
-		$page = strtolower(app()->router->encodeForRewriteUrl($this->page['page_title']));
+		$page = strtolower(router()->encodeForRewriteUrl($this->page['page_title']));
 
 		$parents = $this->parent_classes_recursive($page_id);
 		if(is_array($parents) && count($parents)){
@@ -976,7 +972,7 @@ class Cms_lib {
 		$classes = array();
 		if($page_id && isset($this->pages[$page_id])) {
 			$parent = $this->pages[$page_id]['page_title'];
-			$classes[] = strtolower(app()->router->encodeForRewriteUrl($parent));
+			$classes[] = strtolower(router()->encodeForRewriteUrl($parent));
 			if($this->pages[$page_id]['parent_id']){
 				$classes = array_merge($classes, $this->parent_classes_recursive($this->pages[$page_id]['parent_id']));
 			}
@@ -994,7 +990,7 @@ class Cms_lib {
 		
 		// if body if is set
 		if(isset($this->page['page_body_id']) && !empty($this->page['page_body_id'])) {
-			return strtolower(app()->router->encodeForRewriteUrl($this->page['page_body_id']));
+			return strtolower(router()->encodeForRewriteUrl($this->page['page_body_id']));
 		} else {
 			
 			// look for any parents with body_id set
@@ -1003,14 +999,14 @@ class Cms_lib {
 			foreach($parents as $parent){
 				$parent = $this->pages[$parent];
 				if(isset($parent['page_body_id']) && !empty($parent['page_body_id'])) {
-					return strtolower(app()->router->encodeForRewriteUrl($parent['page_body_id']));
+					return strtolower(router()->encodeForRewriteUrl($parent['page_body_id']));
 				}
 			}
 		}
 		
 		// nothing was found, so use the page title
 		if(isset($this->page['page_title'])) {
-			return strtolower(app()->router->encodeForRewriteUrl($this->page['page_title']));
+			return strtolower(router()->encodeForRewriteUrl($this->page['page_title']));
 		}
 		
 		return false;
@@ -1053,7 +1049,7 @@ class Cms_lib {
 			if(isset($this->page['parent_id']) && $this->page['parent_id'] && isset($this->pages[$this->page['parent_id']]['meta_keywords']) && !empty($this->pages[$this->page['parent_id']]['meta_keywords'])){
 				return $this->pages[$this->page['parent_id']]['meta_keywords'];
 			} else {
-				return app()->settings->getConfig('meta_keywords');
+				return settings()->getConfig('meta_keywords');
 			}
 		}
 	}
@@ -1071,7 +1067,7 @@ class Cms_lib {
 			if(isset($this->page['parent_id']) && $this->page['parent_id'] && isset($this->pages[$this->page['parent_id']]['meta_description']) && !empty($this->pages[$this->page['parent_id']]['meta_description'])){
 				return $this->pages[$this->page['parent_id']]['meta_description'];
 			} else {
-				return app()->settings->getConfig('meta_description');
+				return settings()->getConfig('meta_description');
 			}
 		}
 	}
@@ -1083,7 +1079,7 @@ class Cms_lib {
      * @access public
      */
 	public function website_title(){
-		return app()->settings->getConfig('website_title');
+		return settings()->getConfig('website_title');
 	}
 	
 	
