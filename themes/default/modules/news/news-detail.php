@@ -13,7 +13,7 @@
 	</p>
 	<?php } ?>
 
-	<p class="date"><?php print template()->niceDate($news['timestamp'], "l F j, Y", '-', true); ?></p>
+	<p class="date"><?php print Date::niceDate($news['timestamp'], array('format'=>"l F j, Y", 'empty'=>'-', 'date_only'=>true)); ?></p>
 	<h3><?php print app()->html->purify($news['title']); ?></h3>
 	<?php print $news['body']; ?>
 </div>

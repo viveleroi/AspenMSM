@@ -15,7 +15,7 @@ if(is_array($content['news'])){
 <ul class="news-list">
 <?php
 foreach($content['news'] as $news){
-	$date = template()->niceDate($news['timestamp'], "n/j/y", '-', true);
+	$date = Date::niceDate($news['timestamp'], array('format'=>"n/j/y", 'empty'=>'-', 'date_only'=>true));
 	$detail_page = $content['detail_page_id'] ? $content['detail_page_id'] : $page['page_id'];
 	$link = app()->url($detail_page, false, array('id' => $news['id']));
 ?>
@@ -35,7 +35,7 @@ foreach($content['news'] as $news){
 <div class="news-article">
 <?php
 foreach($content['news'] as $news){
-	$date = template()->niceDate($news['timestamp'], "n/j/y", '-', true);
+	$date = Date::niceDate($news['timestamp'], array('format'=>"n/j/y", 'empty'=>'-', 'date_only'=>true));
 	$link = app()->url(app()->config('news_page_id'), false, array('id' => $news['id']));
 	$title = sprintf('<h4><span class="date">%s</span> %s</h4>', $date, $news['title']);
 ?>
