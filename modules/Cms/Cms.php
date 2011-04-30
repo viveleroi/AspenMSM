@@ -28,7 +28,7 @@ class Cms extends Bootstrap {
 		define('IS_ADMIN', $this->user->userHasGlobalAccess());
 		
 		// load pages module, and any module hooks
-		$this->loadModule('c3f28790-269f-11dd-bd0b-0800200c9a66');
+//		$this->loadModule('c3f28790-269f-11dd-bd0b-0800200c9a66');
 		
 		// run all init commands from library
 		$this->cms_lib->load();
@@ -376,34 +376,36 @@ class Cms extends Bootstrap {
 	 * @access public
 	 */
 	public function process_registration(){
-	
-		if($this->form->isSubmitted()){
-			
-			if($this->user->add()){
 		
-				// send registration email
-				$this->mail->AddAddress($this->form->cv('username'));
+		$form = new Form('users', false, array('groups'));
+		$form->addField('password_confirm');
+		
+		if($form->isSubmitted()){
+			if($form->save()){
+
+				$this->mail->AddAddress($form->cv('username'));
 				$this->mail->From      	= $this->config('email_sender');
 				$this->mail->FromName  	= $this->config('email_sender_name');
 				$this->mail->Mailer    	= "mail";
 				$this->mail->ContentType= 'text/html';
 				$this->mail->Subject   	= $this->website_title() . " Registration Confirmation";
-				
+
 				$body = $this->config('registration_email_body');
 				$body = str_replace('{website}', $this->website_title(), $body);
-				$body = str_replace('{user}', $this->form->cv('username'), $body);
-				$body = str_replace('{pass}', $this->params->post->getRaw('password'), $body);
-				
+				$body = str_replace('{user}', $form->cv('username'), $body);
+				$body = str_replace('{pass}', post()->getRaw('password'), $body);
+
 				$this->mail->Body = $body;
 				$this->mail->Send();
 				$this->mail->ClearAddresses();
-				
+
 				// send to thanks page
 				$thanks = $this->cms_lib->url($this->config('registration_thanks_page_id'));
 				header("Location: " . (empty($thanks) ? 'index.php' : $thanks) );
 				exit;
 			}
 		}
+		return $form;
 	}
 	
 	

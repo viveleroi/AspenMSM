@@ -51,7 +51,23 @@ $(document).ready(function() {
             width: 200 // Set the tooltip width
          }
 	   })
-   })
-	
-	
+   });
+   
+   
+   function enableTheme(theme){
+		$.ajax({
+		    type: "GET",
+		    url: INTERFACE_URL+"/index.php",
+		    data: 'module=Admin&method=ajax_enableTheme&theme=' + escape(theme),
+			success: function(){
+				
+				// disable all other theme icons
+				$('.theme_box a').removeClass('live');
+				$('.theme_box a').addClass('private');
+				
+				$('#' + theme + ' a').removeClass('private');
+				$('#' + theme + ' a').addClass('live');
+	   		}
+	   	});
+	}
 });

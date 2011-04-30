@@ -1,10 +1,12 @@
 	<h2>Admin Settings</h2>
 	<?= sml()->printMessage(); ?>
+	<!--
 	<div class="frame">
 		<h3 class="show-hide"><a id="adminModules" class="toggle-frame" href="#" title="Click to Open/Close this Section">Hide</a> Site Modules</h3>
 		<div id="adminModules-area" class="loadfirst clearfix">
 			<ul>
 				<?php
+				/*
 				if(count($mods)){
 					foreach($mods as $mod){
 						
@@ -22,10 +24,11 @@
 				<?php
 					}
 				}
+				 */
 				?>
 			</ul>
 		</div>
-	</div>
+	</div>-->
 	<div class="frame">
 		<h3 class="show-hide"><a id="adminTheme" class="toggle-frame" href="#" title="Click to Open/Close this Section">Hide</a> Site Theme</h3>
 		<div id="adminTheme-area" class="loadfirst clearfix">

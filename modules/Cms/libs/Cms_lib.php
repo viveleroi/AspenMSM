@@ -865,14 +865,10 @@ class Cms_lib {
 
 		if(is_array($this->content) && count($this->content)){
 			foreach($this->content as $section){
-	
-				$section['placement_group'] = isset($section['template_placement_groups_id']) ? $section['template_placement_groups_id'] : false;
-				
 				if($placement_group){
 					if(strtolower($placement_group) == strtolower($section['placement_group'])){
 						$content[] = $section;
 					}
-		
 				} else {
 					if(!in_array(strtolower($section['placement_group']), $this->placements_this_page)){
 						$content[] = $section;
@@ -880,7 +876,6 @@ class Cms_lib {
 				}
 			}
 		}
-			
 			
 		// save this section as one we've called already
 		if($placement_group){
